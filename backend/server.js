@@ -33,52 +33,110 @@ function safeName(input) {
     .slice(0, 60);
 }
 
-function cleanOcrText(text) {
+function cleanLine(text) {
   return String(text || "")
-    .replace(/\r\n/g, "\n")
-    .replace(/\r/g, "\n")
+    .replace(/\r/g, "")
     .replace(/[“”]/g, '"')
     .replace(/[‘’]/g, "'")
     .replace(/[ \t]+/g, " ")
-    .replace(/\n{3,}/g, "\n\n")
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .join("\n")
     .trim();
 }
 
 function isGarbageLine(line) {
-  const clean = String(line || "").trim();
+  const clean = cleanLine(line);
   if (!clean) return true;
 
   const letters = (clean.match(/[a-zA-Z]/g) || []).length;
   const digits = (clean.match(/[0-9]/g) || []).length;
   const useful = letters + digits;
-  const weird = (clean.match(/[^a-zA-Z0-9\s.,:;'"!?$%&()\-+/]/g) || []).length;
+  const weird = (clean.match(/[^a-zA-Z0-9\s.,:;'"!?$%&()\-+/#[\]]/g) || []).length;
 
   if (clean.length <= 2 && useful === 0) return true;
-  if (clean.length >= 5 && useful / clean.length < 0.35) return true;
-  if (weird / Math.max(clean.length, 1) > 0.28) return true;
+  if (clean.length >= 5 && useful / clean.length < 0.32) return true;
+  if (weird / Math.max(clean.length, 1) > 0.3) return true;
 
   return false;
 }
 
-function filterOcrText(text) {
-  const lines = cleanOcrText(text).split("\n");
-  const kept = lines.filter((line) => !isGarbageLine(line));
-  return kept.join("\n").trim();
+function normalizeOcrLines(ocrData) {
+  const rawLines = Array.isArray(ocrData?.lines) ? ocrData.lines : [];
+
+  if (!rawLines.length) {
+    const fallback = String(ocrData?.text || "")
+      .split(/\r?\n/)
+      .map((text) => ({ text, confidence: ocrData?.confidence || 0, bbox: null }));
+
+    return fallback
+      .map((line) => ({
+        text: cleanLine(line.text),
+        confidence: Math.round(line.confidence || 0),
+        bbox: line.bbox || null,
+      }))
+      .filter((line) => line.text && !isGarbageLine(line.text));
+  }
+
+  return rawLines
+    .map((line) => ({
+      text: cleanLine(line.text),
+      confidence: Math.round(line.confidence || 0),
+      bbox: line.bbox || null,
+    }))
+    .filter((line) => line.text && !isGarbageLine(line.text));
+}
+
+function buildLayoutText(lines) {
+  if (!lines.length) return "";
+
+  const withY = lines
+    .map((line, index) => ({
+      ...line,
+      index,
+      y0: line?.bbox?.y0 ?? index * 20,
+      y1: line?.bbox?.y1 ?? index * 20 + 14,
+      x0: line?.bbox?.x0 ?? 0,
+    }))
+    .sort((a, b) => {
+      const yDiff = a.y0 - b.y0;
+      if (Math.abs(yDiff) > 8) return yDiff;
+      return a.x0 - b.x0;
+    });
+
+  const heights = withY
+    .map((line) => Math.max(8, (line.y1 || 0) - (line.y0 || 0)))
+    .filter(Boolean);
+
+  const avgHeight =
+    heights.reduce((sum, value) => sum + value, 0) / Math.max(heights.length, 1);
+
+  const output = [];
+
+  for (let i = 0; i < withY.length; i++) {
+    const line = withY[i];
+
+    if (i > 0) {
+      const prev = withY[i - 1];
+      const gap = line.y0 - prev.y1;
+
+      if (gap > avgHeight * 1.35) {
+        output.push("");
+      }
+    }
+
+    output.push(line.text);
+  }
+
+  return output.join("\n").replace(/\n{3,}/g, "\n\n").trim();
 }
 
 function scoreTextQuality(text, confidence) {
-  const clean = cleanOcrText(text);
+  const clean = String(text || "").trim();
   if (!clean) return { usable: false, score: 0 };
 
   const chars = clean.length;
   const letters = (clean.match(/[a-zA-Z]/g) || []).length;
   const digits = (clean.match(/[0-9]/g) || []).length;
   const spaces = (clean.match(/\s/g) || []).length;
-  const weird = (clean.match(/[^a-zA-Z0-9\s.,:;'"!?$%&()\-+/]/g) || []).length;
+  const weird = (clean.match(/[^a-zA-Z0-9\s.,:;'"!?$%&()\-+/#[\]]/g) || []).length;
 
   const usefulRatio = (letters + digits + spaces) / Math.max(chars, 1);
   const weirdRatio = weird / Math.max(chars, 1);
@@ -100,17 +158,17 @@ function scoreTextQuality(text, confidence) {
 }
 
 function wrapText(text, font, fontSize, maxWidth) {
-  const paragraphs = String(text || "").split(/\n+/);
   const lines = [];
 
-  for (const paragraph of paragraphs) {
-    const words = paragraph.trim().split(/\s+/).filter(Boolean);
+  for (const inputLine of String(text || "").split("\n")) {
+    const trimmed = inputLine.trim();
 
-    if (!words.length) {
+    if (!trimmed) {
       lines.push("");
       continue;
     }
 
+    const words = trimmed.split(/\s+/).filter(Boolean);
     let currentLine = "";
 
     for (const word of words) {
@@ -126,13 +184,18 @@ function wrapText(text, font, fontSize, maxWidth) {
     }
 
     if (currentLine) lines.push(currentLine);
-    lines.push("");
   }
 
   return lines;
 }
 
-async function createTextPdf({ text, outputPath, filename, confidence, qualityScore }) {
+async function createTextPdf({
+  text,
+  outputPath,
+  filename,
+  confidence,
+  qualityScore,
+}) {
   const pdfDoc = await PDFDocument.create();
   const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
@@ -211,7 +274,7 @@ async function createTextPdf({ text, outputPath, filename, confidence, qualitySc
     }
 
     if (!line.trim()) {
-      y -= bodyLineHeight * 0.75;
+      y -= bodyLineHeight * 0.85;
       continue;
     }
 
@@ -245,10 +308,14 @@ async function createTextPdf({ text, outputPath, filename, confidence, qualitySc
 async function cleanupOldFiles(dir, maxAgeMs = 1000 * 60 * 60 * 12) {
   try {
     const now = Date.now();
+
     for (const entry of fs.readdirSync(dir)) {
       const fullPath = path.join(dir, entry);
       const stat = fs.statSync(fullPath);
-      if (stat.isFile() && now - stat.mtimeMs > maxAgeMs) fs.unlinkSync(fullPath);
+
+      if (stat.isFile() && now - stat.mtimeMs > maxAgeMs) {
+        fs.unlinkSync(fullPath);
+      }
     }
   } catch (error) {
     console.warn("Cleanup warning:", error?.message || error);
@@ -333,12 +400,12 @@ app.post("/process", upload.single("file"), async (req, res) => {
       })
       .grayscale()
       .normalize()
-      .linear(1.22, -16)
+      .linear(1.18, -12)
       .median(1)
       .sharpen({
-        sigma: 1.15,
-        m1: 1.25,
-        m2: 2.25,
+        sigma: 1.1,
+        m1: 1.15,
+        m2: 2.1,
       })
       .png({
         compressionLevel: 8,
@@ -352,12 +419,12 @@ app.post("/process", upload.single("file"), async (req, res) => {
       preserve_interword_spaces: "1",
     });
 
-    const rawText = ocrResult?.data?.text || "";
     const rawConfidence = Math.round(ocrResult?.data?.confidence || 0);
-    const filteredText = filterOcrText(rawText);
-    const quality = scoreTextQuality(filteredText, rawConfidence);
+    const layoutLines = normalizeOcrLines(ocrResult?.data);
+    const layoutText = buildLayoutText(layoutLines);
+    const quality = scoreTextQuality(layoutText, rawConfidence);
 
-    const finalText = quality.usable ? filteredText : OCR_LOW_QUALITY_MESSAGE;
+    const finalText = quality.usable ? layoutText : OCR_LOW_QUALITY_MESSAGE;
 
     fs.writeFileSync(txtPath, finalText, "utf8");
 
@@ -376,6 +443,7 @@ app.post("/process", upload.single("file"), async (req, res) => {
       qualityScore: quality.score,
       usableText: quality.usable,
       warning: quality.usable ? "" : OCR_LOW_QUALITY_MESSAGE,
+      lineCount: layoutLines.length,
       files: {
         cleanedImageUrl: `/output/${path.basename(cleanedImagePath)}`,
         pdfUrl: `/output/${path.basename(pdfPath)}`,
