@@ -15,14 +15,15 @@ const UPLOAD_DIR = path.join(ROOT_DIR, "uploads");
 const OUTPUT_DIR = path.join(ROOT_DIR, "output");
 
 for (const dir of [UPLOAD_DIR, OUTPUT_DIR]) {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 }
 
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
 app.use("/output", express.static(OUTPUT_DIR));
+
+const OCR_LOW_QUALITY_MESSAGE =
+  "Text quality is too low to extract reliable text. Try a clearer, brighter, flatter photo with the document filling the frame.";
 
 function safeName(input) {
   return String(input || "upload")
@@ -36,15 +37,66 @@ function cleanOcrText(text) {
   return String(text || "")
     .replace(/\r\n/g, "\n")
     .replace(/\r/g, "\n")
-    .replace(/[ \t]+/g, " ")
     .replace(/[“”]/g, '"')
     .replace(/[‘’]/g, "'")
-    .replace(/[|]{2,}/g, "|")
+    .replace(/[ \t]+/g, " ")
     .replace(/\n{3,}/g, "\n\n")
     .split("\n")
     .map((line) => line.trim())
+    .filter(Boolean)
     .join("\n")
     .trim();
+}
+
+function isGarbageLine(line) {
+  const clean = String(line || "").trim();
+  if (!clean) return true;
+
+  const letters = (clean.match(/[a-zA-Z]/g) || []).length;
+  const digits = (clean.match(/[0-9]/g) || []).length;
+  const useful = letters + digits;
+  const weird = (clean.match(/[^a-zA-Z0-9\s.,:;'"!?$%&()\-+/]/g) || []).length;
+
+  if (clean.length <= 2 && useful === 0) return true;
+  if (clean.length >= 5 && useful / clean.length < 0.35) return true;
+  if (weird / Math.max(clean.length, 1) > 0.28) return true;
+
+  return false;
+}
+
+function filterOcrText(text) {
+  const lines = cleanOcrText(text).split("\n");
+  const kept = lines.filter((line) => !isGarbageLine(line));
+  return kept.join("\n").trim();
+}
+
+function scoreTextQuality(text, confidence) {
+  const clean = cleanOcrText(text);
+  if (!clean) return { usable: false, score: 0 };
+
+  const chars = clean.length;
+  const letters = (clean.match(/[a-zA-Z]/g) || []).length;
+  const digits = (clean.match(/[0-9]/g) || []).length;
+  const spaces = (clean.match(/\s/g) || []).length;
+  const weird = (clean.match(/[^a-zA-Z0-9\s.,:;'"!?$%&()\-+/]/g) || []).length;
+
+  const usefulRatio = (letters + digits + spaces) / Math.max(chars, 1);
+  const weirdRatio = weird / Math.max(chars, 1);
+
+  let score = 0;
+  score += Math.min(Math.max(confidence, 0), 100) * 0.55;
+  score += usefulRatio * 35;
+  score -= weirdRatio * 45;
+
+  if (chars < 12) score -= 20;
+  if (letters + digits < 8) score -= 25;
+
+  const usable = score >= 42 && confidence >= 28 && usefulRatio >= 0.58 && weirdRatio <= 0.22;
+
+  return {
+    usable,
+    score: Math.round(Math.max(0, Math.min(score, 100))),
+  };
 }
 
 function wrapText(text, font, fontSize, maxWidth) {
@@ -80,9 +132,8 @@ function wrapText(text, font, fontSize, maxWidth) {
   return lines;
 }
 
-async function createTextPdf({ text, outputPath, filename }) {
+async function createTextPdf({ text, outputPath, filename, confidence, qualityScore }) {
   const pdfDoc = await PDFDocument.create();
-
   const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
@@ -98,7 +149,6 @@ async function createTextPdf({ text, outputPath, filename }) {
   const pageHeight = page.getHeight();
   const maxWidth = pageWidth - margin * 2;
 
-  const title = "AZ Scanner Export";
   const createdAt = new Date().toLocaleString("en-US", {
     year: "numeric",
     month: "short",
@@ -108,7 +158,7 @@ async function createTextPdf({ text, outputPath, filename }) {
   });
 
   function drawHeader(currentPage) {
-    currentPage.drawText(title, {
+    currentPage.drawText("AZ Scanner Export", {
       x: margin,
       y: pageHeight - margin,
       size: titleFontSize,
@@ -132,9 +182,17 @@ async function createTextPdf({ text, outputPath, filename }) {
       color: rgb(0.42, 0.42, 0.42),
     });
 
+    currentPage.drawText(`OCR confidence: ${confidence}%   Quality score: ${qualityScore}/100`, {
+      x: margin,
+      y: pageHeight - margin - 44,
+      size: metaFontSize,
+      font: regularFont,
+      color: rgb(0.42, 0.42, 0.42),
+    });
+
     currentPage.drawLine({
-      start: { x: margin, y: pageHeight - margin - 48 },
-      end: { x: pageWidth - margin, y: pageHeight - margin - 48 },
+      start: { x: margin, y: pageHeight - margin - 58 },
+      end: { x: pageWidth - margin, y: pageHeight - margin - 58 },
       thickness: 0.5,
       color: rgb(0.82, 0.82, 0.82),
     });
@@ -142,16 +200,14 @@ async function createTextPdf({ text, outputPath, filename }) {
 
   drawHeader(page);
 
-  const textToWrite = text || "No text detected.";
-  const lines = wrapText(textToWrite, regularFont, bodyFontSize, maxWidth);
-
-  let y = pageHeight - margin - 72;
+  const lines = wrapText(text || OCR_LOW_QUALITY_MESSAGE, regularFont, bodyFontSize, maxWidth);
+  let y = pageHeight - margin - 82;
 
   for (const line of lines) {
     if (y < margin) {
       page = pdfDoc.addPage(pageSize);
       drawHeader(page);
-      y = pageHeight - margin - 72;
+      y = pageHeight - margin - 82;
     }
 
     if (!line.trim()) {
@@ -174,8 +230,7 @@ async function createTextPdf({ text, outputPath, filename }) {
   const pageCount = pdfDoc.getPageCount();
 
   for (let i = 0; i < pageCount; i++) {
-    const currentPage = pdfDoc.getPage(i);
-    currentPage.drawText(`Page ${i + 1} of ${pageCount}`, {
+    pdfDoc.getPage(i).drawText(`Page ${i + 1} of ${pageCount}`, {
       x: pageWidth - margin - 70,
       y: 24,
       size: 8,
@@ -184,22 +239,16 @@ async function createTextPdf({ text, outputPath, filename }) {
     });
   }
 
-  const pdfBytes = await pdfDoc.save();
-  fs.writeFileSync(outputPath, pdfBytes);
+  fs.writeFileSync(outputPath, await pdfDoc.save());
 }
 
 async function cleanupOldFiles(dir, maxAgeMs = 1000 * 60 * 60 * 12) {
   try {
     const now = Date.now();
-    const entries = fs.readdirSync(dir);
-
-    for (const entry of entries) {
+    for (const entry of fs.readdirSync(dir)) {
       const fullPath = path.join(dir, entry);
       const stat = fs.statSync(fullPath);
-
-      if (stat.isFile() && now - stat.mtimeMs > maxAgeMs) {
-        fs.unlinkSync(fullPath);
-      }
+      if (stat.isFile() && now - stat.mtimeMs > maxAgeMs) fs.unlinkSync(fullPath);
     }
   } catch (error) {
     console.warn("Cleanup warning:", error?.message || error);
@@ -217,9 +266,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: {
-    fileSize: 12 * 1024 * 1024,
-  },
+  limits: { fileSize: 12 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     const allowed = [
       "image/jpeg",
@@ -231,9 +278,7 @@ const upload = multer({
     ];
 
     if (!allowed.includes(file.mimetype)) {
-      return cb(
-        new Error("Only JPG, PNG, WEBP, TIFF, HEIC, and HEIF images are allowed.")
-      );
+      return cb(new Error("Only JPG, PNG, WEBP, TIFF, HEIC, and HEIF images are allowed."));
     }
 
     cb(null, true);
@@ -279,21 +324,21 @@ app.post("/process", upload.single("file"), async (req, res) => {
       });
     }
 
+    const resizedWidth = metadata.width > 2400 ? 2400 : metadata.width;
+
     await image
       .resize({
-        width: metadata.width > 2200 ? 2200 : metadata.width,
+        width: resizedWidth,
         withoutEnlargement: true,
       })
       .grayscale()
       .normalize()
-      .modulate({
-        brightness: 1.04,
-        contrast: 1.12,
-      })
+      .linear(1.22, -16)
+      .median(1)
       .sharpen({
-        sigma: 1.1,
-        m1: 1.1,
-        m2: 2.0,
+        sigma: 1.15,
+        m1: 1.25,
+        m2: 2.25,
       })
       .png({
         compressionLevel: 8,
@@ -303,24 +348,34 @@ app.post("/process", upload.single("file"), async (req, res) => {
 
     const ocrResult = await Tesseract.recognize(cleanedImagePath, "eng", {
       logger: () => {},
+      tessedit_pageseg_mode: "6",
+      preserve_interword_spaces: "1",
     });
 
     const rawText = ocrResult?.data?.text || "";
-    const extractedText = cleanOcrText(rawText);
-    const confidence = Math.round(ocrResult?.data?.confidence || 0);
+    const rawConfidence = Math.round(ocrResult?.data?.confidence || 0);
+    const filteredText = filterOcrText(rawText);
+    const quality = scoreTextQuality(filteredText, rawConfidence);
 
-    fs.writeFileSync(txtPath, extractedText || "No text detected.", "utf8");
+    const finalText = quality.usable ? filteredText : OCR_LOW_QUALITY_MESSAGE;
+
+    fs.writeFileSync(txtPath, finalText, "utf8");
 
     await createTextPdf({
-      text: extractedText,
+      text: finalText,
       outputPath: pdfPath,
       filename: req.file.originalname || req.file.filename,
+      confidence: rawConfidence,
+      qualityScore: quality.score,
     });
 
     return res.json({
       success: true,
-      text: extractedText || "No text detected.",
-      confidence,
+      text: finalText,
+      confidence: rawConfidence,
+      qualityScore: quality.score,
+      usableText: quality.usable,
+      warning: quality.usable ? "" : OCR_LOW_QUALITY_MESSAGE,
       files: {
         cleanedImageUrl: `/output/${path.basename(cleanedImagePath)}`,
         pdfUrl: `/output/${path.basename(pdfPath)}`,
