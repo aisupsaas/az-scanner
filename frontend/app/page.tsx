@@ -1,14 +1,45 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { CompareView, ProcessResponse, ResultTab, ScreenMode } from "./types";
-import { cleanStandardText, mergeLines, normalizeSpacing, removeExtraBlankLines } from "./utils/textTools";
+import type {
+  CompareView,
+  ImageEditSettings,
+  OcrLine,
+  ProcessResponse,
+  ResultTab,
+  ScreenMode,
+} from "./types";
+import {
+  cleanStandardText,
+  mergeLines,
+  normalizeSpacing,
+  removeExtraBlankLines,
+} from "./utils/textTools";
 import { downloadBlobFile, downloadTextFile } from "./utils/downloads";
 import StartScreen from "./components/StartScreen";
 import ReviewScreen from "./components/ReviewScreen";
 import ResultScreen from "./components/ResultScreen";
 import CameraOverlay from "./components/CameraOverlay";
 import BottomBar from "./components/BottomBar";
+
+const DEFAULT_IMAGE_EDIT: ImageEditSettings = {
+  pdfSource: "original",
+  rotate: 0,
+  brightness: 1,
+  crop: {
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+  },
+};
+
+function linesToText(lines: OcrLine[]) {
+  return lines
+    .map((line) => line.text.trim())
+    .filter(Boolean)
+    .join("\n");
+}
 
 export default function HomePage() {
   const apiBase = useMemo(
@@ -25,6 +56,8 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ProcessResponse | null>(null);
   const [editedText, setEditedText] = useState("");
+  const [editedLines, setEditedLines] = useState<OcrLine[]>([]);
+  const [imageEdit, setImageEdit] = useState<ImageEditSettings>(DEFAULT_IMAGE_EDIT);
   const [error, setError] = useState("");
   const [statusText, setStatusText] = useState("Ready to scan or upload.");
 
@@ -37,12 +70,13 @@ export default function HomePage() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
+  const originalImageHref = result?.files?.originalPdfImageUrl
+    ? `${apiBase}${result.files.originalPdfImageUrl}`
+    : sourcePreview;
+
   const cleanedImageHref = result?.files?.cleanedImageUrl
     ? `${apiBase}${result.files.cleanedImageUrl}`
     : "";
-
-  const pdfHref = result?.files?.pdfUrl ? `${apiBase}${result.files.pdfUrl}` : "";
-  const txtHref = result?.files?.txtUrl ? `${apiBase}${result.files.txtUrl}` : "";
 
   const topTitle =
     mode === "start" ? "Start" : mode === "review" ? "Review" : "Result";
@@ -70,6 +104,8 @@ export default function HomePage() {
     setFile(null);
     setResult(null);
     setEditedText("");
+    setEditedLines([]);
+    setImageEdit(DEFAULT_IMAGE_EDIT);
     setError("");
     setLoading(false);
     setStatusText("Ready to scan or upload.");
@@ -83,6 +119,8 @@ export default function HomePage() {
     setFile(next);
     setResult(null);
     setEditedText("");
+    setEditedLines([]);
+    setImageEdit(DEFAULT_IMAGE_EDIT);
     setError("");
     setResultTab("text");
     setCompareView("split");
@@ -105,6 +143,7 @@ export default function HomePage() {
     setError("");
     setResult(null);
     setEditedText("");
+    setEditedLines([]);
     setStatusText(`Processing: ${nextFile.name}`);
     setMode("review");
 
@@ -128,8 +167,11 @@ export default function HomePage() {
 
       if (!res.ok) throw new Error(data?.error || "Processing failed.");
 
+      const nextLines = Array.isArray(data.lines) ? data.lines : [];
+
       setResult(data);
-      setEditedText(data?.text || "");
+      setEditedLines(nextLines);
+      setEditedText(nextLines.length ? linesToText(nextLines) : data?.text || "");
       setStatusText(`Processed: ${nextFile.name}`);
       setMode("result");
       setResultTab("text");
@@ -256,41 +298,105 @@ export default function HomePage() {
     downloadTextFile("az-scanner-edited-text.txt", editedText || "");
   }
 
-  async function downloadEditedPdf() {
-  try {
-    setStatusText("Preparing text PDF...");
+  async function downloadOriginalPdf() {
+    try {
+      const selectedImageUrl =
+        imageEdit.pdfSource === "cleaned"
+          ? result?.files?.cleanedImageUrl
+          : result?.files?.originalPdfImageUrl;
 
-    const res = await fetch(`${apiBase}/export/text-pdf`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        text: editedText || "",
-        filename: "az-scanner-edited-text",
-      }),
-    });
+      if (!selectedImageUrl) {
+        throw new Error("Original PDF source is not ready.");
+      }
 
-    if (!res.ok) {
-      const data = await res.json().catch(() => null);
-      throw new Error(data?.error || "Failed to create text PDF.");
+      setStatusText("Preparing original PDF...");
+
+      const res = await fetch(`${apiBase}/export/original-pdf`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          imageUrl: selectedImageUrl,
+          filename: "az-scanner-original",
+          rotate: imageEdit.rotate,
+          brightness: imageEdit.brightness,
+          crop: imageEdit.crop,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Failed to create original PDF.");
+      }
+
+      const blob = await res.blob();
+      downloadBlobFile("az-scanner-original.pdf", blob);
+      setStatusText("Original PDF downloaded.");
+    } catch (err: any) {
+      setStatusText(err?.message || "Original PDF download failed.");
     }
-
-    const blob = await res.blob();
-    downloadBlobFile("az-scanner-edited-text.pdf", blob);
-    setStatusText("Text PDF downloaded.");
-  } catch (err: any) {
-    setStatusText(err?.message || "Text PDF download failed.");
   }
-}
+
+  async function downloadEditedPdf() {
+    try {
+      setStatusText("Preparing text PDF...");
+
+      const res = await fetch(`${apiBase}/export/text-pdf`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: editedText || "",
+          filename: "az-scanner-edited-text",
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Failed to create text PDF.");
+      }
+
+      const blob = await res.blob();
+      downloadBlobFile("az-scanner-edited-text.pdf", blob);
+      setStatusText("Text PDF downloaded.");
+    } catch (err: any) {
+      setStatusText(err?.message || "Text PDF download failed.");
+    }
+  }
+
+  function updateEditedLine(id: string, text: string) {
+    setEditedLines((current) => {
+      const next = current.map((line) => (line.id === id ? { ...line, text } : line));
+      setEditedText(linesToText(next));
+      return next;
+    });
+  }
+
+  function removeEditedLine(id: string) {
+    setEditedLines((current) => {
+      const next = current.filter((line) => line.id !== id);
+      setEditedText(linesToText(next));
+      return next;
+    });
+  }
 
   function applyTextTool(tool: "clean" | "spacing" | "blankLines" | "mergeLines") {
     setEditedText((current) => {
-      if (tool === "clean") return cleanStandardText(current);
-      if (tool === "spacing") return normalizeSpacing(current);
-      if (tool === "blankLines") return removeExtraBlankLines(current);
-      if (tool === "mergeLines") return mergeLines(current);
-      return current;
+      const next =
+        tool === "clean"
+          ? cleanStandardText(current)
+          : tool === "spacing"
+            ? normalizeSpacing(current)
+            : tool === "blankLines"
+              ? removeExtraBlankLines(current)
+              : tool === "mergeLines"
+                ? mergeLines(current)
+                : current;
+
+      setEditedLines([]);
+      return next;
     });
   }
 
@@ -318,10 +424,7 @@ export default function HomePage() {
           ) : null}
 
           {mode === "review" ? (
-            <ReviewScreen
-              sourcePreview={sourcePreview}
-              error={error}
-            />
+            <ReviewScreen sourcePreview={sourcePreview} error={error} />
           ) : null}
 
           {mode === "result" ? (
@@ -331,11 +434,17 @@ export default function HomePage() {
               resultTab={resultTab}
               compareView={compareView}
               sourcePreview={sourcePreview}
+              originalImageHref={originalImageHref}
               cleanedImageHref={cleanedImageHref}
               editedText={editedText}
+              editedLines={editedLines}
+              imageEdit={imageEdit}
               onSetEditedText={setEditedText}
+              onUpdateEditedLine={updateEditedLine}
+              onRemoveEditedLine={removeEditedLine}
               onCopyText={copyEditedText}
               onApplyTextTool={applyTextTool}
+              onImageEditChange={setImageEdit}
               onResultTabChange={setResultTab}
               onCompareViewChange={setCompareView}
             />
@@ -346,8 +455,6 @@ export default function HomePage() {
           mode={mode}
           loading={loading}
           file={file}
-          pdfHref={pdfHref}
-          onDownloadEditedPdf={downloadEditedPdf}
           canOpenReview={!!file}
           canOpenResult={!!result?.success}
           onOpenCamera={openCamera}
@@ -357,7 +464,9 @@ export default function HomePage() {
           onGoToStart={() => setMode("start")}
           onGoToReview={() => file && setMode("review")}
           onGoToResult={() => result?.success && setMode("result")}
+          onDownloadOriginalPdf={downloadOriginalPdf}
           onDownloadEditedTxt={downloadEditedTxt}
+          onDownloadEditedPdf={downloadEditedPdf}
         />
       </div>
 

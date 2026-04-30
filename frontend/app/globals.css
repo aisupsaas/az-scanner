@@ -653,6 +653,25 @@ textarea {
     height: 54px;
   }
   
+ .az-text-editor {
+  width: 100%;
+  min-height: 100%;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: #171717;
+  font-size: 0.98rem;
+  line-height: 1.62;
+  font-weight: 300;
+}
+
+.az-text-actions {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .az-text-editor {
   width: 100%;
   min-height: 100%;
@@ -672,5 +691,149 @@ textarea {
   justify-content: flex-end;
 }
 
+.az-line-editor-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.az-line-editor-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.55rem;
+  align-items: center;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.055);
+  background: rgba(255, 255, 255, 0.82);
+  padding: 0.55rem;
+}
+
+.az-line-editor-index {
+  min-width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.06);
+  color: #5e5e5e;
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
+.az-line-editor-input {
+  min-height: 38px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #171717;
+  font-size: 0.95rem;
+  font-weight: 300;
+}
+
+.az-line-remove-button {
+  min-height: 34px;
+  border: 1px solid rgba(0, 0, 0, 0.075);
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 999px;
+  padding: 0 0.75rem;
+  color: #4f4f4f;
+  font-size: 0.82rem;
+}
+
+.az-scan-edit-tools {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 0.9rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.055);
+  background: rgba(255, 255, 255, 0.76);
+  padding: 0.75rem;
+}
+
+.az-tool-row,
+.az-range-row {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 0.7rem;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: 300;
+  color: #4f4f4f;
+}
+
+.az-mini-toggle {
+  display: inline-grid;
+  grid-auto-flow: column;
+  gap: 0.35rem;
+  justify-content: start;
+}
+
+.az-mini-toggle button {
+  min-height: 32px;
+  border: 1px solid rgba(0, 0, 0, 0.075);
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  padding: 0 0.75rem;
+  color: #555555;
+  font-size: 0.84rem;
+}
+
+.az-mini-toggle .az-mini-toggle-active {
+  background: #111111;
+  border-color: #111111;
+  color: #ffffff;
+}
+
+.az-range-row input {
+  width: 100%;
+}
+
+.az-crop-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.45rem;
+}
+
+.az-crop-field {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.76rem;
+  color: #666666;
+  text-transform: capitalize;
+}
+
+.az-crop-field input {
+  min-height: 34px;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.075);
+  background: rgba(255, 255, 255, 0.86);
+  padding: 0 0.55rem;
+  outline: none;
+}
+
+.az-edit-preview-image {
+  transition: filter 0.16s ease, transform 0.16s ease;
+}
+
+@media (max-width: 640px) {
+  .az-line-editor-row {
+    grid-template-columns: auto 1fr;
+  }
+
+  .az-line-remove-button {
+    grid-column: 2;
+    justify-self: end;
+  }
+
+  .az-tool-row,
+  .az-range-row {
+    grid-template-columns: 1fr;
+  }
+
+  .az-crop-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 
 }

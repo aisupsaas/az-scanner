@@ -6,7 +6,6 @@ type BottomBarProps = {
   mode: ScreenMode;
   loading: boolean;
   file: File | null;
-  pdfHref: string;
   canOpenReview: boolean;
   canOpenResult: boolean;
   onOpenCamera: () => void;
@@ -16,6 +15,7 @@ type BottomBarProps = {
   onGoToStart: () => void;
   onGoToReview: () => void;
   onGoToResult: () => void;
+  onDownloadOriginalPdf: () => void;
   onDownloadEditedTxt: () => void;
   onDownloadEditedPdf: () => void;
 };
@@ -24,7 +24,6 @@ export default function BottomBar({
   mode,
   loading,
   file,
-  pdfHref,
   canOpenReview,
   canOpenResult,
   onOpenCamera,
@@ -34,6 +33,7 @@ export default function BottomBar({
   onGoToStart,
   onGoToReview,
   onGoToResult,
+  onDownloadOriginalPdf,
   onDownloadEditedTxt,
   onDownloadEditedPdf,
 }: BottomBarProps) {
@@ -87,17 +87,9 @@ export default function BottomBar({
 
         {mode === "result" ? (
           <>
-            <a
-              href={pdfHref || undefined}
-              target="_blank"
-              rel="noreferrer"
-              className={[
-                "az-secondary-button az-link-button",
-                pdfHref ? "" : "pointer-events-none opacity-45",
-              ].join(" ")}
-            >
+            <button type="button" onClick={onDownloadOriginalPdf} className="az-secondary-button">
               Original PDF
-            </a>
+            </button>
 
             <button type="button" onClick={onDownloadEditedTxt} className="az-secondary-button">
               Text TXT

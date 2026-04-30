@@ -19,7 +19,7 @@ for (const dir of [UPLOAD_DIR, OUTPUT_DIR]) {
 }
 
 app.use(cors());
-app.use(express.json({ limit: "2mb" }));
+app.use(express.json({ limit: "3mb" }));
 app.use("/output", express.static(OUTPUT_DIR));
 
 const OCR_LOW_QUALITY_MESSAGE =
@@ -31,6 +31,12 @@ function safeName(input) {
     .replace(/[^a-zA-Z0-9-_]/g, "-")
     .replace(/-+/g, "-")
     .slice(0, 60);
+}
+
+function clampNumber(value, min, max, fallback) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.max(min, Math.min(max, n));
 }
 
 function cleanLine(text) {
@@ -52,8 +58,8 @@ function isGarbageLine(line) {
   const weird = (clean.match(/[^a-zA-Z0-9\s.,:;'"!?$%&()\-+/#[\]]/g) || []).length;
 
   if (clean.length <= 2 && useful === 0) return true;
-  if (clean.length >= 5 && useful / clean.length < 0.32) return true;
-  if (weird / Math.max(clean.length, 1) > 0.3) return true;
+  if (clean.length >= 5 && useful / clean.length < 0.34) return true;
+  if (weird / Math.max(clean.length, 1) > 0.24) return true;
 
   return false;
 }
@@ -61,22 +67,24 @@ function isGarbageLine(line) {
 function normalizeOcrLines(ocrData) {
   const rawLines = Array.isArray(ocrData?.lines) ? ocrData.lines : [];
 
-  if (!rawLines.length) {
-    const fallback = String(ocrData?.text || "")
-      .split(/\r?\n/)
-      .map((text) => ({ text, confidence: ocrData?.confidence || 0, bbox: null }));
+  const lines = rawLines.length
+    ? rawLines
+    : String(ocrData?.text || "")
+        .split(/\r?\n/)
+        .map((text, index) => ({
+          text,
+          confidence: ocrData?.confidence || 0,
+          bbox: {
+            x0: 0,
+            y0: index * 20,
+            x1: 100,
+            y1: index * 20 + 14,
+          },
+        }));
 
-    return fallback
-      .map((line) => ({
-        text: cleanLine(line.text),
-        confidence: Math.round(line.confidence || 0),
-        bbox: line.bbox || null,
-      }))
-      .filter((line) => line.text && !isGarbageLine(line.text));
-  }
-
-  return rawLines
-    .map((line) => ({
+  return lines
+    .map((line, index) => ({
+      id: `line-${index}`,
       text: cleanLine(line.text),
       confidence: Math.round(line.confidence || 0),
       bbox: line.bbox || null,
@@ -155,10 +163,83 @@ function scoreTextQuality(text, confidence) {
   };
 }
 
-async function createScanPdf({ imagePath, outputPath }) {
+function outputPathFromPublicUrl(publicUrl) {
+  const basename = path.basename(String(publicUrl || ""));
+  const fullPath = path.join(OUTPUT_DIR, basename);
+
+  if (!basename || !fullPath.startsWith(OUTPUT_DIR)) {
+    throw new Error("Invalid output file path.");
+  }
+
+  if (!fs.existsSync(fullPath)) {
+    throw new Error("Source image is no longer available. Please process the scan again.");
+  }
+
+  return fullPath;
+}
+
+async function buildEditedScanImageBuffer({
+  imagePath,
+  rotate = 0,
+  brightness = 1,
+  crop = {},
+}) {
+  const safeRotate = clampNumber(rotate, 0, 270, 0);
+  const normalizedRotate = [0, 90, 180, 270].includes(safeRotate) ? safeRotate : 0;
+
+  const safeBrightness = clampNumber(brightness, 0.75, 1.35, 1);
+
+  const cropLeft = clampNumber(crop.left, 0, 35, 0);
+  const cropRight = clampNumber(crop.right, 0, 35, 0);
+  const cropTop = clampNumber(crop.top, 0, 35, 0);
+  const cropBottom = clampNumber(crop.bottom, 0, 35, 0);
+
+  let pipeline = sharp(imagePath, {
+    failOn: "none",
+    limitInputPixels: 60_000_000,
+  }).rotate(normalizedRotate);
+
+  const metadata = await pipeline.metadata();
+
+  if (!metadata.width || !metadata.height) {
+    throw new Error("Could not read image dimensions.");
+  }
+
+  const leftPx = Math.floor(metadata.width * (cropLeft / 100));
+  const rightPx = Math.floor(metadata.width * (cropRight / 100));
+  const topPx = Math.floor(metadata.height * (cropTop / 100));
+  const bottomPx = Math.floor(metadata.height * (cropBottom / 100));
+
+  const cropWidth = metadata.width - leftPx - rightPx;
+  const cropHeight = metadata.height - topPx - bottomPx;
+
+  if (cropWidth > 100 && cropHeight > 100) {
+    pipeline = pipeline.extract({
+      left: leftPx,
+      top: topPx,
+      width: cropWidth,
+      height: cropHeight,
+    });
+  }
+
+  return pipeline
+    .modulate({
+      brightness: safeBrightness,
+    })
+    .resize({
+      width: 2400,
+      withoutEnlargement: true,
+    })
+    .png({
+      compressionLevel: 8,
+      adaptiveFiltering: true,
+    })
+    .toBuffer();
+}
+
+async function createScanPdfBuffer({ imageBuffer }) {
   const pdfDoc = await PDFDocument.create();
-  const imageBytes = fs.readFileSync(imagePath);
-  const image = await pdfDoc.embedPng(imageBytes);
+  const image = await pdfDoc.embedPng(imageBuffer);
 
   const pageWidth = 595.28;
   const pageHeight = 841.89;
@@ -177,17 +258,25 @@ async function createScanPdf({ imagePath, outputPath }) {
   const drawWidth = image.width * scale;
   const drawHeight = image.height * scale;
 
-  const x = (pageWidth - drawWidth) / 2;
-  const y = (pageHeight - drawHeight) / 2;
-
   page.drawImage(image, {
-    x,
-    y,
+    x: (pageWidth - drawWidth) / 2,
+    y: (pageHeight - drawHeight) / 2,
     width: drawWidth,
     height: drawHeight,
   });
 
-  fs.writeFileSync(outputPath, await pdfDoc.save());
+  return Buffer.from(await pdfDoc.save());
+}
+
+async function createScanPdfFile({ imagePath, outputPath }) {
+  const imageBuffer = await buildEditedScanImageBuffer({
+    imagePath,
+    rotate: 0,
+    brightness: 1,
+    crop: {},
+  });
+
+  fs.writeFileSync(outputPath, await createScanPdfBuffer({ imageBuffer }));
 }
 
 function wrapText(text, font, fontSize, maxWidth) {
@@ -382,6 +471,34 @@ app.get("/health", (_req, res) => {
   res.json({ ok: true, service: "az-scanner-backend" });
 });
 
+app.post("/export/original-pdf", async (req, res) => {
+  try {
+    const imageUrl = String(req.body?.imageUrl || "");
+    const imagePath = outputPathFromPublicUrl(imageUrl);
+
+    const imageBuffer = await buildEditedScanImageBuffer({
+      imagePath,
+      rotate: req.body?.rotate,
+      brightness: req.body?.brightness,
+      crop: req.body?.crop || {},
+    });
+
+    const pdfBuffer = await createScanPdfBuffer({ imageBuffer });
+    const filename = safeName(req.body?.filename || "az-scanner-original");
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}.pdf"`);
+
+    return res.send(pdfBuffer);
+  } catch (error) {
+    console.error("Original PDF export error:", error);
+
+    return res.status(500).json({
+      error: error?.message || "Failed to create original PDF.",
+    });
+  }
+});
+
 app.post("/export/text-pdf", async (req, res) => {
   try {
     const text = String(req.body?.text || "").slice(0, 250_000);
@@ -393,10 +510,7 @@ app.post("/export/text-pdf", async (req, res) => {
     });
 
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="${filename || "az-scanner-text"}.pdf"`
-    );
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}.pdf"`);
 
     return res.send(pdfBuffer);
   } catch (error) {
@@ -492,7 +606,7 @@ app.post("/process", upload.single("file"), async (req, res) => {
 
     fs.writeFileSync(txtPath, finalText, "utf8");
 
-    await createScanPdf({
+    await createScanPdfFile({
       imagePath: originalPdfImagePath,
       outputPath: pdfPath,
     });
@@ -505,7 +619,9 @@ app.post("/process", upload.single("file"), async (req, res) => {
       usableText: quality.usable,
       warning: quality.usable ? "" : OCR_LOW_QUALITY_MESSAGE,
       lineCount: layoutLines.length,
+      lines: quality.usable ? layoutLines : [],
       files: {
+        originalPdfImageUrl: `/output/${path.basename(originalPdfImagePath)}`,
         cleanedImageUrl: `/output/${path.basename(cleanedImagePath)}`,
         pdfUrl: `/output/${path.basename(pdfPath)}`,
         txtUrl: `/output/${path.basename(txtPath)}`,
