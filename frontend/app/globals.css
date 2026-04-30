@@ -602,76 +602,6 @@ textarea {
   color: rgba(255, 255, 255, 0.82);
 }
 
-@media (max-width: 640px) {
-  .az-topbar {
-    padding-inline: 0.9rem;
-  }
-
-  .az-content,
-  .az-bottom-area {
-    padding-inline: 0.9rem;
-  }
-
-  .az-bottom-actions {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .az-bottom-actions > *:last-child:nth-child(odd) {
-    grid-column: span 2;
-  }
-
-  .az-compare-stage-split {
-    grid-template-columns: 1fr;
-  }
-
-  .az-compare-toggle {
-    width: 100%;
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-
-  .az-camera-frame {
-    width: min(88vw, 520px);
-  }
-
-  .az-camera-top-spacer {
-    width: 56px;
-  }
-
-  .az-camera-top-button,
-  .az-camera-secondary {
-    min-height: 38px;
-    padding: 0 0.75rem;
-  }
-
-  .az-camera-shutter {
-    width: 72px;
-    height: 72px;
-  }
-
-  .az-camera-shutter-inner {
-    width: 54px;
-    height: 54px;
-  }
-  
- .az-text-editor {
-  width: 100%;
-  min-height: 100%;
-  border: none;
-  outline: none;
-  resize: none;
-  background: transparent;
-  color: #171717;
-  font-size: 0.98rem;
-  line-height: 1.62;
-  font-weight: 300;
-}
-
-.az-text-actions {
-  margin-top: 0.75rem;
-  display: flex;
-  justify-content: flex-end;
-}
-
 .az-text-editor {
   width: 100%;
   min-height: 100%;
@@ -707,19 +637,6 @@ textarea {
   padding: 0.55rem;
 }
 
-.az-line-editor-index {
-  min-width: 1.7rem;
-  height: 1.7rem;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.06);
-  color: #5e5e5e;
-  font-size: 0.78rem;
-  font-weight: 400;
-}
-
 .az-line-editor-input {
   min-height: 38px;
   border: none;
@@ -730,154 +647,122 @@ textarea {
   font-weight: 300;
 }
 
-.az-line-remove-button {
-  min-height: 34px;
-  border: 1px solid rgba(0, 0, 0, 0.075);
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 999px;
-  padding: 0 0.75rem;
-  color: #4f4f4f;
-  font-size: 0.82rem;
-}
-
-.az-scan-edit-tools {
+.az-scan-controls {
   display: grid;
-  gap: 0.65rem;
-  margin-top: 0.9rem;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.055);
-  background: rgba(255, 255, 255, 0.76);
-  padding: 0.75rem;
-}
-
-.az-tool-row,
-.az-range-row {
-  display: grid;
-  grid-template-columns: 6.5rem 1fr;
-  gap: 0.7rem;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
   align-items: center;
-  font-size: 0.9rem;
-  font-weight: 300;
-  color: #4f4f4f;
+  margin: 0.9rem 0;
 }
 
-.az-mini-toggle {
-  display: inline-grid;
-  grid-auto-flow: column;
-  gap: 0.35rem;
-  justify-content: start;
-}
-
-.az-mini-toggle button {
-  min-height: 32px;
-  border: 1px solid rgba(0, 0, 0, 0.075);
-  background: rgba(255, 255, 255, 0.72);
+.az-scan-controls button {
+  min-height: 38px;
   border-radius: 999px;
-  padding: 0 0.75rem;
-  color: #555555;
-  font-size: 0.84rem;
-}
-
-.az-mini-toggle .az-mini-toggle-active {
-  background: #111111;
-  border-color: #111111;
-  color: #ffffff;
-}
-
-.az-range-row input {
-  width: 100%;
-}
-
-.az-crop-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.45rem;
-}
-
-.az-crop-field {
-  display: grid;
-  gap: 0.3rem;
-  font-size: 0.76rem;
-  color: #666666;
-  text-transform: capitalize;
-}
-
-.az-crop-field input {
-  min-height: 34px;
-  width: 100%;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.075);
-  background: rgba(255, 255, 255, 0.86);
-  padding: 0 0.55rem;
-  outline: none;
-}
-
-.az-edit-preview-image {
-  transition: filter 0.16s ease, transform 0.16s ease;
-}
-
-@media (max-width: 640px) {
-  .az-line-editor-row {
-    grid-template-columns: auto 1fr;
-  }
-
-  .az-line-remove-button {
-    grid-column: 2;
-    justify-self: end;
-  }
-
-  .az-tool-row,
-  .az-range-row {
-    grid-template-columns: 1fr;
-  }
-
-  .az-crop-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  border: 1px solid rgba(0, 0, 0, 0.085);
+  background: rgba(255, 255, 255, 0.88);
+  color: #1f1f1f;
+  padding: 0 1rem;
+  font-size: 0.9rem;
 }
 
 .az-crop-container {
   position: relative;
   width: 100%;
+  min-height: 360px;
+  border-radius: 10px;
   overflow: hidden;
+  background: #111;
+  touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .az-crop-image {
   width: 100%;
+  height: 100%;
+  max-height: 62vh;
+  object-fit: contain;
   display: block;
+  transition: filter 0.16s ease, transform 0.16s ease;
+  transform-origin: center;
 }
 
 .az-crop-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.4);
+  pointer-events: none;
 }
 
 .az-crop-box {
   position: absolute;
-  border: 2px solid white;
-  box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+  border: 2px solid rgba(255, 255, 255, 0.96);
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.48);
+  pointer-events: none;
 }
 
 .az-grid {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(to right, rgba(255,255,255,0.4) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255,255,255,0.4) 1px, transparent 1px);
-  background-size: 33% 33%;
+    linear-gradient(to right, rgba(255,255,255,0.36) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.36) 1px, transparent 1px);
+  background-size: 33.333% 33.333%;
+  pointer-events: none;
 }
 
 .az-handle {
-  width: 14px;
-  height: 14px;
-  background: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.16);
   position: absolute;
+  pointer-events: auto;
+  touch-action: none;
 }
 
-.az-handle.tl { top: -7px; left: -7px; }
-.az-handle.tr { top: -7px; right: -7px; }
-.az-handle.bl { bottom: -7px; left: -7px; }
-.az-handle.br { bottom: -7px; right: -7px; }
+.az-handle.tl { top: -12px; left: -12px; }
+.az-handle.tr { top: -12px; right: -12px; }
+.az-handle.bl { bottom: -12px; left: -12px; }
+.az-handle.br { bottom: -12px; right: -12px; }
 
+@media (max-width: 640px) {
+  .az-topbar {
+    padding-inline: 0.9rem;
+  }
+
+  .az-content,
+  .az-bottom-area {
+    padding-inline: 0.9rem;
+  }
+
+  .az-bottom-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .az-bottom-actions > *:last-child:nth-child(odd) {
+    grid-column: span 2;
+  }
+
+  .az-compare-stage-split {
+    grid-template-columns: 1fr;
+  }
+
+  .az-compare-toggle {
+    width: 100%;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .az-line-editor-row {
+    grid-template-columns: auto 1fr;
+  }
+
+  .az-crop-container {
+    min-height: 320px;
+  }
+
+  .az-scan-controls {
+    grid-template-columns: 1fr;
+  }
 }
