@@ -4,7 +4,7 @@ const multer = require("multer");
 const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
-const { PDFDocument, StandardFonts, rgb } = require("pdf-lib");
+const { PDFDocument } = require("pdf-lib");
 const Tesseract = require("tesseract.js");
 
 const app = express();
@@ -157,152 +157,40 @@ function scoreTextQuality(text, confidence) {
   };
 }
 
-function wrapText(text, font, fontSize, maxWidth) {
-  const lines = [];
-
-  for (const inputLine of String(text || "").split("\n")) {
-    const trimmed = inputLine.trim();
-
-    if (!trimmed) {
-      lines.push("");
-      continue;
-    }
-
-    const words = trimmed.split(/\s+/).filter(Boolean);
-    let currentLine = "";
-
-    for (const word of words) {
-      const testLine = currentLine ? `${currentLine} ${word}` : word;
-      const width = font.widthOfTextAtSize(testLine, fontSize);
-
-      if (width <= maxWidth) {
-        currentLine = testLine;
-      } else {
-        if (currentLine) lines.push(currentLine);
-        currentLine = word;
-      }
-    }
-
-    if (currentLine) lines.push(currentLine);
-  }
-
-  return lines;
-}
-
-async function createTextPdf({
-  text,
-  outputPath,
-  filename,
-  confidence,
-  qualityScore,
-}) {
+async function createScanPdf({ imagePath, outputPath }) {
   const pdfDoc = await PDFDocument.create();
-  const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-  const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+  const imageBytes = fs.readFileSync(imagePath);
+  const image = await pdfDoc.embedPng(imageBytes);
 
-  const pageSize = [595.28, 841.89];
-  const margin = 42;
-  const titleFontSize = 14;
-  const metaFontSize = 8;
-  const bodyFontSize = 10.5;
-  const bodyLineHeight = 15;
+  const pageWidth = 595.28;
+  const pageHeight = 841.89;
+  const margin = 18;
 
-  let page = pdfDoc.addPage(pageSize);
-  const pageWidth = page.getWidth();
-  const pageHeight = page.getHeight();
-  const maxWidth = pageWidth - margin * 2;
+  const page = pdfDoc.addPage([pageWidth, pageHeight]);
 
-  const createdAt = new Date().toLocaleString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
+  const availableWidth = pageWidth - margin * 2;
+  const availableHeight = pageHeight - margin * 2;
+
+  const scale = Math.min(
+    availableWidth / image.width,
+    availableHeight / image.height
+  );
+
+  const drawWidth = image.width * scale;
+  const drawHeight = image.height * scale;
+
+  const x = (pageWidth - drawWidth) / 2;
+  const y = (pageHeight - drawHeight) / 2;
+
+  page.drawImage(image, {
+    x,
+    y,
+    width: drawWidth,
+    height: drawHeight,
   });
 
-  function drawHeader(currentPage) {
-    currentPage.drawText("AZ Scanner Export", {
-      x: margin,
-      y: pageHeight - margin,
-      size: titleFontSize,
-      font: boldFont,
-      color: rgb(0.07, 0.07, 0.07),
-    });
-
-    currentPage.drawText(`Generated: ${createdAt}`, {
-      x: margin,
-      y: pageHeight - margin - 18,
-      size: metaFontSize,
-      font: regularFont,
-      color: rgb(0.42, 0.42, 0.42),
-    });
-
-    currentPage.drawText(`Source: ${filename}`, {
-      x: margin,
-      y: pageHeight - margin - 31,
-      size: metaFontSize,
-      font: regularFont,
-      color: rgb(0.42, 0.42, 0.42),
-    });
-
-    currentPage.drawText(`OCR confidence: ${confidence}%   Quality score: ${qualityScore}/100`, {
-      x: margin,
-      y: pageHeight - margin - 44,
-      size: metaFontSize,
-      font: regularFont,
-      color: rgb(0.42, 0.42, 0.42),
-    });
-
-    currentPage.drawLine({
-      start: { x: margin, y: pageHeight - margin - 58 },
-      end: { x: pageWidth - margin, y: pageHeight - margin - 58 },
-      thickness: 0.5,
-      color: rgb(0.82, 0.82, 0.82),
-    });
-  }
-
-  drawHeader(page);
-
-  const lines = wrapText(text || OCR_LOW_QUALITY_MESSAGE, regularFont, bodyFontSize, maxWidth);
-  let y = pageHeight - margin - 82;
-
-  for (const line of lines) {
-    if (y < margin) {
-      page = pdfDoc.addPage(pageSize);
-      drawHeader(page);
-      y = pageHeight - margin - 82;
-    }
-
-    if (!line.trim()) {
-      y -= bodyLineHeight * 0.85;
-      continue;
-    }
-
-    page.drawText(line, {
-      x: margin,
-      y,
-      size: bodyFontSize,
-      font: regularFont,
-      color: rgb(0.08, 0.08, 0.08),
-      maxWidth,
-    });
-
-    y -= bodyLineHeight;
-  }
-
-  const pageCount = pdfDoc.getPageCount();
-
-  for (let i = 0; i < pageCount; i++) {
-    pdfDoc.getPage(i).drawText(`Page ${i + 1} of ${pageCount}`, {
-      x: pageWidth - margin - 70,
-      y: 24,
-      size: 8,
-      font: regularFont,
-      color: rgb(0.55, 0.55, 0.55),
-    });
-  }
-
-  fs.writeFileSync(outputPath, await pdfDoc.save());
+  const pdfBytes = await pdfDoc.save();
+  fs.writeFileSync(outputPath, pdfBytes);
 }
 
 async function cleanupOldFiles(dir, maxAgeMs = 1000 * 60 * 60 * 12) {
@@ -428,12 +316,9 @@ app.post("/process", upload.single("file"), async (req, res) => {
 
     fs.writeFileSync(txtPath, finalText, "utf8");
 
-    await createTextPdf({
-      text: finalText,
+    await createScanPdf({
+      imagePath: cleanedImagePath,
       outputPath: pdfPath,
-      filename: req.file.originalname || req.file.filename,
-      confidence: rawConfidence,
-      qualityScore: quality.score,
     });
 
     return res.json({
