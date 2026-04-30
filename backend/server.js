@@ -4,7 +4,7 @@ const multer = require("multer");
 const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
-const { PDFDocument } = require("pdf-lib");
+const { PDFDocument, StandardFonts, rgb } = require("pdf-lib");
 const Tesseract = require("tesseract.js");
 
 const app = express();
@@ -19,7 +19,7 @@ for (const dir of [UPLOAD_DIR, OUTPUT_DIR]) {
 }
 
 app.use(cors());
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json({ limit: "2mb" }));
 app.use("/output", express.static(OUTPUT_DIR));
 
 const OCR_LOW_QUALITY_MESSAGE =
@@ -117,9 +117,7 @@ function buildLayoutText(lines) {
       const prev = withY[i - 1];
       const gap = line.y0 - prev.y1;
 
-      if (gap > avgHeight * 1.35) {
-        output.push("");
-      }
+      if (gap > avgHeight * 1.35) output.push("");
     }
 
     output.push(line.text);
@@ -189,8 +187,144 @@ async function createScanPdf({ imagePath, outputPath }) {
     height: drawHeight,
   });
 
-  const pdfBytes = await pdfDoc.save();
-  fs.writeFileSync(outputPath, pdfBytes);
+  fs.writeFileSync(outputPath, await pdfDoc.save());
+}
+
+function wrapText(text, font, fontSize, maxWidth) {
+  const lines = [];
+
+  for (const inputLine of String(text || "").split("\n")) {
+    const trimmed = inputLine.trim();
+
+    if (!trimmed) {
+      lines.push("");
+      continue;
+    }
+
+    const words = trimmed.split(/\s+/).filter(Boolean);
+    let currentLine = "";
+
+    for (const word of words) {
+      const testLine = currentLine ? `${currentLine} ${word}` : word;
+      const width = font.widthOfTextAtSize(testLine, fontSize);
+
+      if (width <= maxWidth) {
+        currentLine = testLine;
+      } else {
+        if (currentLine) lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+
+    if (currentLine) lines.push(currentLine);
+  }
+
+  return lines;
+}
+
+async function createTextPdfBuffer({ text, filename = "AZ Scanner Text" }) {
+  const pdfDoc = await PDFDocument.create();
+  const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  const pageSize = [595.28, 841.89];
+  const margin = 42;
+  const pageWidth = pageSize[0];
+  const pageHeight = pageSize[1];
+  const maxWidth = pageWidth - margin * 2;
+
+  const titleFontSize = 14;
+  const metaFontSize = 8;
+  const bodyFontSize = 10.5;
+  const bodyLineHeight = 15;
+
+  const createdAt = new Date().toLocaleString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  function addPageWithHeader() {
+    const page = pdfDoc.addPage(pageSize);
+
+    page.drawText("AZ Scanner Text Export", {
+      x: margin,
+      y: pageHeight - margin,
+      size: titleFontSize,
+      font: boldFont,
+      color: rgb(0.07, 0.07, 0.07),
+    });
+
+    page.drawText(`Generated: ${createdAt}`, {
+      x: margin,
+      y: pageHeight - margin - 18,
+      size: metaFontSize,
+      font: regularFont,
+      color: rgb(0.42, 0.42, 0.42),
+    });
+
+    page.drawText(`Source: ${filename}`, {
+      x: margin,
+      y: pageHeight - margin - 31,
+      size: metaFontSize,
+      font: regularFont,
+      color: rgb(0.42, 0.42, 0.42),
+    });
+
+    page.drawLine({
+      start: { x: margin, y: pageHeight - margin - 48 },
+      end: { x: pageWidth - margin, y: pageHeight - margin - 48 },
+      thickness: 0.5,
+      color: rgb(0.82, 0.82, 0.82),
+    });
+
+    return page;
+  }
+
+  let page = addPageWithHeader();
+  let y = pageHeight - margin - 72;
+
+  const safeText = String(text || "").trim() || "No text provided.";
+  const lines = wrapText(safeText, regularFont, bodyFontSize, maxWidth);
+
+  for (const line of lines) {
+    if (y < margin) {
+      page = addPageWithHeader();
+      y = pageHeight - margin - 72;
+    }
+
+    if (!line.trim()) {
+      y -= bodyLineHeight * 0.85;
+      continue;
+    }
+
+    page.drawText(line, {
+      x: margin,
+      y,
+      size: bodyFontSize,
+      font: regularFont,
+      color: rgb(0.08, 0.08, 0.08),
+      maxWidth,
+    });
+
+    y -= bodyLineHeight;
+  }
+
+  const pageCount = pdfDoc.getPageCount();
+
+  for (let i = 0; i < pageCount; i++) {
+    pdfDoc.getPage(i).drawText(`Page ${i + 1} of ${pageCount}`, {
+      x: pageWidth - margin - 70,
+      y: 24,
+      size: 8,
+      font: regularFont,
+      color: rgb(0.55, 0.55, 0.55),
+    });
+  }
+
+  return Buffer.from(await pdfDoc.save());
 }
 
 async function cleanupOldFiles(dir, maxAgeMs = 1000 * 60 * 60 * 12) {
@@ -248,6 +382,32 @@ app.get("/health", (_req, res) => {
   res.json({ ok: true, service: "az-scanner-backend" });
 });
 
+app.post("/export/text-pdf", async (req, res) => {
+  try {
+    const text = String(req.body?.text || "").slice(0, 250_000);
+    const filename = safeName(req.body?.filename || "az-scanner-text");
+
+    const pdfBuffer = await createTextPdfBuffer({
+      text,
+      filename,
+    });
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${filename || "az-scanner-text"}.pdf"`
+    );
+
+    return res.send(pdfBuffer);
+  } catch (error) {
+    console.error("Text PDF export error:", error);
+
+    return res.status(500).json({
+      error: error?.message || "Failed to create text PDF.",
+    });
+  }
+});
+
 app.post("/process", upload.single("file"), async (req, res) => {
   let uploadedPath = null;
 
@@ -262,9 +422,25 @@ app.post("/process", upload.single("file"), async (req, res) => {
     uploadedPath = req.file.path;
 
     const baseId = path.parse(req.file.filename).name;
+    const originalPdfImagePath = path.join(OUTPUT_DIR, `${baseId}-original.png`);
     const cleanedImagePath = path.join(OUTPUT_DIR, `${baseId}-cleaned.png`);
     const pdfPath = path.join(OUTPUT_DIR, `${baseId}.pdf`);
     const txtPath = path.join(OUTPUT_DIR, `${baseId}.txt`);
+
+    await sharp(uploadedPath, {
+      failOn: "none",
+      limitInputPixels: 60_000_000,
+    })
+      .rotate()
+      .resize({
+        width: 2400,
+        withoutEnlargement: true,
+      })
+      .png({
+        compressionLevel: 8,
+        adaptiveFiltering: true,
+      })
+      .toFile(originalPdfImagePath);
 
     const image = sharp(uploadedPath, {
       failOn: "none",
@@ -317,7 +493,7 @@ app.post("/process", upload.single("file"), async (req, res) => {
     fs.writeFileSync(txtPath, finalText, "utf8");
 
     await createScanPdf({
-      imagePath: cleanedImagePath,
+      imagePath: originalPdfImagePath,
       outputPath: pdfPath,
     });
 
