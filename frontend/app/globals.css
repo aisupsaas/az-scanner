@@ -836,4 +836,48 @@ textarea {
   }
 }
 
+.az-crop-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.az-crop-image {
+  width: 100%;
+  display: block;
+}
+
+.az-crop-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+}
+
+.az-crop-box {
+  position: absolute;
+  border: 2px solid white;
+  box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+}
+
+.az-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.4) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.4) 1px, transparent 1px);
+  background-size: 33% 33%;
+}
+
+.az-handle {
+  width: 14px;
+  height: 14px;
+  background: white;
+  position: absolute;
+}
+
+.az-handle.tl { top: -7px; left: -7px; }
+.az-handle.tr { top: -7px; right: -7px; }
+.az-handle.bl { bottom: -7px; left: -7px; }
+.az-handle.br { bottom: -7px; right: -7px; }
+
 }
