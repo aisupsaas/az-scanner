@@ -652,4 +652,25 @@ textarea {
     width: 54px;
     height: 54px;
   }
+  
+.az-text-editor {
+  width: 100%;
+  min-height: 100%;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: #171717;
+  font-size: 0.98rem;
+  line-height: 1.62;
+  font-weight: 300;
+}
+
+.az-text-actions {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+
 }
