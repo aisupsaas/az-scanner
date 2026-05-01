@@ -22,6 +22,8 @@ import ResultScreen from "./components/ResultScreen";
 import CameraOverlay from "./components/CameraOverlay";
 import BottomBar from "./components/BottomBar";
 
+const MAX_IMAGES = 10;
+
 const DEFAULT_IMAGE_EDIT: ImageEditSettings = {
   pdfSource: "original",
   rotate: 0,
@@ -32,7 +34,12 @@ const DEFAULT_IMAGE_EDIT: ImageEditSettings = {
     bottom: 0,
     left: 0,
   },
+  applied: false,
 };
+
+function makeDefaultEdits(count: number) {
+  return Array.from({ length: count }, () => ({ ...DEFAULT_IMAGE_EDIT, crop: { ...DEFAULT_IMAGE_EDIT.crop } }));
+}
 
 function linesToText(lines: OcrLine[]) {
   return lines
@@ -51,13 +58,15 @@ export default function HomePage() {
   const [resultTab, setResultTab] = useState<ResultTab>("text");
   const [compareView, setCompareView] = useState<CompareView>("split");
 
-  const [file, setFile] = useState<File | null>(null);
-  const [sourcePreview, setSourcePreview] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
+  const [sourcePreviews, setSourcePreviews] = useState<string[]>([]);
+  const [activePageIndex, setActivePageIndex] = useState(0);
+
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ProcessResponse | null>(null);
   const [editedText, setEditedText] = useState("");
   const [editedLines, setEditedLines] = useState<OcrLine[]>([]);
-  const [imageEdit, setImageEdit] = useState<ImageEditSettings>(DEFAULT_IMAGE_EDIT);
+  const [imageEdits, setImageEdits] = useState<ImageEditSettings[]>([]);
   const [error, setError] = useState("");
   const [statusText, setStatusText] = useState("Ready to scan or upload.");
 
@@ -70,21 +79,28 @@ export default function HomePage() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const originalImageHref = result?.files?.originalPdfImageUrl
-    ? `${apiBase}${result.files.originalPdfImageUrl}`
-    : sourcePreview;
+  const originalImageUrls =
+    result?.files?.originalPdfImageUrls?.map((url) => `${apiBase}${url}`) ||
+    (result?.files?.originalPdfImageUrl ? [`${apiBase}${result.files.originalPdfImageUrl}`] : []);
 
-  const cleanedImageHref = result?.files?.cleanedImageUrl
-    ? `${apiBase}${result.files.cleanedImageUrl}`
-    : "";
+  const cleanedImageUrls =
+    result?.files?.cleanedImageUrls?.map((url) => `${apiBase}${url}`) ||
+    (result?.files?.cleanedImageUrl ? [`${apiBase}${result.files.cleanedImageUrl}`] : []);
+
+  const originalImageHref =
+    originalImageUrls[activePageIndex] || sourcePreviews[activePageIndex] || "";
+
+  const cleanedImageHref = cleanedImageUrls[activePageIndex] || "";
+
+  const activeImageEdit = imageEdits[activePageIndex] || DEFAULT_IMAGE_EDIT;
 
   const topTitle =
     mode === "start" ? "Start" : mode === "review" ? "Review" : "Result";
 
-  function revokeSourcePreview() {
-    setSourcePreview((prev) => {
-      if (prev) URL.revokeObjectURL(prev);
-      return "";
+  function revokeSourcePreviews() {
+    setSourcePreviews((prev) => {
+      for (const url of prev) URL.revokeObjectURL(url);
+      return [];
     });
   }
 
@@ -101,55 +117,108 @@ export default function HomePage() {
   }
 
   function clearAll() {
-    setFile(null);
+    setFiles([]);
     setResult(null);
     setEditedText("");
     setEditedLines([]);
-    setImageEdit(DEFAULT_IMAGE_EDIT);
+    setImageEdits([]);
+    setActivePageIndex(0);
     setError("");
     setLoading(false);
     setStatusText("Ready to scan or upload.");
     setMode("start");
     setResultTab("text");
     setCompareView("split");
-    revokeSourcePreview();
+    revokeSourcePreviews();
   }
 
-  function chooseLocalFile(next: File | null) {
-    setFile(next);
-    setResult(null);
-    setEditedText("");
-    setEditedLines([]);
-    setImageEdit(DEFAULT_IMAGE_EDIT);
-    setError("");
-    setResultTab("text");
-    setCompareView("split");
-    revokeSourcePreview();
+  function addFiles(nextInput: FileList | File[] | File | null) {
+    if (!nextInput) return;
 
-    if (!next) {
-      setStatusText("Ready to scan or upload.");
-      setMode("start");
+    const incoming =
+      nextInput instanceof File
+        ? [nextInput]
+        : Array.isArray(nextInput)
+          ? nextInput
+          : Array.from(nextInput);
+
+    const images = incoming.filter((item) => item.type.startsWith("image/"));
+
+    if (!images.length) {
+      setError("Only image files are allowed.");
       return;
     }
 
-    const preview = URL.createObjectURL(next);
-    setSourcePreview(preview);
-    setStatusText(`Selected: ${next.name}`);
-    setMode("review");
+    setError("");
+    setResult(null);
+    setEditedText("");
+    setEditedLines([]);
+    setResultTab("text");
+    setCompareView("split");
+
+    setFiles((current) => {
+      const merged = [...current, ...images].slice(0, MAX_IMAGES);
+      const nextPreviews = merged.map((file) => URL.createObjectURL(file));
+
+      setSourcePreviews((prev) => {
+        for (const url of prev) URL.revokeObjectURL(url);
+        return nextPreviews;
+      });
+
+      setImageEdits(makeDefaultEdits(merged.length));
+      setActivePageIndex(Math.max(0, merged.length - images.length));
+      setStatusText(`${merged.length} image${merged.length === 1 ? "" : "s"} ready.`);
+      setMode("review");
+
+      if (current.length + images.length > MAX_IMAGES) {
+        setError("Maximum 10 images allowed. Extra images were skipped.");
+      }
+
+      return merged;
+    });
   }
 
-  async function processSelectedFile(nextFile: File) {
+  function removePage(index: number) {
+    setFiles((current) => {
+      const next = current.filter((_, i) => i !== index);
+      const nextPreviews = next.map((file) => URL.createObjectURL(file));
+
+      setSourcePreviews((prev) => {
+        for (const url of prev) URL.revokeObjectURL(url);
+        return nextPreviews;
+      });
+
+      setImageEdits(makeDefaultEdits(next.length));
+      setActivePageIndex(Math.max(0, Math.min(index, next.length - 1)));
+      setStatusText(next.length ? `${next.length} image${next.length === 1 ? "" : "s"} ready.` : "Ready to scan or upload.");
+
+      if (!next.length) {
+        setMode("start");
+      }
+
+      return next;
+    });
+  }
+
+  async function processSelectedFiles() {
+    if (!files.length) {
+      setError("Please choose an image first.");
+      return;
+    }
+
     setLoading(true);
     setError("");
     setResult(null);
     setEditedText("");
     setEditedLines([]);
-    setStatusText(`Processing: ${nextFile.name}`);
+    setStatusText(`Processing ${files.length} image${files.length === 1 ? "" : "s"}...`);
     setMode("review");
 
     try {
       const formData = new FormData();
-      formData.append("file", nextFile);
+      for (const item of files) {
+        formData.append("files", item);
+      }
 
       const res = await fetch(`${apiBase}/process`, {
         method: "POST",
@@ -168,31 +237,24 @@ export default function HomePage() {
       if (!res.ok) throw new Error(data?.error || "Processing failed.");
 
       const nextLines = Array.isArray(data.lines) ? data.lines : [];
+      const pageCount = data.files?.originalPdfImageUrls?.length || files.length;
 
       setResult(data);
       setEditedLines(nextLines);
       setEditedText(nextLines.length ? linesToText(nextLines) : data?.text || "");
-      setStatusText(`Processed: ${nextFile.name}`);
+      setImageEdits(makeDefaultEdits(pageCount));
+      setStatusText(`Processed ${pageCount} page${pageCount === 1 ? "" : "s"}.`);
       setMode("result");
-      setResultTab("text");
-      setCompareView(data?.files?.cleanedImageUrl ? "split" : "original");
+      setResultTab("compare");
+      setCompareView(data?.files?.cleanedImageUrls?.length ? "split" : "original");
     } catch (err: any) {
       const message = err?.message || "Load failed";
       setError(message);
-      setStatusText(`Failed: ${nextFile.name}`);
+      setStatusText("Processing failed.");
       setMode("review");
     } finally {
       setLoading(false);
     }
-  }
-
-  async function handleSubmit() {
-    if (!file) {
-      setError("Please choose an image first.");
-      return;
-    }
-
-    await processSelectedFile(file);
   }
 
   async function openCamera() {
@@ -282,7 +344,7 @@ export default function HomePage() {
     });
 
     closeCamera();
-    chooseLocalFile(capturedFile);
+    addFiles(capturedFile);
   }
 
   async function copyEditedText() {
@@ -300,16 +362,27 @@ export default function HomePage() {
 
   async function downloadOriginalPdf() {
     try {
-      const selectedImageUrl =
-        imageEdit.pdfSource === "cleaned"
-          ? result?.files?.cleanedImageUrl
-          : result?.files?.originalPdfImageUrl;
+      const originalUrls = result?.files?.originalPdfImageUrls || [];
+      const cleanedUrls = result?.files?.cleanedImageUrls || [];
 
-      if (!selectedImageUrl) {
+      if (!originalUrls.length) {
         throw new Error("Original PDF source is not ready.");
       }
 
-      setStatusText("Preparing original PDF...");
+      setStatusText("Preparing combined Original PDF...");
+
+      const pages = originalUrls.map((originalUrl, index) => {
+        const edit = imageEdits[index] || DEFAULT_IMAGE_EDIT;
+        const cleanedUrl = cleanedUrls[index];
+        const imageUrl = edit.pdfSource === "cleaned" && cleanedUrl ? cleanedUrl : originalUrl;
+
+        return {
+          imageUrl,
+          rotate: edit.rotate,
+          brightness: edit.brightness,
+          crop: edit.crop,
+        };
+      });
 
       const res = await fetch(`${apiBase}/export/original-pdf`, {
         method: "POST",
@@ -317,11 +390,8 @@ export default function HomePage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          imageUrl: selectedImageUrl,
+          pages,
           filename: "az-scanner-original",
-          rotate: imageEdit.rotate,
-          brightness: imageEdit.brightness,
-          crop: imageEdit.crop,
         }),
       });
 
@@ -382,6 +452,14 @@ export default function HomePage() {
     });
   }
 
+  function updateActiveImageEdit(next: ImageEditSettings) {
+    setImageEdits((current) => {
+      const copy = current.length ? [...current] : makeDefaultEdits(originalImageUrls.length || files.length || 1);
+      copy[activePageIndex] = next;
+      return copy;
+    });
+  }
+
   function applyTextTool(tool: "clean" | "spacing" | "blankLines" | "mergeLines") {
     setEditedText((current) => {
       const next =
@@ -403,9 +481,9 @@ export default function HomePage() {
   useEffect(() => {
     return () => {
       stopCameraStream();
-      if (sourcePreview) URL.revokeObjectURL(sourcePreview);
+      for (const url of sourcePreviews) URL.revokeObjectURL(url);
     };
-  }, [sourcePreview]);
+  }, [sourcePreviews]);
 
   return (
     <main className="az-app">
@@ -420,11 +498,20 @@ export default function HomePage() {
 
         <section className="az-content">
           {mode === "start" ? (
-            <StartScreen onOpenCamera={openCamera} onChooseFile={chooseLocalFile} />
+            <StartScreen
+              onOpenCamera={openCamera}
+              onChooseFile={(file) => addFiles(file)}
+            />
           ) : null}
 
           {mode === "review" ? (
-            <ReviewScreen sourcePreview={sourcePreview} error={error} />
+            <ReviewScreen
+              sourcePreviews={sourcePreviews}
+              activePageIndex={activePageIndex}
+              error={error}
+              onSelectPage={setActivePageIndex}
+              onRemovePage={removePage}
+            />
           ) : null}
 
           {mode === "result" ? (
@@ -433,18 +520,21 @@ export default function HomePage() {
               result={result}
               resultTab={resultTab}
               compareView={compareView}
-              sourcePreview={sourcePreview}
+              sourcePreview={sourcePreviews[activePageIndex] || ""}
               originalImageHref={originalImageHref}
               cleanedImageHref={cleanedImageHref}
               editedText={editedText}
               editedLines={editedLines}
-              imageEdit={imageEdit}
+              imageEdit={activeImageEdit}
+              activePageIndex={activePageIndex}
+              pageCount={Math.max(originalImageUrls.length, sourcePreviews.length, 1)}
               onSetEditedText={setEditedText}
               onUpdateEditedLine={updateEditedLine}
               onRemoveEditedLine={removeEditedLine}
               onCopyText={copyEditedText}
               onApplyTextTool={applyTextTool}
-              onImageEditChange={setImageEdit}
+              onImageEditChange={updateActiveImageEdit}
+              onSelectPage={setActivePageIndex}
               onResultTabChange={setResultTab}
               onCompareViewChange={setCompareView}
             />
@@ -454,15 +544,15 @@ export default function HomePage() {
         <BottomBar
           mode={mode}
           loading={loading}
-          file={file}
-          canOpenReview={!!file}
+          fileCount={files.length}
+          canOpenReview={files.length > 0}
           canOpenResult={!!result?.success}
           onOpenCamera={openCamera}
-          onChooseFile={chooseLocalFile}
-          onProcess={handleSubmit}
+          onChooseFiles={addFiles}
+          onProcess={processSelectedFiles}
           onNewScan={clearAll}
           onGoToStart={() => setMode("start")}
-          onGoToReview={() => file && setMode("review")}
+          onGoToReview={() => files.length && setMode("review")}
           onGoToResult={() => result?.success && setMode("result")}
           onDownloadOriginalPdf={downloadOriginalPdf}
           onDownloadEditedTxt={downloadEditedTxt}

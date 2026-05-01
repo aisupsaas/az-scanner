@@ -24,6 +24,7 @@ export type ImageEditSettings = {
     bottom: number;
     left: number;
   };
+  applied?: boolean;
 };
 
 export type ProcessResponse = {
@@ -38,6 +39,8 @@ export type ProcessResponse = {
   files?: {
     originalPdfImageUrl?: string;
     cleanedImageUrl?: string;
+    originalPdfImageUrls?: string[];
+    cleanedImageUrls?: string[];
     pdfUrl?: string;
     txtUrl?: string;
   };

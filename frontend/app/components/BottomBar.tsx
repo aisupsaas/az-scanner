@@ -5,11 +5,11 @@ import type { ScreenMode } from "../types";
 type BottomBarProps = {
   mode: ScreenMode;
   loading: boolean;
-  file: File | null;
+  fileCount: number;
   canOpenReview: boolean;
   canOpenResult: boolean;
   onOpenCamera: () => void;
-  onChooseFile: (file: File | null) => void;
+  onChooseFiles: (files: FileList | File[]) => void;
   onProcess: () => void;
   onNewScan: () => void;
   onGoToStart: () => void;
@@ -23,11 +23,11 @@ type BottomBarProps = {
 export default function BottomBar({
   mode,
   loading,
-  file,
+  fileCount,
   canOpenReview,
   canOpenResult,
   onOpenCamera,
-  onChooseFile,
+  onChooseFiles,
   onProcess,
   onNewScan,
   onGoToStart,
@@ -47,12 +47,16 @@ export default function BottomBar({
             </button>
 
             <label className="az-secondary-button az-file-label">
-              Choose file
+              Choose files
               <input
                 type="file"
+                multiple
                 accept="image/png,image/jpeg,image/webp,image/tiff,image/heic,image/heif"
                 className="hidden"
-                onChange={(e) => onChooseFile(e.target.files?.[0] || null)}
+                onChange={(e) => {
+                  if (e.target.files) onChooseFiles(e.target.files);
+                  e.currentTarget.value = "";
+                }}
               />
             </label>
           </>
@@ -61,23 +65,27 @@ export default function BottomBar({
         {mode === "review" ? (
           <>
             <button type="button" onClick={onOpenCamera} className="az-secondary-button">
-              Retake
+              Add photo
             </button>
 
             <label className="az-secondary-button az-file-label">
-              Replace
+              Add files
               <input
                 type="file"
+                multiple
                 accept="image/png,image/jpeg,image/webp,image/tiff,image/heic,image/heif"
                 className="hidden"
-                onChange={(e) => onChooseFile(e.target.files?.[0] || null)}
+                onChange={(e) => {
+                  if (e.target.files) onChooseFiles(e.target.files);
+                  e.currentTarget.value = "";
+                }}
               />
             </label>
 
             <button
               type="button"
               onClick={onProcess}
-              disabled={loading || !file}
+              disabled={loading || fileCount < 1}
               className="az-primary-button disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? "Processing..." : "Process"}

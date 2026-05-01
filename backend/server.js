@@ -64,7 +64,7 @@ function isGarbageLine(line) {
   return false;
 }
 
-function normalizeOcrLines(ocrData) {
+function normalizeOcrLines(ocrData, pageIndex = 0) {
   const rawLines = Array.isArray(ocrData?.lines) ? ocrData.lines : [];
 
   const lines = rawLines.length
@@ -84,7 +84,7 @@ function normalizeOcrLines(ocrData) {
 
   return lines
     .map((line, index) => ({
-      id: `line-${index}`,
+      id: `page-${pageIndex + 1}-line-${index + 1}`,
       text: cleanLine(line.text),
       confidence: Math.round(line.confidence || 0),
       bbox: line.bbox || null,
@@ -124,7 +124,6 @@ function buildLayoutText(lines) {
     if (i > 0) {
       const prev = withY[i - 1];
       const gap = line.y0 - prev.y1;
-
       if (gap > avgHeight * 1.35) output.push("");
     }
 
@@ -237,8 +236,7 @@ async function buildEditedScanImageBuffer({
     .toBuffer();
 }
 
-async function createScanPdfBuffer({ imageBuffer }) {
-  const pdfDoc = await PDFDocument.create();
+async function addImagePageToPdf(pdfDoc, imageBuffer) {
   const image = await pdfDoc.embedPng(imageBuffer);
 
   const pageWidth = 595.28;
@@ -264,11 +262,32 @@ async function createScanPdfBuffer({ imageBuffer }) {
     width: drawWidth,
     height: drawHeight,
   });
+}
+
+async function createMultiPageScanPdfBuffer(pages) {
+  const pdfDoc = await PDFDocument.create();
+
+  for (const page of pages.slice(0, 10)) {
+    const imagePath = outputPathFromPublicUrl(page.imageUrl);
+
+    const imageBuffer = await buildEditedScanImageBuffer({
+      imagePath,
+      rotate: page.rotate,
+      brightness: page.brightness,
+      crop: page.crop || {},
+    });
+
+    await addImagePageToPdf(pdfDoc, imageBuffer);
+  }
+
+  if (pdfDoc.getPageCount() < 1) {
+    throw new Error("No pages available for PDF.");
+  }
 
   return Buffer.from(await pdfDoc.save());
 }
 
-async function createScanPdfFile({ imagePath, outputPath }) {
+async function createSingleScanPdfFile({ imagePath, outputPath }) {
   const imageBuffer = await buildEditedScanImageBuffer({
     imagePath,
     rotate: 0,
@@ -276,7 +295,9 @@ async function createScanPdfFile({ imagePath, outputPath }) {
     crop: {},
   });
 
-  fs.writeFileSync(outputPath, await createScanPdfBuffer({ imageBuffer }));
+  const pdfDoc = await PDFDocument.create();
+  await addImagePageToPdf(pdfDoc, imageBuffer);
+  fs.writeFileSync(outputPath, await pdfDoc.save());
 }
 
 function wrapText(text, font, fontSize, maxWidth) {
@@ -438,13 +459,17 @@ const storage = multer.diskStorage({
   filename: (_req, file, cb) => {
     const ext = path.extname(file.originalname || "") || ".jpg";
     const safeBase = safeName(file.originalname || "upload");
-    cb(null, `${Date.now()}-${safeBase}${ext.toLowerCase()}`);
+    cb(null, `${Date.now()}-${safeBase}-${cryptoRandom()}${ext.toLowerCase()}`);
   },
 });
 
+function cryptoRandom() {
+  return Math.random().toString(36).slice(2, 8);
+}
+
 const upload = multer({
   storage,
-  limits: { fileSize: 12 * 1024 * 1024 },
+  limits: { fileSize: 12 * 1024 * 1024, files: 10 },
   fileFilter: (_req, file, cb) => {
     const allowed = [
       "image/jpeg",
@@ -473,17 +498,28 @@ app.get("/health", (_req, res) => {
 
 app.post("/export/original-pdf", async (req, res) => {
   try {
-    const imageUrl = String(req.body?.imageUrl || "");
-    const imagePath = outputPathFromPublicUrl(imageUrl);
+    const pages = Array.isArray(req.body?.pages)
+      ? req.body.pages
+      : req.body?.imageUrl
+        ? [
+            {
+              imageUrl: req.body.imageUrl,
+              rotate: req.body.rotate,
+              brightness: req.body.brightness,
+              crop: req.body.crop || {},
+            },
+          ]
+        : [];
 
-    const imageBuffer = await buildEditedScanImageBuffer({
-      imagePath,
-      rotate: req.body?.rotate,
-      brightness: req.body?.brightness,
-      crop: req.body?.crop || {},
-    });
+    if (!pages.length) {
+      return res.status(400).json({ error: "No PDF pages provided." });
+    }
 
-    const pdfBuffer = await createScanPdfBuffer({ imageBuffer });
+    if (pages.length > 10) {
+      return res.status(400).json({ error: "Maximum 10 pages allowed." });
+    }
+
+    const pdfBuffer = await createMultiPageScanPdfBuffer(pages);
     const filename = safeName(req.body?.filename || "az-scanner-original");
 
     res.setHeader("Content-Type", "application/pdf");
@@ -522,109 +558,152 @@ app.post("/export/text-pdf", async (req, res) => {
   }
 });
 
-app.post("/process", upload.single("file"), async (req, res) => {
-  let uploadedPath = null;
+app.post("/process", upload.array("files", 10), async (req, res) => {
+  const uploadedPaths = [];
 
   try {
     await cleanupOldFiles(UPLOAD_DIR);
     await cleanupOldFiles(OUTPUT_DIR);
 
-    if (!req.file) {
+    const files = Array.isArray(req.files) ? req.files.slice(0, 10) : [];
+
+    if (!files.length) {
       return res.status(400).json({ error: "No file uploaded." });
     }
 
-    uploadedPath = req.file.path;
+    for (const f of files) uploadedPaths.push(f.path);
 
-    const baseId = path.parse(req.file.filename).name;
-    const originalPdfImagePath = path.join(OUTPUT_DIR, `${baseId}-original.png`);
-    const cleanedImagePath = path.join(OUTPUT_DIR, `${baseId}-cleaned.png`);
-    const pdfPath = path.join(OUTPUT_DIR, `${baseId}.pdf`);
-    const txtPath = path.join(OUTPUT_DIR, `${baseId}.txt`);
+    const originalPdfImageUrls = [];
+    const cleanedImageUrls = [];
+    const allLines = [];
+    const textSections = [];
+    const confidences = [];
+    const qualityScores = [];
 
-    await sharp(uploadedPath, {
-      failOn: "none",
-      limitInputPixels: 60_000_000,
-    })
-      .rotate()
-      .resize({
-        width: 2400,
-        withoutEnlargement: true,
+    let firstPdfPath = "";
+    let firstTxtPath = "";
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+
+      const baseId = path.parse(file.filename).name;
+      const originalPdfImagePath = path.join(OUTPUT_DIR, `${baseId}-original.png`);
+      const cleanedImagePath = path.join(OUTPUT_DIR, `${baseId}-cleaned.png`);
+      const pdfPath = path.join(OUTPUT_DIR, `${baseId}.pdf`);
+      const txtPath = path.join(OUTPUT_DIR, `${baseId}.txt`);
+
+      if (i === 0) {
+        firstPdfPath = pdfPath;
+        firstTxtPath = txtPath;
+      }
+
+      await sharp(file.path, {
+        failOn: "none",
+        limitInputPixels: 60_000_000,
       })
-      .png({
-        compressionLevel: 8,
-        adaptiveFiltering: true,
-      })
-      .toFile(originalPdfImagePath);
+        .rotate()
+        .resize({
+          width: 2400,
+          withoutEnlargement: true,
+        })
+        .png({
+          compressionLevel: 8,
+          adaptiveFiltering: true,
+        })
+        .toFile(originalPdfImagePath);
 
-    const image = sharp(uploadedPath, {
-      failOn: "none",
-      limitInputPixels: 60_000_000,
-    }).rotate();
+      const image = sharp(file.path, {
+        failOn: "none",
+        limitInputPixels: 60_000_000,
+      }).rotate();
 
-    const metadata = await image.metadata();
+      const metadata = await image.metadata();
 
-    if (!metadata.width || !metadata.height) {
-      return res.status(400).json({
-        error: "Could not read image dimensions. Please try another image.",
+      if (!metadata.width || !metadata.height) {
+        throw new Error("Could not read image dimensions. Please try another image.");
+      }
+
+      const resizedWidth = metadata.width > 2400 ? 2400 : metadata.width;
+
+      await image
+        .resize({
+          width: resizedWidth,
+          withoutEnlargement: true,
+        })
+        .grayscale()
+        .normalize()
+        .linear(1.18, -12)
+        .median(1)
+        .sharpen({
+          sigma: 1.1,
+          m1: 1.15,
+          m2: 2.1,
+        })
+        .png({
+          compressionLevel: 8,
+          adaptiveFiltering: true,
+        })
+        .toFile(cleanedImagePath);
+
+      const ocrResult = await Tesseract.recognize(cleanedImagePath, "eng", {
+        logger: () => {},
+        tessedit_pageseg_mode: "6",
+        preserve_interword_spaces: "1",
       });
+
+      const rawConfidence = Math.round(ocrResult?.data?.confidence || 0);
+      const layoutLines = normalizeOcrLines(ocrResult?.data, i);
+      const layoutText = buildLayoutText(layoutLines);
+      const quality = scoreTextQuality(layoutText, rawConfidence);
+
+      const pageText = quality.usable ? layoutText : "";
+
+      confidences.push(rawConfidence);
+      qualityScores.push(quality.score);
+
+      allLines.push(...(quality.usable ? layoutLines : []));
+      textSections.push(pageText ? `Page ${i + 1}\n${pageText}` : `Page ${i + 1}\n${OCR_LOW_QUALITY_MESSAGE}`);
+
+      originalPdfImageUrls.push(`/output/${path.basename(originalPdfImagePath)}`);
+      cleanedImageUrls.push(`/output/${path.basename(cleanedImagePath)}`);
+
+      if (i === 0) {
+        await createSingleScanPdfFile({
+          imagePath: originalPdfImagePath,
+          outputPath: pdfPath,
+        });
+      }
     }
 
-    const resizedWidth = metadata.width > 2400 ? 2400 : metadata.width;
+    const finalText = textSections.join("\n\n");
+    fs.writeFileSync(firstTxtPath, finalText, "utf8");
 
-    await image
-      .resize({
-        width: resizedWidth,
-        withoutEnlargement: true,
-      })
-      .grayscale()
-      .normalize()
-      .linear(1.18, -12)
-      .median(1)
-      .sharpen({
-        sigma: 1.1,
-        m1: 1.15,
-        m2: 2.1,
-      })
-      .png({
-        compressionLevel: 8,
-        adaptiveFiltering: true,
-      })
-      .toFile(cleanedImagePath);
+    const averageConfidence = Math.round(
+      confidences.reduce((sum, item) => sum + item, 0) / Math.max(confidences.length, 1)
+    );
 
-    const ocrResult = await Tesseract.recognize(cleanedImagePath, "eng", {
-      logger: () => {},
-      tessedit_pageseg_mode: "6",
-      preserve_interword_spaces: "1",
-    });
+    const averageQuality = Math.round(
+      qualityScores.reduce((sum, item) => sum + item, 0) / Math.max(qualityScores.length, 1)
+    );
 
-    const rawConfidence = Math.round(ocrResult?.data?.confidence || 0);
-    const layoutLines = normalizeOcrLines(ocrResult?.data);
-    const layoutText = buildLayoutText(layoutLines);
-    const quality = scoreTextQuality(layoutText, rawConfidence);
-
-    const finalText = quality.usable ? layoutText : OCR_LOW_QUALITY_MESSAGE;
-
-    fs.writeFileSync(txtPath, finalText, "utf8");
-
-    await createScanPdfFile({
-      imagePath: originalPdfImagePath,
-      outputPath: pdfPath,
-    });
+    const usableText = allLines.length > 0;
 
     return res.json({
       success: true,
       text: finalText,
-      confidence: rawConfidence,
-      qualityScore: quality.score,
-      usableText: quality.usable,
-      warning: quality.usable ? "" : OCR_LOW_QUALITY_MESSAGE,
-      lineCount: layoutLines.length,
-      lines: quality.usable ? layoutLines : [],
+      confidence: averageConfidence,
+      qualityScore: averageQuality,
+      usableText,
+      warning: usableText ? "" : OCR_LOW_QUALITY_MESSAGE,
+      lineCount: allLines.length,
+      lines: usableText ? allLines : [],
       files: {
-        originalPdfImageUrl: `/output/${path.basename(originalPdfImagePath)}`,
-        cleanedImageUrl: `/output/${path.basename(cleanedImagePath)}`,
-        pdfUrl: `/output/${path.basename(pdfPath)}`,
-        txtUrl: `/output/${path.basename(txtPath)}`,
+        originalPdfImageUrl: originalPdfImageUrls[0],
+        cleanedImageUrl: cleanedImageUrls[0],
+        originalPdfImageUrls,
+        cleanedImageUrls,
+        pdfUrl: firstPdfPath ? `/output/${path.basename(firstPdfPath)}` : "",
+        txtUrl: firstTxtPath ? `/output/${path.basename(firstTxtPath)}` : "",
       },
     });
   } catch (error) {
@@ -636,11 +715,13 @@ app.post("/process", upload.single("file"), async (req, res) => {
         "Failed to process file. Please try a clearer image with better lighting.",
     });
   } finally {
-    if (uploadedPath && fs.existsSync(uploadedPath)) {
-      try {
-        fs.unlinkSync(uploadedPath);
-      } catch (error) {
-        console.warn("Upload cleanup warning:", error?.message || error);
+    for (const uploadedPath of uploadedPaths) {
+      if (uploadedPath && fs.existsSync(uploadedPath)) {
+        try {
+          fs.unlinkSync(uploadedPath);
+        } catch (error) {
+          console.warn("Upload cleanup warning:", error?.message || error);
+        }
       }
     }
   }
