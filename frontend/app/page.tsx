@@ -5,6 +5,7 @@ import type {
   CompareView,
   ImageEditSettings,
   OcrLine,
+  PlanType,
   ProcessResponse,
   ResultTab,
   ScreenMode,
@@ -78,6 +79,8 @@ export default function HomePage() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<PlanType>("standard");
+  
 
   const originalImageUrls =
     result?.files?.originalPdfImageUrls?.map((url) => `${apiBase}${url}`) ||
@@ -502,9 +505,11 @@ export default function HomePage() {
         <section className="az-content">
           {mode === "start" ? (
             <StartScreen
-              onOpenCamera={openCamera}
-              onChooseFile={(file) => addFiles(file)}
-            />
+  selectedPlan={selectedPlan}
+  onSelectPlan={setSelectedPlan}
+  onOpenCamera={openCamera}
+  onChooseFile={(file) => addFiles(file)}
+/>
           ) : null}
 
           {mode === "review" ? (
@@ -521,6 +526,7 @@ export default function HomePage() {
             <ResultScreen
               loading={loading}
               result={result}
+              selectedPlan={selectedPlan}
               resultTab={resultTab}
               compareView={compareView}
               sourcePreview={sourcePreviews[activePageIndex] || ""}
