@@ -927,4 +927,23 @@ textarea {
     }
   }
 
+  .az-page-pill {
+  border: none !important;
+  border-bottom: 3px solid transparent !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 0.45rem 0.38rem !important;
+  color: #6b7280;
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.az-page-pill-active {
+  color: #767676 !important;
+  border-bottom-color: #0b57ff !important;
+  box-shadow: none !important;
+}
+
 
