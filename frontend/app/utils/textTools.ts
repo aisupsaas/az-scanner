@@ -47,8 +47,8 @@ export function removeLikelyGarbageLines(text: string) {
       const weird = (line.match(/[^a-zA-Z0-9\s.,:;'"!?$%&()\-+/#[\]]/g) || []).length;
 
       if (line.length <= 2 && useful === 0) return false;
-      if (line.length >= 5 && useful / line.length < 0.32) return false;
-      if (weird / Math.max(line.length, 1) > 0.28) return false;
+      if (line.length >= 5 && useful / line.length < 0.34) return false;
+      if (weird / Math.max(line.length, 1) > 0.22) return false;
 
       return true;
     })
@@ -56,6 +56,20 @@ export function removeLikelyGarbageLines(text: string) {
     .trim();
 }
 
+/* STANDARD CLEAN */
 export function cleanStandardText(text: string) {
-  return removeLikelyGarbageLines(removeExtraBlankLines(normalizeSpacing(text)));
+  return removeLikelyGarbageLines(
+    removeExtraBlankLines(
+      normalizeSpacing(text)
+    )
+  );
+}
+
+/* PRO CLEAN (stronger) */
+export function cleanProText(text: string) {
+  return mergeLines(
+    removeLikelyGarbageLines(
+      normalizeSpacing(text)
+    )
+  );
 }
