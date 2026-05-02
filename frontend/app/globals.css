@@ -946,4 +946,21 @@ textarea {
   box-shadow: none !important;
 }
 
+.az-remove-page-button {
+  min-height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(190, 70, 70, 0.16);
+  background: rgba(255, 235, 235, 0.78);
+  color: #9f2f2f;
+  padding: 0 1rem;
+  font-size: 0.9rem;
+  font-weight: 400;
+  box-shadow:
+    0 8px 18px rgba(150, 50, 50, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.az-remove-page-button:active {
+  transform: scale(0.99);
+}
 

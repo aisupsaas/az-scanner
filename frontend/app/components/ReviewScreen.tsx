@@ -53,12 +53,12 @@ export default function ReviewScreen(props: {
         {activePreview ? (
           <div className="az-text-actions">
             <button
-              type="button"
-              onClick={() => props.onRemovePage(props.activePageIndex)}
-              className="az-secondary-button"
-            >
-              Remove page
-            </button>
+                type="button"
+                onClick={() => props.onRemovePage(props.activePageIndex)}
+                className="az-remove-page-button"
+              >
+                Remove page
+              </button>
           </div>
         ) : null}
 
