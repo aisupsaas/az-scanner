@@ -490,12 +490,15 @@ export default function HomePage() {
       <div className="az-shell">
         <header className="az-topbar">
           <div>
-            <div className="az-topbar-chip">AZ SCANNER</div>
+            <img
+                src="/az-logo.png"
+                alt="AZ Scanner"
+                className="az-topbar-logo"
+              />
             <div className="az-topbar-title">{topTitle}</div>
             <div className="az-topbar-subtitle">{statusText}</div>
           </div>
         </header>
-
         <section className="az-content">
           {mode === "start" ? (
             <StartScreen

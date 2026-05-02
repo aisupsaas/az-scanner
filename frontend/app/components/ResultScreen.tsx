@@ -147,6 +147,12 @@ export default function ResultScreen({
     bottom: `${imageEdit.crop.bottom}%`,
   };
 
+  const editedPreviewStyle = {
+    transform: `rotate(${imageEdit.rotate}deg)`,
+    filter: `brightness(${imageEdit.brightness})`,
+    clipPath: `inset(${imageEdit.crop.top}% ${imageEdit.crop.right}% ${imageEdit.crop.bottom}% ${imageEdit.crop.left}%)`,
+  };
+
   return (
     <div className="az-screen">
       <div className="az-result-tabs">
@@ -262,21 +268,21 @@ export default function ResultScreen({
                   onClick={() => onCompareViewChange("split")}
                   className={["az-segment-button", compareView === "split" ? "az-segment-button-active" : ""].join(" ")}
                 >
-                  Split
+                  Edit + Preview
                 </button>
                 <button
                   type="button"
                   onClick={() => onCompareViewChange("original")}
                   className={["az-segment-button", compareView === "original" ? "az-segment-button-active" : ""].join(" ")}
                 >
-                  Original
+                  Edit
                 </button>
                 <button
                   type="button"
                   onClick={() => onCompareViewChange("cleaned")}
                   className={["az-segment-button", compareView === "cleaned" ? "az-segment-button-active" : ""].join(" ")}
                 >
-                  Cleaned
+                  Cleaned OCR Preview
                 </button>
               </div>
             </div>
@@ -371,7 +377,7 @@ export default function ResultScreen({
             >
               {(compareView === "split" || compareView === "original") && (
                 <div className="az-compare-panel">
-                  <div className="az-compare-label">Original / PDF Preview</div>
+                  <div className="az-compare-label">Edit crop</div>
                   <div
                     ref={containerRef}
                     className="az-crop-container"
@@ -421,7 +427,25 @@ export default function ResultScreen({
                 </div>
               )}
 
-              {(compareView === "split" || compareView === "cleaned") && (
+              {compareView === "split" && (
+                <div className="az-compare-panel">
+                  <div className="az-compare-label">Preview</div>
+                  <div className="az-compare-frame">
+                    {previewImage ? (
+                      <img
+                        src={previewImage}
+                        alt="Edited scan preview"
+                        className="az-main-preview"
+                        style={editedPreviewStyle}
+                      />
+                    ) : (
+                      <div className="az-empty-note">Preview is not available.</div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {compareView === "cleaned" && (
                 <div className="az-compare-panel">
                   <div className="az-compare-label">Cleaned OCR Preview</div>
                   <div className="az-compare-frame">
