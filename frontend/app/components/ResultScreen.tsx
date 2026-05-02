@@ -1,12 +1,14 @@
 "use client";
 
 import { useRef, useState } from "react";
+
 import type {
   CompareView,
   ImageEditSettings,
   OcrLine,
   ProcessResponse,
   ResultTab,
+  PlanType,
 } from "../types";
 
 type TextTool = "clean" | "spacing" | "blankLines" | "mergeLines";
@@ -15,6 +17,7 @@ type Corner = "tl" | "tr" | "bl" | "br";
 type ResultScreenProps = {
   result: ProcessResponse | null;
   loading: boolean;
+  selectedPlan: PlanType;
   resultTab: ResultTab;
   compareView: CompareView;
   sourcePreview: string;
@@ -41,6 +44,7 @@ export default function ResultScreen({
   loading,
   resultTab,
   compareView,
+  selectedPlan,
   sourcePreview,
   originalImageHref,
   cleanedImageHref,
@@ -184,22 +188,31 @@ export default function ResultScreen({
                 </div>
               </div>
 
-              <div className="az-compare-toggle">
-                <button type="button" onClick={() => onApplyTextTool("clean")} className="az-segment-button">
-                  Clean
+            <div className="az-text-tool-row"> 
+             <div className="az-text-tool-row">
+                <button
+                  type="button"
+                  onClick={() => onApplyTextTool("clean")}
+                  className="az-smart-clean-button"
+                >
+                  {selectedPlan === "pro" ? "Smart clean Pro" : "Smart clean"}
                 </button>
+
                 <button type="button" onClick={() => onApplyTextTool("spacing")} className="az-segment-button">
                   Spacing
                 </button>
+
                 <button type="button" onClick={() => onApplyTextTool("blankLines")} className="az-segment-button">
                   Lines
                 </button>
+
                 <button type="button" onClick={() => onApplyTextTool("mergeLines")} className="az-segment-button">
                   Merge
                 </button>
-              </div>
+              </div>   
             </div>
 
+          </div>
             {result?.warning ? (
               <div className="az-inline-error">
                 <div className="az-inline-error-title">OCR warning</div>
@@ -252,6 +265,7 @@ export default function ResultScreen({
               </button>
             </div>
           </>
+          
         ) : (
           <>
             <div className="az-panel-header az-panel-header-wrap">

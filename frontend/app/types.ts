@@ -1,3 +1,4 @@
+export type PlanType = "standard" | "pro";
 export type ScreenMode = "start" | "review" | "result";
 export type ResultTab = "text" | "compare";
 export type CompareView = "split" | "original" | "cleaned";

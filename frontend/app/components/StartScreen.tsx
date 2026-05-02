@@ -1,21 +1,58 @@
 "use client";
 
+import type { PlanType } from "../types";
+
 export default function StartScreen(props: {
+  selectedPlan: PlanType;
+  onSelectPlan: (plan: PlanType) => void;
   onOpenCamera: () => void;
   onChooseFile: (file: File | null) => void;
 }) {
+  const isPro = props.selectedPlan === "pro";
+
   return (
     <div className="az-screen az-screen-center">
       <div className="az-hero-card">
-        <div className="az-kicker">STANDARD OCR</div>
+        <div className="az-home-plan-picker" aria-label="Choose scan plan">
+          <button
+            type="button"
+            onClick={() => props.onSelectPlan("standard")}
+            className={[
+              "az-home-plan-card",
+              props.selectedPlan === "standard" ? "az-home-plan-card-active" : "",
+            ].join(" ")}
+          >
+            <span>Standard</span>
+            <strong>Free</strong>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => props.onSelectPlan("pro")}
+            className={[
+              "az-home-plan-card",
+              props.selectedPlan === "pro" ? "az-home-plan-card-active" : "",
+            ].join(" ")}
+          >
+            <span>Pro</span>
+            <strong>3-day trial</strong>
+          </button>
+        </div>
+
+        <div className="az-kicker">
+          {isPro ? "PRO OCR" : "STANDARD OCR"}
+        </div>
 
         <h1 className="az-hero-title">
-          Scan documents and edit extracted text.
+          {isPro
+            ? "High-accuracy scans with smarter text cleanup."
+            : "Scan documents and edit extracted text."}
         </h1>
 
         <p className="az-hero-copy">
-          Capture with the camera or upload an image, then review, extract, edit,
-          and export your text.
+          {isPro
+            ? "Try Pro for cleaner extraction, smarter layout handling, and better document-ready text."
+            : "Capture with the camera or upload an image, then review, extract, edit, and export your text."}
         </p>
 
         <div className="az-start-actions">

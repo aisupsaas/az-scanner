@@ -964,3 +964,122 @@ textarea {
   transform: scale(0.99);
 }
 
+.az-pro-toolbox {
+  display: grid;
+  gap: 0.55rem;
+  min-width: min(100%, 360px);
+}
+
+.az-plan-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+  padding: 0.28rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(50, 92, 140, 0.08);
+}
+
+.az-plan-button {
+  min-height: 34px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.84rem;
+  font-weight: 400;
+}
+
+.az-plan-button-active {
+  background: #111111;
+  color: #ffffff;
+}
+
+.az-plan-button-locked {
+  color: #2563eb;
+}
+
+.az-plan-button-locked span {
+  margin-left: 0.28rem;
+  color: #7c8da5;
+  font-size: 0.68rem;
+}
+
+.az-pro-badge {
+  border-radius: 999px;
+  padding: 0.42rem 0.72rem;
+  background: rgba(231, 241, 255, 0.86);
+  border: 1px solid rgba(37, 99, 235, 0.12);
+  color: #315d9c;
+  font-size: 0.78rem;
+  line-height: 1.25;
+  font-weight: 300;
+}
+
+.az-text-tool-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.az-smart-clean-button {
+  min-height: 34px;
+  padding: 0 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  background: rgba(231, 241, 255, 0.92);
+  color: #0b57ff;
+  font-size: 0.88rem;
+  font-weight: 400;
+}
+
+@media (max-width: 640px) {
+  .az-pro-toolbox {
+    width: 100%;
+  }
+
+  .az-text-tool-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.az-home-plan-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.az-home-plan-card {
+  min-height: 74px;
+  border-radius: 12px;
+  border: 1px solid rgba(50, 92, 140, 0.09);
+  background: rgba(255, 255, 255, 0.68);
+  display: grid;
+  align-content: center;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  text-align: left;
+  color: #5d6876;
+}
+
+.az-home-plan-card span {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #2f3742;
+}
+
+.az-home-plan-card strong {
+  font-size: 0.78rem;
+  font-weight: 300;
+  color: #6f7b89;
+}
+
+.az-home-plan-card-active {
+  border-color: rgba(17, 17, 17, 0.28);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow:
+    0 10px 22px rgba(42, 91, 150, 0.08),
+    inset 0 0 0 1px rgba(17, 17, 17, 0.08);
+}
