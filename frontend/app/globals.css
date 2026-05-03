@@ -1333,3 +1333,30 @@ textarea {
     min-height: 540px !important;
   }
 }
+
+/* PRO BACKGROUND */
+.az-app-pro {
+  background:
+    radial-gradient(1200px 600px at 10% 0%, rgba(255,255,255,0.18), transparent 60%),
+    radial-gradient(900px 500px at 90% 20%, rgba(255,255,255,0.12), transparent 60%),
+
+    /* subtle grain / texture feel */
+    repeating-linear-gradient(
+      135deg,
+      rgba(0,0,0,0.015) 0px,
+      rgba(0,0,0,0.015) 0.6px,
+      transparent 0.6px,
+      transparent 8px
+    ),
+
+    radial-gradient(circle at 30% 60%, rgba(0,0,0,0.02) 0.5px, transparent 0.6px),
+    radial-gradient(circle at 70% 80%, rgba(0,0,0,0.015) 0.5px, transparent 0.6px),
+
+    /* MAIN GREEN */
+    linear-gradient(
+      180deg,
+      #6fb7a3 0%,
+      #4aa38c 55%,
+      #3b8f7a 100%
+    );
+}

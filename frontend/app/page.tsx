@@ -519,7 +519,7 @@ function resetOcrText() {
   }, [sourcePreviews]);
 
   return (
-    <main className="az-app">
+    <main className={`az-app ${selectedPlan === "pro" ? "az-app-pro" : ""}`}>
       <div className="az-shell">
         <header className="az-topbar">
           <div>
