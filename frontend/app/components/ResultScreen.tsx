@@ -28,6 +28,9 @@ type ResultScreenProps = {
   imageEdit: ImageEditSettings;
   activePageIndex: number;
   pageCount: number;
+  canUndoText: boolean;
+  onUndoText: () => void;
+  onResetOcrText: () => void;
   onSetEditedText: (text: string) => void;
   onUpdateEditedLine: (id: string, text: string) => void;
   onRemoveEditedLine: (id: string) => void;
@@ -53,6 +56,9 @@ export default function ResultScreen({
   imageEdit,
   activePageIndex,
   pageCount,
+  canUndoText,
+onUndoText,
+onResetOcrText,
   onSetEditedText,
   onUpdateEditedLine,
   onRemoveEditedLine,
@@ -188,39 +194,54 @@ export default function ResultScreen({
                 </div>
               </div>
             <div className="az-text-tool-row">
-            <div className="az-text-tool-row">
-                <button
-                  type="button"
-                  onClick={() => onApplyTextTool("clean")}
-                  className="az-text-tool-button"
-                >
-                  Smart clean
-                </button>
+              <button
+                type="button"
+                onClick={() => onApplyTextTool("clean")}
+                className="az-text-tool-button"
+              >
+                Smart clean
+              </button>
 
-                <button
-                  type="button"
-                  onClick={() => onApplyTextTool("spacing")}
-                  className="az-text-tool-button"
-                >
-                  Spacing
-                </button>
+              <button
+                type="button"
+                onClick={() => onApplyTextTool("spacing")}
+                className="az-text-tool-button"
+              >
+                Spacing
+              </button>
 
-                <button
-                  type="button"
-                  onClick={() => onApplyTextTool("blankLines")}
-                  className="az-text-tool-button"
-                >
-                  Lines
-                </button>
+              <button
+                type="button"
+                onClick={() => onApplyTextTool("blankLines")}
+                className="az-text-tool-button"
+              >
+                Lines
+              </button>
 
-                <button
-                  type="button"
-                  onClick={() => onApplyTextTool("mergeLines")}
-                  className="az-text-tool-button"
-                >
-                  Merge
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => onApplyTextTool("mergeLines")}
+                className="az-text-tool-button"
+              >
+                Merge
+              </button>
+
+              <button
+                type="button"
+                onClick={onUndoText}
+                disabled={!canUndoText}
+                className="az-text-tool-button az-text-tool-button-soft"
+              >
+                Undo
+              </button>
+
+              <button
+                type="button"
+                onClick={onResetOcrText}
+                className="az-text-tool-button az-text-tool-button-soft"
+              >
+                Reset OCR
+              </button>
             </div>
 
           </div>

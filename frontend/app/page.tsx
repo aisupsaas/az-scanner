@@ -67,6 +67,9 @@ export default function HomePage() {
   const [result, setResult] = useState<ProcessResponse | null>(null);
   const [editedText, setEditedText] = useState("");
   const [editedLines, setEditedLines] = useState<OcrLine[]>([]);
+  const [originalOcrText, setOriginalOcrText] = useState("");
+  const [originalOcrLines, setOriginalOcrLines] = useState<OcrLine[]>([]);
+  const [textHistory, setTextHistory] = useState<string[]>([]);
   const [imageEdits, setImageEdits] = useState<ImageEditSettings[]>([]);
   const [error, setError] = useState("");
   const [statusText, setStatusText] = useState("Ready to scan or upload.");
@@ -125,6 +128,9 @@ export default function HomePage() {
     setEditedText("");
     setEditedLines([]);
     setImageEdits([]);
+    setOriginalOcrText("");
+    setOriginalOcrLines([]);
+    setTextHistory([]);
     setActivePageIndex(0);
     setError("");
     setLoading(false);
@@ -241,10 +247,14 @@ export default function HomePage() {
 
       const nextLines = Array.isArray(data.lines) ? data.lines : [];
       const pageCount = data.files?.originalPdfImageUrls?.length || files.length;
+      const nextText = nextLines.length ? linesToText(nextLines) : data?.text || "";
 
       setResult(data);
       setEditedLines(nextLines);
-      setEditedText(nextLines.length ? linesToText(nextLines) : data?.text || "");
+      setEditedText(nextText);
+      setOriginalOcrLines(nextLines);
+      setOriginalOcrText(nextText);
+      setTextHistory([]);
       setImageEdits(makeDefaultEdits(pageCount));
       setStatusText(`Processed ${pageCount} page${pageCount === 1 ? "" : "s"}.`);
       setMode("result");
@@ -464,22 +474,42 @@ export default function HomePage() {
   }
 
   function applyTextTool(tool: "clean" | "spacing" | "blankLines" | "mergeLines") {
-    setEditedText((current) => {
-      const next =
-        tool === "clean"
-          ? cleanStandardText(current)
-          : tool === "spacing"
-            ? normalizeSpacing(current)
-            : tool === "blankLines"
-              ? removeExtraBlankLines(current)
-              : tool === "mergeLines"
-                ? mergeLines(current)
-                : current;
+  setEditedText((current) => {
+    setTextHistory((history) => [...history.slice(-9), current]);
 
-      setEditedLines([]);
-      return next;
-    });
-  }
+    const next =
+      tool === "clean"
+        ? cleanStandardText(current)
+        : tool === "spacing"
+          ? normalizeSpacing(current)
+          : tool === "blankLines"
+            ? removeExtraBlankLines(current)
+            : tool === "mergeLines"
+              ? mergeLines(current)
+              : current;
+
+    setEditedLines([]);
+    return next;
+  });
+}
+
+function undoTextTool() {
+  setTextHistory((history) => {
+    const previous = history[history.length - 1];
+
+    if (previous === undefined) return history;
+
+    setEditedText(previous);
+    setEditedLines([]);
+    return history.slice(0, -1);
+  });
+}
+
+function resetOcrText() {
+  setEditedText(originalOcrText);
+  setEditedLines(originalOcrLines);
+  setTextHistory([]);
+}
 
   useEffect(() => {
     return () => {
@@ -529,6 +559,9 @@ export default function HomePage() {
               selectedPlan={selectedPlan}
               resultTab={resultTab}
               compareView={compareView}
+              canUndoText={textHistory.length > 0}
+onUndoText={undoTextTool}
+onResetOcrText={resetOcrText}
               sourcePreview={sourcePreviews[activePageIndex] || ""}
               originalImageHref={originalImageHref}
               cleanedImageHref={cleanedImageHref}
