@@ -238,11 +238,12 @@ export default function ResultScreen({
                     <div className="az-line-editor-row" key={line.id}>
                       <div className="az-line-editor-index">{index + 1}</div>
 
-                      <input
+                      <textarea
                         value={line.text}
                         onChange={(e) => onUpdateEditedLine(line.id, e.target.value)}
                         className="az-line-editor-input"
                         spellCheck={false}
+                        rows={3}
                       />
 
                       <button

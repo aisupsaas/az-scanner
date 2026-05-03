@@ -1157,3 +1157,87 @@ textarea {
     justify-self: end;
   }
 }
+
+.az-text-tool-row {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 0.55rem !important;
+  margin-top: 0.9rem;
+}
+
+.az-text-tool-button {
+  min-height: 42px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(50, 92, 140, 0.1) !important;
+  background: rgba(235, 244, 255, 0.78) !important;
+  color: #4f5966 !important;
+  padding: 0 0.85rem !important;
+  font-size: 0.88rem !important;
+  font-weight: 400 !important;
+  line-height: 1.15 !important;
+  box-shadow:
+    0 6px 14px rgba(42, 91, 150, 0.045),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+}
+
+.az-scroll-panel {
+  min-height: 520px !important;
+  padding: 1.1rem !important;
+  border-radius: 14px !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+}
+
+.az-line-editor-list {
+  gap: 1rem !important;
+}
+
+.az-line-editor-row {
+  display: grid !important;
+  grid-template-columns: auto 1fr auto !important;
+  align-items: start !important;
+  gap: 0.75rem !important;
+  padding: 0.9rem !important;
+  border-radius: 14px !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+}
+
+.az-line-editor-input {
+  width: 100% !important;
+  min-height: 92px !important;
+  resize: vertical !important;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  color: #171717 !important;
+  font-size: 1rem !important;
+  line-height: 1.55 !important;
+  font-weight: 300 !important;
+  overflow-wrap: anywhere !important;
+  white-space: pre-wrap !important;
+}
+
+.az-line-remove-button {
+  align-self: start !important;
+}
+
+@media (max-width: 640px) {
+  .az-text-tool-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .az-scroll-panel {
+    min-height: 540px !important;
+  }
+
+  .az-line-editor-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .az-line-editor-index {
+    display: none !important;
+  }
+
+  .az-line-remove-button {
+    justify-self: end !important;
+  }
+}
