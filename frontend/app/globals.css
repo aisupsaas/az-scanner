@@ -1334,30 +1334,47 @@ textarea {
   }
 }
 
-/* PRO BACKGROUND */
+/* PRO BACKGROUND — matte textured green (closer to image) */
 .az-app-pro {
   background:
-    radial-gradient(1200px 600px at 10% 0%, rgba(255,255,255,0.18), transparent 60%),
-    radial-gradient(900px 500px at 90% 20%, rgba(255,255,255,0.12), transparent 60%),
-
-    /* subtle grain / texture feel */
-    repeating-linear-gradient(
-      135deg,
-      rgba(0,0,0,0.015) 0px,
-      rgba(0,0,0,0.015) 0.6px,
-      transparent 0.6px,
-      transparent 8px
+    /* soft highlight center */
+    radial-gradient(
+      900px 500px at 50% 30%,
+      rgba(255, 255, 255, 0.18),
+      transparent 65%
     ),
 
-    radial-gradient(circle at 30% 60%, rgba(0,0,0,0.02) 0.5px, transparent 0.6px),
-    radial-gradient(circle at 70% 80%, rgba(0,0,0,0.015) 0.5px, transparent 0.6px),
+    /* darker edges */
+    radial-gradient(
+      1200px 700px at 50% 100%,
+      rgba(0, 0, 0, 0.18),
+      transparent 70%
+    ),
 
-    /* MAIN GREEN */
+    /* grain texture */
+    repeating-linear-gradient(
+      120deg,
+      rgba(0, 0, 0, 0.025) 0px,
+      rgba(0, 0, 0, 0.025) 0.6px,
+      transparent 0.6px,
+      transparent 6px
+    ),
+
+    repeating-linear-gradient(
+      30deg,
+      rgba(0, 0, 0, 0.02) 0px,
+      rgba(0, 0, 0, 0.02) 0.5px,
+      transparent 0.5px,
+      transparent 7px
+    ),
+
+    /* base color (THIS is key) */
     linear-gradient(
       180deg,
-      #6fb7a3 0%,
-      #4aa38c 55%,
-      #3b8f7a 100%
+      #7fb9a7 0%,
+      #63a895 45%,
+      #4e9584 75%,
+      #3f8777 100%
     );
 }
 
