@@ -187,29 +187,40 @@ export default function ResultScreen({
                   Edit detected lines, remove bad OCR guesses, then export TXT or Text PDF.
                 </div>
               </div>
-
-            <div className="az-text-tool-row"> 
-             <div className="az-text-tool-row">
+            <div className="az-text-tool-row">
+            <div className="az-text-tool-row">
                 <button
                   type="button"
                   onClick={() => onApplyTextTool("clean")}
-                  className="az-smart-clean-button"
+                  className="az-text-tool-button"
                 >
-                  {selectedPlan === "pro" ? "Smart clean Pro" : "Smart clean"}
+                  Smart clean
                 </button>
 
-                <button type="button" onClick={() => onApplyTextTool("spacing")} className="az-segment-button">
+                <button
+                  type="button"
+                  onClick={() => onApplyTextTool("spacing")}
+                  className="az-text-tool-button"
+                >
                   Spacing
                 </button>
 
-                <button type="button" onClick={() => onApplyTextTool("blankLines")} className="az-segment-button">
+                <button
+                  type="button"
+                  onClick={() => onApplyTextTool("blankLines")}
+                  className="az-text-tool-button"
+                >
                   Lines
                 </button>
 
-                <button type="button" onClick={() => onApplyTextTool("mergeLines")} className="az-segment-button">
+                <button
+                  type="button"
+                  onClick={() => onApplyTextTool("mergeLines")}
+                  className="az-text-tool-button"
+                >
                   Merge
                 </button>
-              </div>   
+              </div>
             </div>
 
           </div>
