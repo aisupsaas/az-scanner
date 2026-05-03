@@ -1360,3 +1360,80 @@ textarea {
       #3b8f7a 100%
     );
 }
+
+.az-app {
+  transition: background 0.35s ease;
+}
+
+/* Pro mode: natural green premium background */
+.az-app-pro {
+  background:
+    radial-gradient(1200px 600px at 10% 0%, rgba(255, 255, 255, 0.18), transparent 60%),
+    radial-gradient(900px 500px at 90% 20%, rgba(255, 255, 255, 0.12), transparent 60%),
+    repeating-linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.014) 0px,
+      rgba(0, 0, 0, 0.014) 0.6px,
+      transparent 0.6px,
+      transparent 8px
+    ),
+    radial-gradient(circle at 30% 60%, rgba(0, 0, 0, 0.018) 0.5px, transparent 0.6px),
+    radial-gradient(circle at 70% 80%, rgba(0, 0, 0, 0.014) 0.5px, transparent 0.6px),
+    linear-gradient(180deg, #78bfae 0%, #55aa94 54%, #3f927d 100%);
+}
+
+/* Pro mode: slightly darker premium glass cards */
+.az-app-pro .az-hero-card,
+.az-app-pro .az-panel-card {
+  background: rgba(255, 255, 255, 0.78);
+  border-color: rgba(255, 255, 255, 0.32);
+  box-shadow:
+    0 16px 40px rgba(20, 82, 68, 0.16),
+    0 2px 8px rgba(0, 0, 0, 0.035),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* Pro mode: softer glassy buttons */
+.az-app-pro .az-primary-button {
+  border-color: rgba(15, 65, 55, 0.86);
+  background: rgba(17, 75, 63, 0.92);
+  color: #ffffff;
+  box-shadow:
+    0 10px 22px rgba(17, 75, 63, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.az-app-pro .az-secondary-button,
+.az-app-pro .az-text-tool-button,
+.az-app-pro .az-plan-button,
+.az-app-pro .az-segment-button {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(255, 255, 255, 0.34);
+  color: #40534e;
+  box-shadow:
+    0 8px 18px rgba(20, 82, 68, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.58);
+}
+
+.az-app-pro .az-plan-button-active,
+.az-app-pro .az-segment-button-active,
+.az-app-pro .az-nav-item-active {
+  background: rgba(17, 75, 63, 0.92);
+  color: #ffffff;
+}
+
+/* Subtle motion when switching plan */
+.az-app-pro .az-hero-card {
+  animation: azProLift 0.32s ease both;
+}
+
+@keyframes azProLift {
+  from {
+    transform: translateY(4px);
+    opacity: 0.92;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
