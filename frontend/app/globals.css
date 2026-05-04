@@ -1047,41 +1047,55 @@ textarea {
 .az-home-plan-picker {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.65rem;
+  gap: 0.75rem;
   margin-bottom: 1rem;
 }
 
 .az-home-plan-card {
-  min-height: 74px;
-  border-radius: 12px;
-  border: 1px solid rgba(50, 92, 140, 0.09);
-  background: rgba(255, 255, 255, 0.68);
-  display: grid;
-  align-content: center;
+  appearance: none;
+  width: 100%;
+  min-height: 76px;
+  border-radius: 14px;
+  border: 1px solid rgba(50, 92, 140, 0.12);
+  background: rgba(255, 255, 255, 0.72);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
   gap: 0.25rem;
-  padding: 0.75rem;
+  padding: 0.85rem;
   text-align: left;
-  color: #5d6876;
-}
-
-.az-home-plan-card span {
-  font-size: 0.95rem;
-  font-weight: 400;
   color: #2f3742;
 }
 
+.az-home-plan-card span {
+  display: block;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #202833;
+}
+
 .az-home-plan-card strong {
-  font-size: 0.78rem;
+  display: block;
+  font-size: 0.8rem;
   font-weight: 300;
   color: #6f7b89;
 }
 
 .az-home-plan-card-active {
   border-color: rgba(17, 17, 17, 0.28);
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.96);
   box-shadow:
     0 10px 22px rgba(42, 91, 150, 0.08),
     inset 0 0 0 1px rgba(17, 17, 17, 0.08);
+}
+
+.az-app-pro .az-home-plan-card-active {
+  border-color: rgba(15, 65, 55, 0.35);
+  background: rgba(236, 255, 247, 0.9);
+  box-shadow:
+    0 12px 26px rgba(17, 75, 63, 0.16),
+    inset 0 0 0 1px rgba(17, 75, 63, 0.1);
 }
 
 .az-text-tool-row {

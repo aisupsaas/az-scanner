@@ -1,6 +1,6 @@
 const express = require("express");
-const processProRoute = require("./routes/process-pro");
 const cors = require("cors");
+const processProRoute = require("./routes/process-pro");
 const multer = require("multer");
 const sharp = require("sharp");
 const fs = require("fs");
@@ -10,7 +10,12 @@ const Tesseract = require("tesseract.js");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "https://az-scanner-production.up.railway.app"
+  ],
+}));
 const ROOT_DIR = __dirname;
 const UPLOAD_DIR = path.join(ROOT_DIR, "uploads");
 const OUTPUT_DIR = path.join(ROOT_DIR, "output");

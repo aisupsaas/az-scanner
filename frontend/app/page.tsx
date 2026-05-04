@@ -209,6 +209,15 @@ export default function HomePage() {
     });
   }
 
+  function toBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve((reader.result as string).split(",")[1]);
+    reader.onerror = reject;
+  });
+}
+
   async function processSelectedFiles() {
     if (!files.length) {
       setError("Please choose an image first.");
@@ -229,10 +238,15 @@ export default function HomePage() {
         formData.append("files", item);
       }
 
-      const res = await fetch(`${apiBase}/process`, {
-        method: "POST",
-        body: formData,
-      });
+      const res = await fetch(`https://az-scanner-production.up.railway.app/process-pro`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    file: await toBase64(files[0]),
+  }),
+});
 
       const contentType = res.headers.get("content-type") || "";
       let data: ProcessResponse = {};
