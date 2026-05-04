@@ -1,4 +1,5 @@
 const express = require("express");
+const processProRoute = require("./routes/process-pro");
 const cors = require("cors");
 const multer = require("multer");
 const sharp = require("sharp");
@@ -17,7 +18,7 @@ const OUTPUT_DIR = path.join(ROOT_DIR, "output");
 for (const dir of [UPLOAD_DIR, OUTPUT_DIR]) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 }
-
+app.use("/process-pro", processProRoute);
 app.use(cors());
 app.use(express.json({ limit: "3mb" }));
 app.use("/output", express.static(OUTPUT_DIR));
