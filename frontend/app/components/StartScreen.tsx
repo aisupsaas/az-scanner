@@ -6,7 +6,7 @@ export default function StartScreen(props: {
   selectedPlan: PlanType;
   onSelectPlan: (plan: PlanType) => void;
   onOpenCamera: () => void;
-  onChooseFile: (file: File | null) => void;
+  onChooseFiles: (files: FileList | File[] | null) => void;
 }) {
   const isPro = props.selectedPlan === "pro";
 
@@ -77,12 +77,16 @@ export default function StartScreen(props: {
           </button>
 
           <label className="az-secondary-button az-file-label">
-            Choose file
+            Choose files
             <input
               type="file"
+              multiple
               accept="image/png,image/jpeg,image/webp,image/tiff,image/heic,image/heif"
               className="hidden"
-              onChange={(e) => props.onChooseFile(e.target.files?.[0] || null)}
+              onChange={(e) => {
+                props.onChooseFiles(e.target.files || null);
+                e.currentTarget.value = "";
+              }}
             />
           </label>
         </div>

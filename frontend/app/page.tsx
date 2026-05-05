@@ -597,11 +597,11 @@ function resetOcrText() {
         <section className="az-content">
           {mode === "start" ? (
             <StartScreen
-  selectedPlan={selectedPlan}
-  onSelectPlan={setSelectedPlan}
-  onOpenCamera={openCamera}
-  onChooseFile={(file) => addFiles(file)}
-/>
+              selectedPlan={selectedPlan}
+              onSelectPlan={setSelectedPlan}
+              onOpenCamera={openCamera}
+              onChooseFiles={addFiles}
+            />
           ) : null}
 
           {mode === "review" ? (

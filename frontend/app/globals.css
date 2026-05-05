@@ -762,12 +762,22 @@ textarea {
 
 }
 
-    .az-page-strip {
+  .az-page-strip {
   display: flex;
   gap: 0.65rem;
+  width: 100%;
+  max-width: 100%;
   margin: 1rem 0 0.95rem;
   overflow-x: auto;
+  overflow-y: hidden;
   padding: 0.15rem 0 0.35rem;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+}
+
+.az-page-strip > * {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
 }
 
   .az-page-thumb,
