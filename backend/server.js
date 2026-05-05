@@ -20,7 +20,8 @@ for (const dir of [UPLOAD_DIR, OUTPUT_DIR]) {
 app.use(cors({
   origin: [
     "http://localhost:3000",
-    "https://az-scanner-mgyd03zbe-bahtiyars-projects-d6d3c5b4.vercel.app"
+    "https://az-scanner-mgyd03zbe-bahtiyars-projects-d6d3c5b4.vercel.app",
+    "https://az-scanner-h41pa0nuu-bahtiyars-projects-d6d3c5b4.vercel.app"
   ],
 }));
 
