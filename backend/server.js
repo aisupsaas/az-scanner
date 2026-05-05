@@ -18,11 +18,18 @@ for (const dir of [UPLOAD_DIR, OUTPUT_DIR]) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 }
 app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "https://az-scanner-mgyd03zbe-bahtiyars-projects-d6d3c5b4.vercel.app",
-    "https://az-scanner-h41pa0nuu-bahtiyars-projects-d6d3c5b4.vercel.app"
-  ],
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+
+    if (
+      origin === "http://localhost:3000" ||
+      origin.includes("vercel.app")
+    ) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Not allowed by CORS"));
+  },
 }));
 
 app.use(express.json({ limit: "20mb" }));
