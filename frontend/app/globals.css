@@ -1320,3 +1320,17 @@ textarea {
     align-items: center;
   }
 }
+
+.az-plan-features {
+  margin-top: 0.55rem;
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.82rem;
+  color: #5f5f5f;
+  font-weight: 300;
+}
+
+.az-plan-features li {
+  line-height: 1.3;
+}

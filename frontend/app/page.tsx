@@ -23,7 +23,8 @@ import ResultScreen from "./components/ResultScreen";
 import CameraOverlay from "./components/CameraOverlay";
 import BottomBar from "./components/BottomBar";
 
-const MAX_IMAGES = 10;
+const STANDARD_MAX_IMAGES = 10;
+const PRO_BATCH_LIMIT = 20;
 
 const DEFAULT_IMAGE_EDIT: ImageEditSettings = {
   pdfSource: "original",
@@ -147,50 +148,61 @@ export default function HomePage() {
   }
 
   function addFiles(nextInput: FileList | File[] | File | null) {
-    if (!nextInput) return;
+  if (!nextInput) return;
 
-    const incoming =
-      nextInput instanceof File
-        ? [nextInput]
-        : Array.isArray(nextInput)
-          ? nextInput
-          : Array.from(nextInput);
+  const incoming =
+    nextInput instanceof File
+      ? [nextInput]
+      : Array.isArray(nextInput)
+        ? nextInput
+        : Array.from(nextInput);
 
-    const images = incoming.filter((item) => item.type.startsWith("image/"));
+  const images = incoming.filter((item) => item.type.startsWith("image/"));
 
-    if (!images.length) {
-      setError("Only image files are allowed.");
-      return;
+  if (!images.length) {
+    setError("Only image files are allowed.");
+    return;
+  }
+
+  setError("");
+  setResult(null);
+  setEditedText("");
+  setEditedLines([]);
+  setResultTab("text");
+  setCompareView("split");
+
+  setFiles((current) => {
+    let nextImages = images;
+
+    // 🚫 PRO batch limit (per selection)
+    if (selectedPlan === "pro" && images.length > PRO_BATCH_LIMIT) {
+      nextImages = images.slice(0, PRO_BATCH_LIMIT);
+      setError("You can add up to 20 files at once. Extra files were skipped.");
     }
 
-    setError("");
-    setResult(null);
-    setEditedText("");
-    setEditedLines([]);
-    setResultTab("text");
-    setCompareView("split");
+    let merged = [...current, ...nextImages];
 
-    setFiles((current) => {
-      const merged = [...current, ...images].slice(0, MAX_IMAGES);
-      const nextPreviews = merged.map((file) => URL.createObjectURL(file));
+    // 🚫 STANDARD total limit
+    if (selectedPlan === "standard" && merged.length > STANDARD_MAX_IMAGES) {
+      merged = merged.slice(0, STANDARD_MAX_IMAGES);
+      setError("Maximum 10 images allowed in Standard plan.");
+    }
 
-      setSourcePreviews((prev) => {
-        for (const url of prev) URL.revokeObjectURL(url);
-        return nextPreviews;
-      });
+    const nextPreviews = merged.map((file) => URL.createObjectURL(file));
 
-      setImageEdits(makeDefaultEdits(merged.length));
-      setActivePageIndex(Math.max(0, merged.length - images.length));
-      setStatusText(`${merged.length} image${merged.length === 1 ? "" : "s"} ready.`);
-      setMode("review");
-
-      if (current.length + images.length > MAX_IMAGES) {
-        setError("Maximum 10 images allowed. Extra images were skipped.");
-      }
-
-      return merged;
+    setSourcePreviews((prev) => {
+      for (const url of prev) URL.revokeObjectURL(url);
+      return nextPreviews;
     });
-  }
+
+    setImageEdits(makeDefaultEdits(merged.length));
+    setActivePageIndex(Math.max(0, merged.length - nextImages.length));
+    setStatusText(`${merged.length} image${merged.length === 1 ? "" : "s"} ready.`);
+    setMode("review");
+
+    return merged;
+  });
+}
 
   function removePage(index: number) {
     setFiles((current) => {
@@ -420,10 +432,8 @@ function cancelDownload() {
   }
 
   function downloadEditedTxt() {
-  requestDownload(() => {
-    downloadTextFile("az-scanner-edited-text.txt", editedText || "");
-    setStatusText("Text TXT downloaded.");
-  });
+  downloadTextFile("az-scanner-edited-text.txt", editedText || "");
+  setStatusText("Text TXT downloaded.");
 }
 
   async function downloadOriginalPdf() {
@@ -467,10 +477,8 @@ function cancelDownload() {
       }
 
       const blob = await res.blob();
-      requestDownload(() => {
-        downloadBlobFile("az-scanner-original.pdf", blob);
-        setStatusText("Original PDF downloaded.");
-      });
+      downloadBlobFile("az-scanner-original.pdf", blob);
+      setStatusText("Original PDF downloaded.");
     } catch (err: any) {
       setStatusText(err?.message || "Original PDF download failed.");
     }
@@ -496,10 +504,8 @@ function cancelDownload() {
         throw new Error(data?.error || "Failed to create text PDF.");
       }
       const blob = await res.blob();
-      requestDownload(() => {
-        downloadBlobFile("az-scanner-edited-text.pdf", blob);
-        setStatusText("Text PDF downloaded.");
-      });
+      downloadBlobFile("az-scanner-edited-text.pdf", blob);
+      setStatusText("Text PDF downloaded.");
     } catch (err: any) {
       setStatusText(err?.message || "Text PDF download failed.");
     }

@@ -23,9 +23,14 @@ export default function StartScreen(props: {
             ].join(" ")}
           >
             <span>Standard</span>
-            <strong>Free</strong>
-          </button>
-
+              <strong>Free</strong>
+              <ul className="az-plan-features">
+                <li>Free basic OCR</li>
+                <li>Up to 10 images per scan</li>
+                <li>Editable text</li>
+                <li>TXT and PDF export</li>
+              </ul>
+              </button>
           <button
             type="button"
             onClick={() => props.onSelectPlan("pro")}
@@ -34,8 +39,15 @@ export default function StartScreen(props: {
               props.selectedPlan === "pro" ? "az-home-plan-card-active" : "",
             ].join(" ")}
           >
-            <span>Pro</span>
-            <strong>3-day trial</strong>
+              <span>Pro</span>
+              <strong>3-day trial</strong>
+              <ul className="az-plan-features">
+                <li>Document AI OCR (Optical Character Recognition)</li>
+                <li>Unlimited total images</li>
+                <li>Add up to 20 files per upload</li>
+                <li>Better text accuracy</li>
+                <li>Better document-ready extraction</li>
+              </ul>
           </button>
         </div>
 
