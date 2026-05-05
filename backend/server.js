@@ -346,10 +346,11 @@ function wrapText(text, font, fontSize, maxWidth) {
 
   return lines;
 }
-
 async function createTextPdfBuffer({ text, filename = "AZ Scanner Text" }) {
+  const pdfDoc = await PDFDocument.create();
 
-  pdfDoc.registerFontkit(require("@pdf-lib/fontkit"));
+  const fontkit = require("@pdf-lib/fontkit");
+  pdfDoc.registerFontkit(fontkit);
 
   const fontBytes = fs.readFileSync(path.join(__dirname, "fonts", "Inter-Regular.ttf"));
   const boldFontBytes = fs.readFileSync(path.join(__dirname, "fonts", "Inter-Bold.ttf"));
