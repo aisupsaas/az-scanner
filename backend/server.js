@@ -348,10 +348,14 @@ function wrapText(text, font, fontSize, maxWidth) {
 }
 
 async function createTextPdfBuffer({ text, filename = "AZ Scanner Text" }) {
-  const pdfDoc = await PDFDocument.create();
-  const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-  const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
+  pdfDoc.registerFontkit(require("@pdf-lib/fontkit"));
+
+  const fontBytes = fs.readFileSync(path.join(__dirname, "fonts", "Inter-Regular.ttf"));
+  const boldFontBytes = fs.readFileSync(path.join(__dirname, "fonts", "Inter-Bold.ttf"));
+
+  const regularFont = await pdfDoc.embedFont(fontBytes);
+  const boldFont = await pdfDoc.embedFont(boldFontBytes);
   const pageSize = [595.28, 841.89];
   const margin = 42;
   const pageWidth = pageSize[0];

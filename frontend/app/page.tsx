@@ -239,14 +239,14 @@ export default function HomePage() {
       }
 
       const res = await fetch(`https://az-scanner-production.up.railway.app/process-pro`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    file: await toBase64(files[0]),
-  }),
-});
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          file: await toBase64(files[0]),
+        }),
+      });
 
       const contentType = res.headers.get("content-type") || "";
       let data: ProcessResponse = {};
@@ -273,8 +273,9 @@ export default function HomePage() {
       setStatusText(`Processed ${pageCount} page${pageCount === 1 ? "" : "s"}.`);
       setMode("result");
       setResultTab("compare");
-      setCompareView(data?.files?.cleanedImageUrls?.length ? "split" : "original");
-    } catch (err: any) {
+      setCompareView("split");
+    } 
+      catch (err: any) {
       const message = err?.message || "Load failed";
       setError(message);
       setStatusText("Processing failed.");
