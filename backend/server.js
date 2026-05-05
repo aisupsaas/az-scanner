@@ -10,12 +10,6 @@ const Tesseract = require("tesseract.js");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "https://az-scanner-production.up.railway.app"
-  ],
-}));
 const ROOT_DIR = __dirname;
 const UPLOAD_DIR = path.join(ROOT_DIR, "uploads");
 const OUTPUT_DIR = path.join(ROOT_DIR, "output");
@@ -23,9 +17,16 @@ const OUTPUT_DIR = path.join(ROOT_DIR, "output");
 for (const dir of [UPLOAD_DIR, OUTPUT_DIR]) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 }
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "https://az-scanner-mgyd03zbe-bahtiyars-projects-d6d3c5b4.vercel.app"
+  ],
+}));
+
+app.use(express.json({ limit: "20mb" }));
 app.use("/process-pro", processProRoute);
-app.use(cors());
-app.use(express.json({ limit: "3mb" }));
+
 app.use("/output", express.static(OUTPUT_DIR));
 
 const OCR_LOW_QUALITY_MESSAGE =
