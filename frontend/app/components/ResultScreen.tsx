@@ -324,13 +324,6 @@ onResetOcrText,
                 >
                   Edit
                 </button>
-                <button
-                  type="button"
-                  onClick={() => onCompareViewChange("cleaned")}
-                  className={["az-segment-button", compareView === "cleaned" ? "az-segment-button-active" : ""].join(" ")}
-                >
-                  Cleaned OCR Preview
-                </button>
               </div>
             </div>
 
@@ -492,22 +485,6 @@ onResetOcrText,
                 </div>
               )}
 
-              {compareView === "cleaned" && (
-                <div className="az-compare-panel">
-                  <div className="az-compare-label">Cleaned OCR Preview</div>
-                  <div className="az-compare-frame">
-                    {cleanedImageHref ? (
-                      <img
-                        src={cleanedImageHref}
-                        alt="Cleaned document preview"
-                        className="az-main-preview"
-                      />
-                    ) : (
-                      <div className="az-empty-note">Cleaned preview is not available.</div>
-                    )}
-                  </div>
-                </div>
-              )}
             </div>
           </>
         )}
