@@ -895,10 +895,14 @@ textarea {
     font-size: 0.9rem;
   }
 
-  .az-apply-button-done {
-    background: rgba(255, 255, 255, 0.85);
-    color: #1f1f1f;
-  }
+  .az-apply-button-saved {
+  border-color: rgba(22, 101, 52, 0.34);
+  background: rgba(34, 197, 94, 0.92);
+  color: #ffffff;
+  box-shadow:
+    0 10px 22px rgba(22, 101, 52, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
 
   .az-crop-image-wrap {
     position: relative;

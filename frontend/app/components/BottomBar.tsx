@@ -93,18 +93,18 @@ export default function BottomBar({
           </>
         ) : null}
 
-        {mode === "result" ? (
+                {mode === "result" ? (
           <>
             <button type="button" onClick={onDownloadOriginalPdf} className="az-secondary-button">
-              Original PDF
+              Download Original PDF
             </button>
 
             <button type="button" onClick={onDownloadEditedTxt} className="az-secondary-button">
-              Text TXT
+              Download Text TXT
             </button>
 
             <button type="button" onClick={onDownloadEditedPdf} className="az-secondary-button">
-              Text PDF
+              Download Text PDF
             </button>
 
             <button type="button" onClick={onNewScan} className="az-primary-button">

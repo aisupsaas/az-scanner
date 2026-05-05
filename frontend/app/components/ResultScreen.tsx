@@ -408,12 +408,12 @@ onResetOcrText,
               </div>
 
               <button
-                type="button"
-                onClick={applyScanEdit}
-                className={imageEdit.applied ? "az-apply-button az-apply-button-done" : "az-apply-button"}
-              >
-                {imageEdit.applied ? "Applied" : "Apply"}
-              </button>
+                  type="button"
+                  onClick={applyScanEdit}
+                  className={imageEdit.applied ? "az-apply-button az-apply-button-saved" : "az-apply-button"}
+                >
+                  {imageEdit.applied ? "Saved" : "Apply"}
+                </button>
             </div>
 
             <div
