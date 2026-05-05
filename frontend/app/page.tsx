@@ -83,6 +83,11 @@ export default function HomePage() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<PlanType>("standard");
+
+  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
+  const [pendingDownload, setPendingDownload] = useState<null | (() => void | Promise<void>)>(null);
+  const [skipDownloadConfirm, setSkipDownloadConfirm] = useState(false);
+  const [skipDownloadConfirmDraft, setSkipDownloadConfirmDraft] = useState(false);
   
 
   const originalImageUrls =
@@ -375,6 +380,36 @@ export default function HomePage() {
     addFiles(capturedFile);
   }
 
+  function requestDownload(action: () => void | Promise<void>) {
+  if (skipDownloadConfirm) {
+    void action();
+    return;
+  }
+
+  setPendingDownload(() => action);
+  setSkipDownloadConfirmDraft(false);
+  setDownloadModalOpen(true);
+}
+
+async function confirmDownload() {
+  if (!pendingDownload) return;
+
+  if (skipDownloadConfirmDraft) {
+    setSkipDownloadConfirm(true);
+  }
+
+  setDownloadModalOpen(false);
+  const action = pendingDownload;
+  setPendingDownload(null);
+  await action();
+}
+
+function cancelDownload() {
+  setDownloadModalOpen(false);
+  setPendingDownload(null);
+  setSkipDownloadConfirmDraft(false);
+}
+  
   async function copyEditedText() {
     try {
       await navigator.clipboard.writeText(editedText || "");
@@ -385,8 +420,11 @@ export default function HomePage() {
   }
 
   function downloadEditedTxt() {
+  requestDownload(() => {
     downloadTextFile("az-scanner-edited-text.txt", editedText || "");
-  }
+    setStatusText("Text TXT downloaded.");
+  });
+}
 
   async function downloadOriginalPdf() {
     try {
@@ -429,8 +467,10 @@ export default function HomePage() {
       }
 
       const blob = await res.blob();
-      downloadBlobFile("az-scanner-original.pdf", blob);
-      setStatusText("Original PDF downloaded.");
+      requestDownload(() => {
+        downloadBlobFile("az-scanner-original.pdf", blob);
+        setStatusText("Original PDF downloaded.");
+      });
     } catch (err: any) {
       setStatusText(err?.message || "Original PDF download failed.");
     }
@@ -455,10 +495,11 @@ export default function HomePage() {
         const data = await res.json().catch(() => null);
         throw new Error(data?.error || "Failed to create text PDF.");
       }
-
       const blob = await res.blob();
-      downloadBlobFile("az-scanner-edited-text.pdf", blob);
-      setStatusText("Text PDF downloaded.");
+      requestDownload(() => {
+        downloadBlobFile("az-scanner-edited-text.pdf", blob);
+        setStatusText("Text PDF downloaded.");
+      });
     } catch (err: any) {
       setStatusText(err?.message || "Text PDF download failed.");
     }
@@ -617,8 +658,39 @@ onResetOcrText={resetOcrText}
         />
       </div>
 
+                {downloadModalOpen ? (
+        <div className="az-modal-backdrop" role="dialog" aria-modal="true">
+          <div className="az-download-modal">
+            <div className="az-download-modal-kicker">DOWNLOAD</div>
+            <h2 className="az-download-modal-title">Download this file?</h2>
+            <p className="az-download-modal-copy">
+              Your file is ready. You can download it now, or skip this confirmation next time.
+            </p>
+
+            <label className="az-download-check-row">
+              <input
+                type="checkbox"
+                checked={skipDownloadConfirmDraft}
+                onChange={(e) => setSkipDownloadConfirmDraft(e.target.checked)}
+              />
+              <span>Don’t show this again</span>
+            </label>
+
+            <div className="az-download-modal-actions">
+              <button type="button" onClick={cancelDownload} className="az-secondary-button">
+                Cancel
+              </button>
+
+              <button type="button" onClick={confirmDownload} className="az-primary-button">
+                Download
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       {cameraOpen ? (
         <CameraOverlay
+        
           cameraLoading={cameraLoading}
           cameraError={cameraError}
           cameraReady={cameraReady}

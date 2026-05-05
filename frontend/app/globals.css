@@ -1234,3 +1234,89 @@ textarea {
     opacity: 1;
   }
 }
+
+.az-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.22);
+  backdrop-filter: blur(10px);
+}
+
+.az-download-modal {
+  width: min(100%, 420px);
+  border-radius: 18px;
+  border: 1px solid rgba(50, 92, 140, 0.1);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow:
+    0 24px 60px rgba(42, 91, 150, 0.18),
+    0 8px 18px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  padding: 1rem;
+}
+
+.az-download-modal-kicker {
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  font-weight: 400;
+  color: #6a6a6a;
+}
+
+.az-download-modal-title {
+  margin: 0.55rem 0 0;
+  font-size: 1.35rem;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  font-weight: 400;
+  color: #111111;
+}
+
+.az-download-modal-copy {
+  margin: 0.55rem 0 0;
+  font-size: 0.94rem;
+  line-height: 1.5;
+  font-weight: 300;
+  color: #5f5f5f;
+}
+
+.az-download-check-row {
+  margin-top: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #4f5966;
+  font-size: 0.9rem;
+  font-weight: 300;
+}
+
+.az-download-check-row input {
+  width: 18px;
+  height: 18px;
+  accent-color: #111111;
+}
+
+.az-download-modal-actions {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.az-app-pro .az-download-modal {
+  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(245, 255, 251, 0.92);
+  box-shadow:
+    0 24px 60px rgba(20, 82, 68, 0.18),
+    0 8px 18px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.68);
+}
+
+@media (min-width: 641px) {
+  .az-modal-backdrop {
+    align-items: center;
+  }
+}
