@@ -354,7 +354,6 @@ async function createTextPdfBuffer({ text, filename = "AZ Scanner Text" }) {
   pdfDoc.registerFontkit(fontkit);
 
   const fontBytes = fs.readFileSync(path.join(__dirname, "fonts", "Inter-Regular.ttf"));
-
   const regularFont = await pdfDoc.embedFont(fontBytes);
 
   const pageSize = [595.28, 841.89];
@@ -370,23 +369,7 @@ async function createTextPdfBuffer({ text, filename = "AZ Scanner Text" }) {
     return pdfDoc.addPage(pageSize);
   }
 
-  let page = addCleanPage();
-  let y = pageHeight - margin;
-
-  const safeText = String(text || "").trim() || "No text provided.";
-  const lines = wrapText(safeText, regularFont, bodyFontSize, maxWidth);
-
-  for (const line of lines) {
-    if (y < margin) {
-      page = addCleanPage();
-      y = pageHeight - margin;
-    }
-
-    if (!line.trim()) {
-      y -= bodyLineHeight * 0.85;
-      continue;
-    }
-
+  function drawBodyLine(page, line, y) {
     page.drawText(line, {
       x: margin,
       y,
@@ -395,8 +378,38 @@ async function createTextPdfBuffer({ text, filename = "AZ Scanner Text" }) {
       color: rgb(0.08, 0.08, 0.08),
       maxWidth,
     });
+  }
 
-    y -= bodyLineHeight;
+  const safeText = String(text || "").trim() || "No text provided.";
+
+  const pageChunks = safeText
+    .split(/\n\s*\n(?=Page\s+\d+\s*\n)/g)
+    .map((chunk) => chunk.trim())
+    .filter(Boolean);
+
+  const chunks = pageChunks.length ? pageChunks : [safeText];
+
+  for (const chunk of chunks) {
+    let page = addCleanPage();
+    let y = pageHeight - margin;
+
+    const cleanedChunk = chunk.replace(/^Page\s+\d+\s*\n/i, "").trim();
+    const lines = wrapText(cleanedChunk || "No text provided.", regularFont, bodyFontSize, maxWidth);
+
+    for (const line of lines) {
+      if (y < margin) {
+        page = addCleanPage();
+        y = pageHeight - margin;
+      }
+
+      if (!line.trim()) {
+        y -= bodyLineHeight * 0.85;
+        continue;
+      }
+
+      drawBodyLine(page, line, y);
+      y -= bodyLineHeight;
+    }
   }
 
   return Buffer.from(await pdfDoc.save());
