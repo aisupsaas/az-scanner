@@ -1188,28 +1188,31 @@ textarea {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background:
+    radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.16) 0 1px, transparent 1.4px),
+    radial-gradient(circle at 72% 30%, rgba(255, 255, 255, 0.11) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 44% 76%, rgba(14, 87, 75, 0.055) 0 1px, transparent 1.5px),
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.045) 0px,
+      rgba(255, 255, 255, 0.045) 1px,
+      transparent 1px,
+      transparent 10px
+    );
+  opacity: 0.42;
 }
 
 .az-app {
   transition: background 0.35s ease;
 }
 
-/* Pro mode: natural green premium background */
+/* Pro mode: soft textured mint premium background */
 .az-app-pro {
   background:
-    radial-gradient(1200px 600px at 10% 0%, rgba(255, 255, 255, 0.18), transparent 60%),
-    radial-gradient(900px 500px at 90% 20%, rgba(255, 255, 255, 0.12), transparent 60%),
-    repeating-linear-gradient(
-      135deg,
-      rgba(0, 0, 0, 0.014) 0px,
-      rgba(0, 0, 0, 0.014) 0.6px,
-      transparent 0.6px,
-      transparent 8px
-    ),
-    radial-gradient(circle at 30% 60%, rgba(0, 0, 0, 0.018) 0.5px, transparent 0.6px),
-    radial-gradient(circle at 70% 80%, rgba(0, 0, 0, 0.014) 0.5px, transparent 0.6px),
-    linear-gradient(180deg, #78bfae 0%, #55aa94 54%, #3f927d 100%);
+    radial-gradient(1100px 560px at 16% 0%, rgba(255, 255, 255, 0.34), transparent 62%),
+    radial-gradient(900px 520px at 92% 10%, rgba(255, 255, 255, 0.18), transparent 60%),
+    radial-gradient(760px 520px at 50% 92%, rgba(70, 155, 137, 0.16), transparent 64%),
+    linear-gradient(180deg, #a9dccc 0%, #8fcebe 48%, #76bbaa 100%);
 }
 
 /* Pro mode: slightly darker premium glass cards */
