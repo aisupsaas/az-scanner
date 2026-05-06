@@ -605,7 +605,8 @@ function resetOcrText() {
           ) : null}
 
           {mode === "review" ? (
-            <ReviewScreen
+           <ReviewScreen
+              selectedPlan={selectedPlan}
               sourcePreviews={sourcePreviews}
               activePageIndex={activePageIndex}
               error={error}

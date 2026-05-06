@@ -828,8 +828,13 @@ textarea {
   }
 
   .az-page-thumb-active {
-  border-color: #111111;
-  box-shadow: 0 0 0 1px #111111;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1.5px #2563eb;
+}
+
+.az-app-pro .az-page-thumb-active {
+  border-color: rgba(17, 75, 63, 0.95);
+  box-shadow: 0 0 0 1.5px rgba(17, 75, 63, 0.95);
 }
 
 .az-page-pill-active {

@@ -1,6 +1,9 @@
 "use client";
 
+import type { PlanType } from "../types";
+
 export default function ReviewScreen(props: {
+  selectedPlan: PlanType;
   sourcePreviews: string[];
   activePageIndex: number;
   error: string;
@@ -16,7 +19,9 @@ export default function ReviewScreen(props: {
           <div>
             <div className="az-section-label">IMAGE REVIEW</div>
             <div className="az-section-copy">
-              Review up to 10 images. All pages will combine into one Original PDF.
+             {props.selectedPlan === "pro"
+                ? "Review your uploaded pages. All pages will combine into one Original PDF."
+                : "Review up to 10 images. All pages will combine into one Original PDF."}
             </div>
           </div>
         </div>

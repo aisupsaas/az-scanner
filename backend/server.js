@@ -346,6 +346,7 @@ function wrapText(text, font, fontSize, maxWidth) {
 
   return lines;
 }
+
 async function createTextPdfBuffer({ text, filename = "AZ Scanner Text" }) {
   const pdfDoc = await PDFDocument.create();
 
@@ -353,76 +354,32 @@ async function createTextPdfBuffer({ text, filename = "AZ Scanner Text" }) {
   pdfDoc.registerFontkit(fontkit);
 
   const fontBytes = fs.readFileSync(path.join(__dirname, "fonts", "Inter-Regular.ttf"));
-  const boldFontBytes = fs.readFileSync(path.join(__dirname, "fonts", "Inter-Bold.ttf"));
 
   const regularFont = await pdfDoc.embedFont(fontBytes);
-  const boldFont = await pdfDoc.embedFont(boldFontBytes);
+
   const pageSize = [595.28, 841.89];
   const margin = 42;
   const pageWidth = pageSize[0];
   const pageHeight = pageSize[1];
   const maxWidth = pageWidth - margin * 2;
 
-  const titleFontSize = 14;
-  const metaFontSize = 8;
   const bodyFontSize = 10.5;
   const bodyLineHeight = 15;
 
-  const createdAt = new Date().toLocaleString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
-  function addPageWithHeader() {
-    const page = pdfDoc.addPage(pageSize);
-
-    page.drawText("AZ Scanner Text Export", {
-      x: margin,
-      y: pageHeight - margin,
-      size: titleFontSize,
-      font: boldFont,
-      color: rgb(0.07, 0.07, 0.07),
-    });
-
-    page.drawText(`Generated: ${createdAt}`, {
-      x: margin,
-      y: pageHeight - margin - 18,
-      size: metaFontSize,
-      font: regularFont,
-      color: rgb(0.42, 0.42, 0.42),
-    });
-
-    page.drawText(`Source: ${filename}`, {
-      x: margin,
-      y: pageHeight - margin - 31,
-      size: metaFontSize,
-      font: regularFont,
-      color: rgb(0.42, 0.42, 0.42),
-    });
-
-    page.drawLine({
-      start: { x: margin, y: pageHeight - margin - 48 },
-      end: { x: pageWidth - margin, y: pageHeight - margin - 48 },
-      thickness: 0.5,
-      color: rgb(0.82, 0.82, 0.82),
-    });
-
-    return page;
+  function addCleanPage() {
+    return pdfDoc.addPage(pageSize);
   }
 
-  let page = addPageWithHeader();
-  let y = pageHeight - margin - 72;
+  let page = addCleanPage();
+  let y = pageHeight - margin;
 
   const safeText = String(text || "").trim() || "No text provided.";
   const lines = wrapText(safeText, regularFont, bodyFontSize, maxWidth);
 
   for (const line of lines) {
     if (y < margin) {
-      page = addPageWithHeader();
-      y = pageHeight - margin - 72;
+      page = addCleanPage();
+      y = pageHeight - margin;
     }
 
     if (!line.trim()) {
@@ -440,18 +397,6 @@ async function createTextPdfBuffer({ text, filename = "AZ Scanner Text" }) {
     });
 
     y -= bodyLineHeight;
-  }
-
-  const pageCount = pdfDoc.getPageCount();
-
-  for (let i = 0; i < pageCount; i++) {
-    pdfDoc.getPage(i).drawText(`Page ${i + 1} of ${pageCount}`, {
-      x: pageWidth - margin - 70,
-      y: 24,
-      size: 8,
-      font: regularFont,
-      color: rgb(0.55, 0.55, 0.55),
-    });
   }
 
   return Buffer.from(await pdfDoc.save());
