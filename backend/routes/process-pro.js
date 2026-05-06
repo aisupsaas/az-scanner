@@ -21,45 +21,62 @@ if (!fs.existsSync(OUTPUT_DIR)) {
 
 router.post("/", async (req, res) => {
   try {
-    const { file } = req.body;
+    const incomingFiles = Array.isArray(req.body.files)
+      ? req.body.files
+      : req.body.file
+        ? [req.body.file]
+        : [];
 
-    if (!file) {
-      return res.status(400).json({ error: "No file provided" });
+    if (!incomingFiles.length) {
+      return res.status(400).json({ error: "No files provided" });
     }
 
-    const imageBuffer = Buffer.from(file, "base64");
-    const baseId = `pro-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-    const originalImagePath = path.join(OUTPUT_DIR, `${baseId}-original.png`);
-
-    await sharp(imageBuffer, {
-      failOn: "none",
-      limitInputPixels: 60_000_000,
-    })
-      .rotate()
-      .resize({
-        width: 2400,
-        withoutEnlargement: true,
-      })
-      .png({
-        compressionLevel: 8,
-        adaptiveFiltering: true,
-      })
-      .toFile(originalImagePath);
-
     const name = `projects/${PROJECT_ID}/locations/${LOCATION}/processors/${PROCESSOR_ID}`;
+    const originalPdfImageUrls = [];
+    const allText = [];
 
-    const request = {
-      name,
-      rawDocument: {
-        content: imageBuffer,
-        mimeType: "image/jpeg",
-      },
-    };
+    for (let index = 0; index < incomingFiles.length; index += 1) {
+      const file = incomingFiles[index];
+      const imageBuffer = Buffer.from(file, "base64");
+      const baseId = `pro-${Date.now()}-${index + 1}-${Math.random().toString(36).slice(2, 8)}`;
+      const originalImagePath = path.join(OUTPUT_DIR, `${baseId}-original.png`);
 
-    const [result] = await client.processDocument(request);
+      await sharp(imageBuffer, {
+        failOn: "none",
+        limitInputPixels: 60_000_000,
+      })
+        .rotate()
+        .resize({
+          width: 2400,
+          withoutEnlargement: true,
+        })
+        .png({
+          compressionLevel: 8,
+          adaptiveFiltering: true,
+        })
+        .toFile(originalImagePath);
 
-    const text = result?.document?.text || "";
-    const originalPdfImageUrl = `/output/${path.basename(originalImagePath)}`;
+      const originalPdfImageUrl = `/output/${path.basename(originalImagePath)}`;
+      originalPdfImageUrls.push(originalPdfImageUrl);
+
+      const request = {
+        name,
+        rawDocument: {
+          content: imageBuffer,
+          mimeType: "image/jpeg",
+        },
+      };
+
+      const [result] = await client.processDocument(request);
+      const pageText = result?.document?.text || "";
+
+      if (pageText.trim()) {
+        allText.push(`Page ${index + 1}\n${pageText.trim()}`);
+      }
+    }
+
+    const text = allText.join("\n\n");
+    const firstOriginalUrl = originalPdfImageUrls[0] || "";
 
     res.json({
       success: true,
@@ -71,8 +88,8 @@ router.post("/", async (req, res) => {
       lineCount: text.trim() ? text.split(/\r?\n/).filter(Boolean).length : 0,
       lines: [],
       files: {
-        originalPdfImageUrl,
-        originalPdfImageUrls: [originalPdfImageUrl],
+        originalPdfImageUrl: firstOriginalUrl,
+        originalPdfImageUrls,
         cleanedImageUrl: "",
         cleanedImageUrls: [],
         pdfUrl: "",

@@ -261,8 +261,8 @@ export default function HomePage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          file: await toBase64(files[0]),
-        }),
+        files: await Promise.all(files.map((file) => toBase64(file))),
+      }),
       });
 
       const contentType = res.headers.get("content-type") || "";
