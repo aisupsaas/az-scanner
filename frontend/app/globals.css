@@ -762,17 +762,26 @@ textarea {
 
 }
 
+.az-panel-card,
+.az-panel-card-fill,
+.az-screen,
+.az-content {
+  min-width: 0;
+}
+
   .az-page-strip {
   display: flex;
   gap: 0.65rem;
   width: 100%;
   max-width: 100%;
+  min-width: 0;
   margin: 1rem 0 0.95rem;
   overflow-x: auto;
   overflow-y: hidden;
   padding: 0.15rem 0 0.35rem;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
 }
 
 .az-page-strip > * {
@@ -793,7 +802,7 @@ textarea {
     height: 82px;
     border-radius: 8px;
     overflow: hidden;
-    flex: 0 0 auto;
+    flex: 0 0 64px;
     padding: 0;
   }
 
