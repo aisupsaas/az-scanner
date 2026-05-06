@@ -1189,30 +1189,31 @@ textarea {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.16) 0 1px, transparent 1.4px),
-    radial-gradient(circle at 72% 30%, rgba(255, 255, 255, 0.11) 0 1px, transparent 1.5px),
-    radial-gradient(circle at 44% 76%, rgba(14, 87, 75, 0.055) 0 1px, transparent 1.5px),
-    repeating-linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.045) 0px,
-      rgba(255, 255, 255, 0.045) 1px,
-      transparent 1px,
-      transparent 10px
-    );
-  opacity: 0.42;
+    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.16) 0 0.8px, transparent 1.2px),
+    radial-gradient(circle at 42% 18%, rgba(13, 95, 82, 0.045) 0 0.9px, transparent 1.3px),
+    radial-gradient(circle at 76% 32%, rgba(255, 255, 255, 0.12) 0 0.9px, transparent 1.4px),
+    radial-gradient(circle at 24% 68%, rgba(10, 88, 74, 0.04) 0 0.8px, transparent 1.2px),
+    radial-gradient(circle at 68% 78%, rgba(255, 255, 255, 0.1) 0 0.8px, transparent 1.3px);
+  background-size:
+    17px 19px,
+    23px 21px,
+    29px 27px,
+    31px 34px,
+    41px 39px;
+  opacity: 0.45;
 }
 
 .az-app {
   transition: background 0.35s ease;
 }
 
-/* Pro mode: soft textured mint premium background */
+/* Pro mode: matte mint paper background */
 .az-app-pro {
   background:
-    radial-gradient(1100px 560px at 16% 0%, rgba(255, 255, 255, 0.34), transparent 62%),
-    radial-gradient(900px 520px at 92% 10%, rgba(255, 255, 255, 0.18), transparent 60%),
-    radial-gradient(760px 520px at 50% 92%, rgba(70, 155, 137, 0.16), transparent 64%),
-    linear-gradient(180deg, #a9dccc 0%, #8fcebe 48%, #76bbaa 100%);
+    radial-gradient(900px 540px at 22% 4%, rgba(255, 255, 255, 0.24), transparent 62%),
+    radial-gradient(720px 480px at 88% 14%, rgba(255, 255, 255, 0.14), transparent 60%),
+    radial-gradient(780px 560px at 48% 88%, rgba(75, 150, 132, 0.12), transparent 64%),
+    linear-gradient(180deg, #9fd7c8 0%, #8dcdbd 48%, #79bbaa 100%);
 }
 
 /* Pro mode: slightly darker premium glass cards */
