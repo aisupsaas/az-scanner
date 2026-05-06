@@ -246,7 +246,11 @@ export default function HomePage() {
     setResult(null);
     setEditedText("");
     setEditedLines([]);
-    setStatusText(`Processing ${files.length} image${files.length === 1 ? "" : "s"}...`);
+    setStatusText(
+  selectedPlan === "pro"
+    ? `Processing ${files.length} page${files.length === 1 ? "" : "s"} with Pro OCR. Large scans may take a moment...`
+    : `Processing ${files.length} image${files.length === 1 ? "" : "s"}...`
+);
     setMode("review");
 
     try {
@@ -287,7 +291,11 @@ export default function HomePage() {
       setOriginalOcrText(nextText);
       setTextHistory([]);
       setImageEdits(makeDefaultEdits(pageCount));
-      setStatusText(`Processed ${pageCount} page${pageCount === 1 ? "" : "s"}.`);
+      setStatusText(
+  selectedPlan === "pro"
+    ? `Pro OCR complete. ${pageCount} page${pageCount === 1 ? "" : "s"} processed.`
+    : `Processed ${pageCount} page${pageCount === 1 ? "" : "s"}.`
+);
       setMode("result");
       setResultTab("compare");
       setCompareView("split");
