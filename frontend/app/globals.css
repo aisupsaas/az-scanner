@@ -847,8 +847,9 @@ textarea {
 }
 
 .az-page-pill-active {
-  color: #0b57ff;
-  border-bottom: 3px solid #0b57ff;
+  color: #767676 !important;
+  border-bottom-color: #0b57ff !important;
+  box-shadow: none !important;
 }
 
   .az-page-pill {
@@ -978,9 +979,14 @@ textarea {
 }
 
 .az-page-pill-active {
-  color: #767676 !important;
-  border-bottom-color: #0b57ff !important;
+  color: #4d6f96 !important;
+  border-bottom-color: rgba(96, 165, 250, 0.86) !important;
   box-shadow: none !important;
+}
+
+.az-app-pro .az-page-pill-active {
+  color: #35665e !important;
+  border-bottom-color: rgba(83, 196, 177, 0.9) !important;
 }
 
 .az-remove-page-button {
