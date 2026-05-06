@@ -235,6 +235,60 @@ export default function HomePage() {
   });
 }
 
+function compressImageForOcr(file: File): Promise<File> {
+  return new Promise((resolve) => {
+    const image = new Image();
+    const url = URL.createObjectURL(file);
+
+    image.onload = () => {
+      URL.revokeObjectURL(url);
+
+      const maxSide = 1800;
+      const scale = Math.min(1, maxSide / Math.max(image.width, image.height));
+      const width = Math.max(1, Math.round(image.width * scale));
+      const height = Math.max(1, Math.round(image.height * scale));
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) {
+        resolve(file);
+        return;
+      }
+
+      ctx.drawImage(image, 0, 0, width, height);
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            resolve(file);
+            return;
+          }
+
+          resolve(
+            new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), {
+              type: "image/jpeg",
+              lastModified: Date.now(),
+            })
+          );
+        },
+        "image/jpeg",
+        0.82
+      );
+    };
+
+    image.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(file);
+    };
+
+    image.src = url;
+  });
+}
+
   async function processSelectedFiles() {
     if (!files.length) {
       setError("Please choose an image first.");
@@ -264,9 +318,15 @@ export default function HomePage() {
         headers: {
           "Content-Type": "application/json",
         },
+
         body: JSON.stringify({
-        files: await Promise.all(files.map((file) => toBase64(file))),
-      }),
+          files: await Promise.all(
+            files.map(async (file) => {
+              const compressed = await compressImageForOcr(file);
+              return toBase64(compressed);
+            })
+          ),
+        }),
       });
 
       const contentType = res.headers.get("content-type") || "";
