@@ -177,7 +177,7 @@ export default function HomePage() {
     // 🚫 PRO batch limit (per selection)
     if (selectedPlan === "pro" && images.length > PRO_BATCH_LIMIT) {
       nextImages = images.slice(0, PRO_BATCH_LIMIT);
-      setError("You can add up to 20 files at once. Extra files were skipped.");
+     setError('You can add only up to 20 files at once. Tap "Add files" again if needed.');
     }
 
     let merged = [...current, ...nextImages];

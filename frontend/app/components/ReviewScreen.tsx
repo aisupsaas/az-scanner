@@ -64,7 +64,7 @@ export default function ReviewScreen(props: {
 
         {props.error ? (
           <div className="az-inline-error">
-            <div className="az-inline-error-title">Load failed</div>
+            <div className="az-inline-error-title">Warning!</div>
             <div className="az-inline-error-copy">{props.error}</div>
           </div>
         ) : null}
