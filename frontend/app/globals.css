@@ -1448,3 +1448,22 @@ textarea {
 .az-app-pro .az-brightness-control input {
   accent-color: #3f8f7f;
 }
+
+.az-apply-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.az-apply-all-button {
+  min-height: 38px;
+  border-radius: 999px;
+  border: 1px solid rgba(67, 137, 122, 0.18);
+  background: rgba(248, 252, 250, 0.88);
+  color: #314f4a;
+  padding: 0 1rem;
+  font-size: 0.9rem;
+  box-shadow:
+    0 8px 18px rgba(45, 104, 92, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}

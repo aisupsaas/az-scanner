@@ -89,7 +89,7 @@ export default function HomePage() {
   const [pendingDownload, setPendingDownload] = useState<null | (() => void | Promise<void>)>(null);
   const [skipDownloadConfirm, setSkipDownloadConfirm] = useState(false);
   const [skipDownloadConfirmDraft, setSkipDownloadConfirmDraft] = useState(false);
-  
+  const [applyAllModalOpen, setApplyAllModalOpen] = useState(false);
 
   const originalImageUrls =
     result?.files?.originalPdfImageUrls?.map((url) => `${apiBase}${url}`) ||
@@ -595,6 +595,29 @@ function cancelDownload() {
     });
   }
 
+  function requestApplyEditToAllPages() {
+  setApplyAllModalOpen(true);
+  }
+
+  function confirmApplyEditToAllPages() {
+    const currentEdit = imageEdits[activePageIndex] || DEFAULT_IMAGE_EDIT;
+
+    setImageEdits((current) =>
+      current.map(() => ({
+        ...currentEdit,
+        crop: { ...currentEdit.crop },
+        applied: true,
+      }))
+    );
+
+    setApplyAllModalOpen(false);
+    setStatusText(`Applied current page settings to ${imageEdits.length} page${imageEdits.length === 1 ? "" : "s"}.`);
+  }
+
+  function cancelApplyEditToAllPages() {
+    setApplyAllModalOpen(false);
+  }
+
   function updateActiveImageEdit(next: ImageEditSettings) {
     setImageEdits((current) => {
       const copy = current.length ? [...current] : makeDefaultEdits(originalImageUrls.length || files.length || 1);
@@ -691,8 +714,8 @@ function resetOcrText() {
               resultTab={resultTab}
               compareView={compareView}
               canUndoText={textHistory.length > 0}
-onUndoText={undoTextTool}
-onResetOcrText={resetOcrText}
+              onUndoText={undoTextTool}
+              onResetOcrText={resetOcrText}
               sourcePreview={sourcePreviews[activePageIndex] || ""}
               originalImageHref={originalImageHref}
               cleanedImageHref={cleanedImageHref}
@@ -707,6 +730,7 @@ onResetOcrText={resetOcrText}
               onCopyText={copyEditedText}
               onApplyTextTool={applyTextTool}
               onImageEditChange={updateActiveImageEdit}
+              onApplyEditToAllPages={requestApplyEditToAllPages}
               onSelectPage={setActivePageIndex}
               onResultTabChange={setResultTab}
               onCompareViewChange={setCompareView}
@@ -732,6 +756,29 @@ onResetOcrText={resetOcrText}
           onDownloadEditedPdf={downloadEditedPdf}
         />
       </div>
+
+        {applyAllModalOpen ? (
+          <div className="az-modal-backdrop" role="dialog" aria-modal="true">
+            <div className="az-download-modal">
+              <div className="az-download-modal-kicker">APPLY TO ALL</div>
+              <h2 className="az-download-modal-title">Apply current page settings to all pages?</h2>
+              <p className="az-download-modal-copy">
+                This will copy the current rotate, crop, brightness, and color settings to every uploaded page.
+                You can still edit individual pages afterward.
+              </p>
+
+              <div className="az-download-modal-actions">
+                <button type="button" onClick={cancelApplyEditToAllPages} className="az-secondary-button">
+                  Cancel
+                </button>
+
+                <button type="button" onClick={confirmApplyEditToAllPages} className="az-primary-button">
+                  Apply to all
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
                 {downloadModalOpen ? (
         <div className="az-modal-backdrop" role="dialog" aria-modal="true">

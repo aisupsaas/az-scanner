@@ -37,6 +37,7 @@ type ResultScreenProps = {
   onCopyText: () => void | Promise<void>;
   onApplyTextTool: (tool: TextTool) => void;
   onImageEditChange: (settings: ImageEditSettings) => void;
+  onApplyEditToAllPages: () => void;
   onSelectPage: (index: number) => void;
   onResultTabChange: (tab: ResultTab) => void;
   onCompareViewChange: (view: CompareView) => void;
@@ -65,6 +66,7 @@ onResetOcrText,
   onCopyText,
   onApplyTextTool,
   onImageEditChange,
+  onApplyEditToAllPages,
   onSelectPage,
   onResultTabChange,
   onCompareViewChange,
@@ -402,6 +404,7 @@ onResetOcrText,
                 </button>
               </div>
 
+              <div className="az-apply-row">
               <button
                 type="button"
                 onClick={applyScanEdit}
@@ -409,6 +412,15 @@ onResetOcrText,
               >
                 {imageEdit.applied ? "Saved" : "Apply"}
               </button>
+
+              <button
+                type="button"
+                onClick={onApplyEditToAllPages}
+                className="az-apply-all-button"
+              >
+                Apply to all
+              </button>
+            </div>
             </div>
 
             <div
