@@ -95,6 +95,8 @@ export default function HomePage() {
   const [skipDownloadConfirm, setSkipDownloadConfirm] = useState(false);
   const [skipDownloadConfirmDraft, setSkipDownloadConfirmDraft] = useState(false);
   const [applyAllModalOpen, setApplyAllModalOpen] = useState(false);
+  const [downloadMenuOpen, setDownloadMenuOpen] = useState(false);
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
 
   const originalImageUrls =
     result?.files?.originalPdfImageUrls?.map((url) => `${apiBase}${url}`) ||
@@ -871,14 +873,110 @@ function resetOcrText() {
           onGoToStart={() => setMode("start")}
           onGoToReview={() => files.length && setMode("review")}
           onGoToResult={() => result?.success && setMode("result")}
-          onDownloadOriginalPdf={downloadOriginalPdf}
-          onDownloadEditedTxt={downloadEditedTxt}
-          onDownloadEditedPdf={downloadEditedPdf}
-          onShareOriginalPdf={shareOriginalPdf}
-          onShareEditedTxt={shareEditedTxt}
-          onShareEditedPdf={shareEditedPdf}
+          onOpenDownloadMenu={() => setDownloadMenuOpen(true)}
+          onOpenShareMenu={() => setShareMenuOpen(true)}
         />
       </div>
+
+          {downloadMenuOpen ? (
+  <div className="az-modal-backdrop" role="dialog" aria-modal="true">
+    <div className="az-download-modal">
+      <div className="az-download-modal-kicker">DOWNLOAD</div>
+      <h2 className="az-download-modal-title">Choose download format</h2>
+
+      <div className="az-export-menu">
+        <button
+          type="button"
+          onClick={() => {
+            setDownloadMenuOpen(false);
+            void downloadOriginalPdf();
+          }}
+          className="az-export-menu-button"
+        >
+          Original PDF
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setDownloadMenuOpen(false);
+            downloadEditedTxt();
+          }}
+          className="az-export-menu-button"
+        >
+          Text TXT
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setDownloadMenuOpen(false);
+            void downloadEditedPdf();
+          }}
+          className="az-export-menu-button"
+        >
+          Text PDF
+        </button>
+      </div>
+
+      <div className="az-download-modal-actions">
+        <button type="button" onClick={() => setDownloadMenuOpen(false)} className="az-secondary-button">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+) : null}
+
+{shareMenuOpen ? (
+  <div className="az-modal-backdrop" role="dialog" aria-modal="true">
+    <div className="az-download-modal">
+      <div className="az-download-modal-kicker">SHARE</div>
+      <h2 className="az-download-modal-title">Choose share format</h2>
+
+      <div className="az-export-menu">
+        <button
+          type="button"
+          onClick={() => {
+            setShareMenuOpen(false);
+            void shareOriginalPdf();
+          }}
+          className="az-export-menu-button"
+        >
+          Original PDF
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setShareMenuOpen(false);
+            void shareEditedTxt();
+          }}
+          className="az-export-menu-button"
+        >
+          Text TXT
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setShareMenuOpen(false);
+            void shareEditedPdf();
+          }}
+          className="az-export-menu-button"
+        >
+          Text PDF
+        </button>
+      </div>
+
+      <div className="az-download-modal-actions">
+        <button type="button" onClick={() => setShareMenuOpen(false)} className="az-secondary-button">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+) : null}
 
         {applyAllModalOpen ? (
           <div className="az-modal-backdrop" role="dialog" aria-modal="true">

@@ -15,13 +15,8 @@ type BottomBarProps = {
   onGoToStart: () => void;
   onGoToReview: () => void;
   onGoToResult: () => void;
-  onDownloadOriginalPdf: () => void;
-  onDownloadEditedTxt: () => void;
-  onDownloadEditedPdf: () => void;
-
-  onShareOriginalPdf: () => void;
-  onShareEditedTxt: () => void;
-  onShareEditedPdf: () => void;
+  onOpenDownloadMenu: () => void;
+  onOpenShareMenu: () => void;
   };
 
 export default function BottomBar({
@@ -37,14 +32,11 @@ export default function BottomBar({
   onGoToStart,
   onGoToReview,
   onGoToResult,
-  onDownloadOriginalPdf,
-  onDownloadEditedTxt,
-  onDownloadEditedPdf,
+  onOpenDownloadMenu,
+  onOpenShareMenu,
+}: 
 
-  onShareOriginalPdf,
-  onShareEditedTxt,
-  onShareEditedPdf,
-}: BottomBarProps) {
+BottomBarProps) {
   return (
     <footer className="az-bottom-area">
       <div className="az-bottom-actions">
@@ -101,37 +93,22 @@ export default function BottomBar({
           </>
         ) : null}
 
-                       {mode === "result" ? (
-          <>
-            <button type="button" onClick={onDownloadOriginalPdf} className="az-secondary-button">
-              Download Original PDF
-            </button>
+           {mode === "result" ? (
+            <>
+              <button type="button" onClick={onOpenDownloadMenu} className="az-secondary-button">
+                Download
+              </button>
 
-            <button type="button" onClick={onShareOriginalPdf} className="az-secondary-button">
-              Share Original PDF
-            </button>
+              <button type="button" onClick={onOpenShareMenu} className="az-secondary-button">
+                Share
+              </button>
 
-            <button type="button" onClick={onDownloadEditedTxt} className="az-secondary-button">
-              Download Text TXT
-            </button>
-
-            <button type="button" onClick={onShareEditedTxt} className="az-secondary-button">
-              Share Text TXT
-            </button>
-
-            <button type="button" onClick={onDownloadEditedPdf} className="az-secondary-button">
-              Download Text PDF
-            </button>
-
-            <button type="button" onClick={onShareEditedPdf} className="az-secondary-button">
-              Share Text PDF
-            </button>
-
-            <button type="button" onClick={onNewScan} className="az-primary-button">
-              New scan
-            </button>
-          </>
-        ) : null}
+              <button type="button" onClick={onNewScan} className="az-primary-button">
+                New scan
+              </button>
+            </>
+          ) : null}
+          
       </div>
 
       <nav className="az-bottom-nav" aria-label="Workflow navigation">

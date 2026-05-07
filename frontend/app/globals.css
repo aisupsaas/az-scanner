@@ -1467,3 +1467,27 @@ textarea {
     0 8px 18px rgba(45, 104, 92, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
+
+.az-export-menu {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.az-export-menu-button {
+  min-height: 48px;
+  border-radius: 14px;
+  border: 1px solid rgba(50, 92, 140, 0.1);
+  background: rgba(255, 255, 255, 0.88);
+  color: #1f1f1f;
+  font-size: 0.95rem;
+  font-weight: 400;
+  text-align: left;
+  padding: 0 1rem;
+}
+
+.az-app-pro .az-export-menu-button {
+  border-color: rgba(67, 137, 122, 0.18);
+  background: rgba(248, 252, 250, 0.88);
+  color: #314f4a;
+}
