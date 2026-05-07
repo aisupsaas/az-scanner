@@ -18,7 +18,11 @@ type BottomBarProps = {
   onDownloadOriginalPdf: () => void;
   onDownloadEditedTxt: () => void;
   onDownloadEditedPdf: () => void;
-};
+
+  onShareOriginalPdf: () => void;
+  onShareEditedTxt: () => void;
+  onShareEditedPdf: () => void;
+  };
 
 export default function BottomBar({
   mode,
@@ -36,6 +40,10 @@ export default function BottomBar({
   onDownloadOriginalPdf,
   onDownloadEditedTxt,
   onDownloadEditedPdf,
+
+  onShareOriginalPdf,
+  onShareEditedTxt,
+  onShareEditedPdf,
 }: BottomBarProps) {
   return (
     <footer className="az-bottom-area">
@@ -93,18 +101,30 @@ export default function BottomBar({
           </>
         ) : null}
 
-                {mode === "result" ? (
+                       {mode === "result" ? (
           <>
             <button type="button" onClick={onDownloadOriginalPdf} className="az-secondary-button">
               Download Original PDF
+            </button>
+
+            <button type="button" onClick={onShareOriginalPdf} className="az-secondary-button">
+              Share Original PDF
             </button>
 
             <button type="button" onClick={onDownloadEditedTxt} className="az-secondary-button">
               Download Text TXT
             </button>
 
+            <button type="button" onClick={onShareEditedTxt} className="az-secondary-button">
+              Share Text TXT
+            </button>
+
             <button type="button" onClick={onDownloadEditedPdf} className="az-secondary-button">
               Download Text PDF
+            </button>
+
+            <button type="button" onClick={onShareEditedPdf} className="az-secondary-button">
+              Share Text PDF
             </button>
 
             <button type="button" onClick={onNewScan} className="az-primary-button">

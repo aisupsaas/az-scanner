@@ -16,7 +16,12 @@ import {
   normalizeSpacing,
   removeExtraBlankLines,
 } from "./utils/textTools";
-import { downloadBlobFile, downloadTextFile } from "./utils/downloads";
+import {
+  downloadBlobFile,
+  downloadTextFile,
+  shareBlobFile,
+  shareTextFile,
+} from "./utils/downloads";
 import StartScreen from "./components/StartScreen";
 import ReviewScreen from "./components/ReviewScreen";
 import ResultScreen from "./components/ResultScreen";
@@ -512,6 +517,22 @@ function cancelDownload() {
   setStatusText("Text TXT downloaded.");
 }
 
+  async function shareEditedTxt() {
+  const shared = await shareTextFile(
+    "az-scanner-edited-text.txt",
+    editedText || "",
+    "AZ Scanner Text"
+  );
+
+  if (shared) {
+    setStatusText("Text TXT shared.");
+    return;
+  }
+
+  downloadTextFile("az-scanner-edited-text.txt", editedText || "");
+  setStatusText("Sharing is not supported here. Text TXT downloaded instead.");
+}
+
   async function downloadOriginalPdf() {
     try {
       const originalUrls = result?.files?.originalPdfImageUrls || [];
@@ -560,6 +581,61 @@ function cancelDownload() {
     }
   }
 
+  async function shareOriginalPdf() {
+  try {
+    const originalUrls = result?.files?.originalPdfImageUrls || [];
+    const cleanedUrls = result?.files?.cleanedImageUrls || [];
+
+    if (!originalUrls.length) {
+      throw new Error("Original PDF source is not ready.");
+    }
+
+    setStatusText("Preparing Original PDF to share...");
+
+    const pages = originalUrls.map((originalUrl, index) => {
+      const edit = imageEdits[index] || DEFAULT_IMAGE_EDIT;
+      const cleanedUrl = cleanedUrls[index];
+      const imageUrl = edit.pdfSource === "cleaned" && cleanedUrl ? cleanedUrl : originalUrl;
+
+      return {
+        imageUrl,
+        rotate: edit.rotate,
+        brightness: edit.brightness,
+        crop: edit.crop,
+      };
+    });
+
+    const res = await fetch(`${apiBase}/export/original-pdf`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        pages,
+        filename: "az-scanner-original",
+      }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      throw new Error(data?.error || "Failed to create original PDF.");
+    }
+
+    const blob = await res.blob();
+    const shared = await shareBlobFile("az-scanner-original.pdf", blob, "AZ Scanner Original PDF");
+
+    if (shared) {
+      setStatusText("Original PDF shared.");
+      return;
+    }
+
+    downloadBlobFile("az-scanner-original.pdf", blob);
+    setStatusText("Sharing is not supported here. Original PDF downloaded instead.");
+  } catch (err: any) {
+    setStatusText(err?.message || "Original PDF share failed.");
+  }
+}
+
   async function downloadEditedPdf() {
     try {
       setStatusText("Preparing text PDF...");
@@ -586,6 +662,42 @@ function cancelDownload() {
       setStatusText(err?.message || "Text PDF download failed.");
     }
   }
+
+  async function shareEditedPdf() {
+  try {
+    setStatusText("Preparing Text PDF to share...");
+
+    const res = await fetch(`${apiBase}/export/text-pdf`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text: editedText || "",
+        filename: "az-scanner-edited-text",
+      }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      throw new Error(data?.error || "Failed to create text PDF.");
+    }
+
+    const blob = await res.blob();
+    const shared = await shareBlobFile("az-scanner-edited-text.pdf", blob, "AZ Scanner Text PDF");
+
+    if (shared) {
+      setStatusText("Text PDF shared.");
+      return;
+    }
+
+    downloadBlobFile("az-scanner-edited-text.pdf", blob);
+    setStatusText("Sharing is not supported here. Text PDF downloaded instead.");
+  } catch (err: any) {
+    setStatusText(err?.message || "Text PDF share failed.");
+  }
+}
+
 
   function updateEditedLine(id: string, text: string) {
     setEditedLines((current) => {
@@ -762,6 +874,9 @@ function resetOcrText() {
           onDownloadOriginalPdf={downloadOriginalPdf}
           onDownloadEditedTxt={downloadEditedTxt}
           onDownloadEditedPdf={downloadEditedPdf}
+          onShareOriginalPdf={shareOriginalPdf}
+          onShareEditedTxt={shareEditedTxt}
+          onShareEditedPdf={shareEditedPdf}
         />
       </div>
 
