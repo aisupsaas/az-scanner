@@ -35,6 +35,12 @@ type ResultScreenProps = {
   onUpdateEditedLine: (id: string, text: string) => void;
   onRemoveEditedLine: (id: string) => void;
   onCopyText: () => void | Promise<void>;
+  onDownloadOriginalPdf: () => void | Promise<void>;
+  onDownloadEditedTxt: () => void | Promise<void>;
+  onDownloadEditedPdf: () => void | Promise<void>;
+  onShareOriginalPdf: () => void | Promise<void>;
+  onShareEditedTxt: () => void | Promise<void>;
+  onShareEditedPdf: () => void | Promise<void>;
   onApplyTextTool: (tool: TextTool) => void;
   onImageEditChange: (settings: ImageEditSettings) => void;
   onApplyEditToAllPages: () => void;
@@ -58,19 +64,27 @@ export default function ResultScreen({
   activePageIndex,
   pageCount,
   canUndoText,
-onUndoText,
-onResetOcrText,
+  onUndoText,
+  onResetOcrText,
   onSetEditedText,
   onUpdateEditedLine,
   onRemoveEditedLine,
   onCopyText,
+  onDownloadOriginalPdf,
+  onDownloadEditedTxt,
+  onDownloadEditedPdf,
+  onShareOriginalPdf,
+  onShareEditedTxt,
+  onShareEditedPdf,
   onApplyTextTool,
   onImageEditChange,
   onApplyEditToAllPages,
   onSelectPage,
   onResultTabChange,
   onCompareViewChange,
-}: ResultScreenProps) {
+}: 
+
+ResultScreenProps) {
   const previewImage =
     imageEdit.pdfSource === "cleaned" && cleanedImageHref
       ? cleanedImageHref
@@ -186,6 +200,79 @@ onResetOcrText,
       </div>
 
       <div className="az-panel-card az-panel-card-fill">
+
+              <div className="az-export-card">
+          <div>
+            <div className="az-section-label">EXPORT</div>
+            <div className="az-section-copy">
+              Choose a format, then download or share it.
+            </div>
+          </div>
+
+          <div className="az-export-list">
+            <div className="az-export-row">
+              <div>
+                <div className="az-export-title">Original PDF</div>
+                <div className="az-export-subtitle">Edited scan pages</div>
+              </div>
+
+              <div className="az-export-actions">
+                <button type="button" onClick={onDownloadOriginalPdf} className="az-export-action-button">
+                  Download
+                </button>
+                <button type="button" onClick={onShareOriginalPdf} className="az-export-icon-button" aria-label="Share Original PDF">
+                  ↗
+                </button>
+              </div>
+            </div>
+
+            <div className="az-export-row">
+              <div>
+                <div className="az-export-title">Text TXT</div>
+                <div className="az-export-subtitle">Plain editable text</div>
+              </div>
+
+              <div className="az-export-actions">
+                <button type="button" onClick={onDownloadEditedTxt} className="az-export-action-button">
+                  Download
+                </button>
+                <button type="button" onClick={onShareEditedTxt} className="az-export-icon-button" aria-label="Share Text TXT">
+                  ↗
+                </button>
+              </div>
+            </div>
+
+            <div className="az-export-row">
+              <div>
+                <div className="az-export-title">Text PDF</div>
+                <div className="az-export-subtitle">Clean text document</div>
+              </div>
+
+              <div className="az-export-actions">
+                <button type="button" onClick={onDownloadEditedPdf} className="az-export-action-button">
+                  Download
+                </button>
+                <button type="button" onClick={onShareEditedPdf} className="az-export-icon-button" aria-label="Share Text PDF">
+                  ↗
+                </button>
+              </div>
+            </div>
+
+            <div className="az-export-row az-export-row-muted">
+              <div>
+                <div className="az-export-title">Word DOCX</div>
+                <div className="az-export-subtitle">Microsoft Word format</div>
+              </div>
+
+              <div className="az-export-actions">
+                <button type="button" disabled className="az-export-action-button">
+                  Next
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {resultTab === "text" ? (
           <>
             <div className="az-panel-header az-panel-header-wrap">

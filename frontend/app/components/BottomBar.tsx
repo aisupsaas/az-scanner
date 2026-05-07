@@ -15,9 +15,7 @@ type BottomBarProps = {
   onGoToStart: () => void;
   onGoToReview: () => void;
   onGoToResult: () => void;
-  onOpenDownloadMenu: () => void;
-  onOpenShareMenu: () => void;
-  };
+};
 
 export default function BottomBar({
   mode,
@@ -32,11 +30,7 @@ export default function BottomBar({
   onGoToStart,
   onGoToReview,
   onGoToResult,
-  onOpenDownloadMenu,
-  onOpenShareMenu,
-}: 
-
-BottomBarProps) {
+}: BottomBarProps) {
   return (
     <footer className="az-bottom-area">
       <div className="az-bottom-actions">
@@ -93,22 +87,11 @@ BottomBarProps) {
           </>
         ) : null}
 
-           {mode === "result" ? (
-            <>
-              <button type="button" onClick={onOpenDownloadMenu} className="az-secondary-button">
-                Download
-              </button>
-
-              <button type="button" onClick={onOpenShareMenu} className="az-secondary-button">
-                Share
-              </button>
-
-              <button type="button" onClick={onNewScan} className="az-primary-button">
-                New scan
-              </button>
-            </>
-          ) : null}
-          
+        {mode === "result" ? (
+          <button type="button" onClick={onNewScan} className="az-primary-button az-bottom-single-button">
+            New scan
+          </button>
+        ) : null}
       </div>
 
       <nav className="az-bottom-nav" aria-label="Workflow navigation">

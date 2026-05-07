@@ -90,13 +90,8 @@ export default function HomePage() {
   const streamRef = useRef<MediaStream | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<PlanType>("standard");
 
-  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
-  const [pendingDownload, setPendingDownload] = useState<null | (() => void | Promise<void>)>(null);
-  const [skipDownloadConfirm, setSkipDownloadConfirm] = useState(false);
-  const [skipDownloadConfirmDraft, setSkipDownloadConfirmDraft] = useState(false);
   const [applyAllModalOpen, setApplyAllModalOpen] = useState(false);
-  const [downloadMenuOpen, setDownloadMenuOpen] = useState(false);
-  const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  
 
   const originalImageUrls =
     result?.files?.originalPdfImageUrls?.map((url) => `${apiBase}${url}`) ||
@@ -474,36 +469,6 @@ function compressImageForOcr(file: File): Promise<File> {
     closeCamera();
     addFiles(capturedFile);
   }
-
-  function requestDownload(action: () => void | Promise<void>) {
-  if (skipDownloadConfirm) {
-    void action();
-    return;
-  }
-
-  setPendingDownload(() => action);
-  setSkipDownloadConfirmDraft(false);
-  setDownloadModalOpen(true);
-}
-
-async function confirmDownload() {
-  if (!pendingDownload) return;
-
-  if (skipDownloadConfirmDraft) {
-    setSkipDownloadConfirm(true);
-  }
-
-  setDownloadModalOpen(false);
-  const action = pendingDownload;
-  setPendingDownload(null);
-  await action();
-}
-
-function cancelDownload() {
-  setDownloadModalOpen(false);
-  setPendingDownload(null);
-  setSkipDownloadConfirmDraft(false);
-}
   
   async function copyEditedText() {
     try {
@@ -856,6 +821,12 @@ function resetOcrText() {
               onSelectPage={setActivePageIndex}
               onResultTabChange={setResultTab}
               onCompareViewChange={setCompareView}
+              onDownloadOriginalPdf={downloadOriginalPdf}
+              onDownloadEditedTxt={downloadEditedTxt}
+              onDownloadEditedPdf={downloadEditedPdf}
+              onShareOriginalPdf={shareOriginalPdf}
+              onShareEditedTxt={shareEditedTxt}
+              onShareEditedPdf={shareEditedPdf}
             />
           ) : null}
         </section>
@@ -873,110 +844,9 @@ function resetOcrText() {
           onGoToStart={() => setMode("start")}
           onGoToReview={() => files.length && setMode("review")}
           onGoToResult={() => result?.success && setMode("result")}
-          onOpenDownloadMenu={() => setDownloadMenuOpen(true)}
-          onOpenShareMenu={() => setShareMenuOpen(true)}
+         
         />
       </div>
-
-          {downloadMenuOpen ? (
-  <div className="az-modal-backdrop" role="dialog" aria-modal="true">
-    <div className="az-download-modal">
-      <div className="az-download-modal-kicker">DOWNLOAD</div>
-      <h2 className="az-download-modal-title">Choose download format</h2>
-
-      <div className="az-export-menu">
-        <button
-          type="button"
-          onClick={() => {
-            setDownloadMenuOpen(false);
-            void downloadOriginalPdf();
-          }}
-          className="az-export-menu-button"
-        >
-          Original PDF
-        </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            setDownloadMenuOpen(false);
-            downloadEditedTxt();
-          }}
-          className="az-export-menu-button"
-        >
-          Text TXT
-        </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            setDownloadMenuOpen(false);
-            void downloadEditedPdf();
-          }}
-          className="az-export-menu-button"
-        >
-          Text PDF
-        </button>
-      </div>
-
-      <div className="az-download-modal-actions">
-        <button type="button" onClick={() => setDownloadMenuOpen(false)} className="az-secondary-button">
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-) : null}
-
-{shareMenuOpen ? (
-  <div className="az-modal-backdrop" role="dialog" aria-modal="true">
-    <div className="az-download-modal">
-      <div className="az-download-modal-kicker">SHARE</div>
-      <h2 className="az-download-modal-title">Choose share format</h2>
-
-      <div className="az-export-menu">
-        <button
-          type="button"
-          onClick={() => {
-            setShareMenuOpen(false);
-            void shareOriginalPdf();
-          }}
-          className="az-export-menu-button"
-        >
-          Original PDF
-        </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            setShareMenuOpen(false);
-            void shareEditedTxt();
-          }}
-          className="az-export-menu-button"
-        >
-          Text TXT
-        </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            setShareMenuOpen(false);
-            void shareEditedPdf();
-          }}
-          className="az-export-menu-button"
-        >
-          Text PDF
-        </button>
-      </div>
-
-      <div className="az-download-modal-actions">
-        <button type="button" onClick={() => setShareMenuOpen(false)} className="az-secondary-button">
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-) : null}
 
         {applyAllModalOpen ? (
           <div className="az-modal-backdrop" role="dialog" aria-modal="true">
@@ -1001,36 +871,6 @@ function resetOcrText() {
           </div>
         ) : null}
 
-                {downloadModalOpen ? (
-        <div className="az-modal-backdrop" role="dialog" aria-modal="true">
-          <div className="az-download-modal">
-            <div className="az-download-modal-kicker">DOWNLOAD</div>
-            <h2 className="az-download-modal-title">Download this file?</h2>
-            <p className="az-download-modal-copy">
-              Your file is ready. You can download it now, or skip this confirmation next time.
-            </p>
-
-            <label className="az-download-check-row">
-              <input
-                type="checkbox"
-                checked={skipDownloadConfirmDraft}
-                onChange={(e) => setSkipDownloadConfirmDraft(e.target.checked)}
-              />
-              <span>Don’t show this again</span>
-            </label>
-
-            <div className="az-download-modal-actions">
-              <button type="button" onClick={cancelDownload} className="az-secondary-button">
-                Cancel
-              </button>
-
-              <button type="button" onClick={confirmDownload} className="az-primary-button">
-                Download
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
       {cameraOpen ? (
         <CameraOverlay
         
