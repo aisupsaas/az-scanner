@@ -853,8 +853,8 @@ textarea {
 }
 
 .az-page-pill-active {
-  color: #767676 !important;
-  border-bottom-color: #0b57ff !important;
+  color: #4d6f96 !important;
+  border-bottom: none !important; /* 🔥 remove old underline */
   box-shadow: none !important;
 }
 
@@ -992,7 +992,7 @@ textarea {
 
   .az-page-pill {
   border: none !important;
-  border-bottom: 3px solid transparent !important;
+  border-bottom: none !important;
   border-radius: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
@@ -1001,17 +1001,6 @@ textarea {
   transition:
     color 0.18s ease,
     border-color 0.18s ease;
-}
-
-.az-page-pill-active {
-  color: #4d6f96 !important;
-  border-bottom-color: rgba(96, 165, 250, 0.86) !important;
-  box-shadow: none !important;
-}
-
-.az-app-pro .az-page-pill-active {
-  color: #35665e !important;
-  border-bottom-color: rgba(83, 196, 177, 0.9) !important;
 }
 
 .az-remove-page-button {
@@ -1403,4 +1392,59 @@ textarea {
 
 .az-plan-features li {
   line-height: 1.3;
+}
+
+/* Pro polish: unify internal controls with luxury mint/jade identity */
+.az-app-pro .az-text-tool-button {
+  background: rgba(241, 251, 248, 0.82) !important;
+  border-color: rgba(91, 168, 151, 0.24) !important;
+  color: #3d5f59 !important;
+  box-shadow:
+    0 8px 18px rgba(45, 104, 92, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.68) !important;
+}
+
+.az-app-pro .az-text-tool-button:active {
+  background: rgba(222, 244, 238, 0.94) !important;
+}
+
+.az-app-pro .az-page-pill {
+  color: #60716e !important;
+}
+
+.az-app-pro .az-page-pill-active {
+  color: #2f675f !important;
+}
+
+.az-app-pro .az-scan-controls button,
+.az-app-pro .az-mini-toggle button,
+.az-app-pro .az-apply-button {
+  background: rgba(248, 252, 250, 0.88);
+  border-color: rgba(67, 137, 122, 0.18);
+  color: #314f4a;
+  box-shadow:
+    0 8px 18px rgba(45, 104, 92, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.az-app-pro .az-mini-toggle .az-mini-toggle-active {
+  background: rgba(35, 92, 81, 0.94);
+  border-color: rgba(35, 92, 81, 0.94);
+  color: #ffffff;
+  box-shadow:
+    0 10px 22px rgba(35, 92, 81, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.az-app-pro .az-apply-button-saved {
+  background: rgba(71, 184, 153, 0.92);
+  border-color: rgba(71, 184, 153, 0.42);
+  color: #ffffff;
+  box-shadow:
+    0 10px 22px rgba(45, 104, 92, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.az-app-pro .az-brightness-control input {
+  accent-color: #3f8f7f;
 }
