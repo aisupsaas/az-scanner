@@ -302,8 +302,8 @@ function compressImageForOcr(file: File): Promise<File> {
     setEditedLines([]);
     setStatusText(
   selectedPlan === "pro"
-    ? `Processing ${files.length} page${files.length === 1 ? "" : "s"} with Pro OCR. Large scans may take a moment...`
-    : `Processing ${files.length} image${files.length === 1 ? "" : "s"}...`
+    ? `Preparing ${files.length} page${files.length === 1 ? "" : "s"} for Pro OCR...`
+    : `Preparing ${files.length} image${files.length === 1 ? "" : "s"}...`
 );
     setMode("review");
 
@@ -319,15 +319,23 @@ function compressImageForOcr(file: File): Promise<File> {
           "Content-Type": "application/json",
         },
 
-        body: JSON.stringify({
-          files: await Promise.all(
-            files.map(async (file) => {
-              const compressed = await compressImageForOcr(file);
-              return toBase64(compressed);
-            })
-          ),
-        }),
-      });
+       body: JSON.stringify({
+        files: await Promise.all(
+          files.map(async (file, index) => {
+            setStatusText(
+              selectedPlan === "pro"
+                ? `Preparing page ${index + 1} of ${files.length} for Pro OCR...`
+                : `Preparing image ${index + 1} of ${files.length}...`
+            );
+
+            const compressed = await compressImageForOcr(file);
+            return toBase64(compressed);
+          })
+        ),
+      }),
+    });
+
+      setStatusText("Running OCR and building your scan...");
 
       const contentType = res.headers.get("content-type") || "";
       let data: ProcessResponse = {};
