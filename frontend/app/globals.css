@@ -648,6 +648,12 @@ textarea {
   margin: 0.9rem 0;
 }
 
+.az-edit-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
 .az-scan-controls button {
   min-height: 38px;
   border-radius: 999px;
@@ -777,8 +783,8 @@ textarea {
   min-width: 0;
   margin: 1rem 0 1.05rem;
   overflow-x: auto;
-  overflow-y: hidden;
-  padding: 0.25rem 0 0.7rem;
+  overflow-y: visible; /* 🔥 FIX */
+  padding: 0.25rem 0 0.9rem; /* 🔥 more bottom space for underline */
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
   overscroll-behavior-x: contain;
@@ -850,6 +856,25 @@ textarea {
   color: #767676 !important;
   border-bottom-color: #0b57ff !important;
   box-shadow: none !important;
+}
+
+.az-page-pill-active {
+  position: relative;
+}
+
+.az-page-pill-active::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: -6px; /* 🔥 moves underline below container edge */
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(96, 165, 250, 0.9);
+}
+
+.az-app-pro .az-page-pill-active::after {
+  background: rgba(83, 196, 177, 0.95);
 }
 
   .az-page-pill {

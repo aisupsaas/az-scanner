@@ -344,13 +344,15 @@ onResetOcrText,
             </div>
 
             <div className="az-scan-controls">
-              <button type="button" onClick={cycleRotate}>
-                Rotate
-              </button>
+              <div className="az-edit-row">
+                <button type="button" onClick={cycleRotate}>
+                  Rotate
+                </button>
 
-              <button type="button" onClick={resetCrop}>
-                Reset crop
-              </button>
+                <button type="button" onClick={resetCrop}>
+                  Reset crop
+                </button>
+              </div>
 
               <label className="az-brightness-control">
                 Brightness
@@ -401,12 +403,12 @@ onResetOcrText,
               </div>
 
               <button
-                  type="button"
-                  onClick={applyScanEdit}
-                  className={imageEdit.applied ? "az-apply-button az-apply-button-saved" : "az-apply-button"}
-                >
-                  {imageEdit.applied ? "Saved" : "Apply"}
-                </button>
+                type="button"
+                onClick={applyScanEdit}
+                className={imageEdit.applied ? "az-apply-button az-apply-button-saved" : "az-apply-button"}
+              >
+                {imageEdit.applied ? "Saved" : "Apply"}
+              </button>
             </div>
 
             <div
