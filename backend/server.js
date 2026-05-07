@@ -7,6 +7,7 @@ const fs = require("fs");
 const path = require("path");
 const { PDFDocument, StandardFonts, rgb } = require("pdf-lib");
 const Tesseract = require("tesseract.js");
+const { Document, Packer, Paragraph, TextRun } = require("docx");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -415,6 +416,34 @@ async function createTextPdfBuffer({ text, filename = "AZ Scanner Text" }) {
   return Buffer.from(await pdfDoc.save());
 }
 
+async function createTextDocxBuffer({ text }) {
+  const safeText = String(text || "").trim() || "No text provided.";
+
+  const paragraphs = safeText
+    .split(/\r?\n/)
+    .map((line) =>
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: line || " ",
+            size: 22,
+          }),
+        ],
+      })
+    );
+
+  const doc = new Document({
+    sections: [
+      {
+        properties: {},
+        children: paragraphs,
+      },
+    ],
+  });
+
+  return Packer.toBuffer(doc);
+}
+
 async function cleanupOldFiles(dir, maxAgeMs = 1000 * 60 * 60 * 12) {
   try {
     const now = Date.now();
@@ -532,6 +561,29 @@ app.post("/export/text-pdf", async (req, res) => {
 
     return res.status(500).json({
       error: error?.message || "Failed to create text PDF.",
+    });
+  }
+});
+
+app.post("/export/text-docx", async (req, res) => {
+  try {
+    const text = String(req.body?.text || "").slice(0, 250_000);
+    const filename = safeName(req.body?.filename || "az-scanner-text");
+
+    const docxBuffer = await createTextDocxBuffer({ text });
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    );
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}.docx"`);
+
+    return res.send(docxBuffer);
+  } catch (error) {
+    console.error("DOCX export error:", error);
+
+    return res.status(500).json({
+      error: error?.message || "Failed to create Word DOCX.",
     });
   }
 });

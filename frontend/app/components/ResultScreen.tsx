@@ -41,6 +41,8 @@ type ResultScreenProps = {
   onShareOriginalPdf: () => void | Promise<void>;
   onShareEditedTxt: () => void | Promise<void>;
   onShareEditedPdf: () => void | Promise<void>;
+  onDownloadEditedDocx: () => void | Promise<void>;
+  onShareEditedDocx: () => void | Promise<void>;
   onApplyTextTool: (tool: TextTool) => void;
   onImageEditChange: (settings: ImageEditSettings) => void;
   onApplyEditToAllPages: () => void;
@@ -76,6 +78,8 @@ export default function ResultScreen({
   onShareOriginalPdf,
   onShareEditedTxt,
   onShareEditedPdf,
+  onDownloadEditedDocx,
+  onShareEditedDocx,
   onApplyTextTool,
   onImageEditChange,
   onApplyEditToAllPages,
@@ -258,15 +262,18 @@ ResultScreenProps) {
               </div>
             </div>
 
-            <div className="az-export-row az-export-row-muted">
+            <div className="az-export-row">
               <div>
                 <div className="az-export-title">Word DOCX</div>
                 <div className="az-export-subtitle">Microsoft Word format</div>
               </div>
 
               <div className="az-export-actions">
-                <button type="button" disabled className="az-export-action-button">
-                  Next
+                <button type="button" onClick={onDownloadEditedDocx} className="az-export-action-button">
+                  Download
+                </button>
+                <button type="button" onClick={onShareEditedDocx} className="az-export-icon-button" aria-label="Share Word DOCX">
+                  ↗
                 </button>
               </div>
             </div>

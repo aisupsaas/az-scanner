@@ -665,6 +665,73 @@ function compressImageForOcr(file: File): Promise<File> {
   }
 }
 
+async function downloadEditedDocx() {
+  try {
+    setStatusText("Preparing Word DOCX...");
+
+    const res = await fetch(`${apiBase}/export/text-docx`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text: editedText || "",
+        filename: "az-scanner-edited-text",
+      }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      throw new Error(data?.error || "Failed to create Word DOCX.");
+    }
+
+    const blob = await res.blob();
+    downloadBlobFile("az-scanner-edited-text.docx", blob);
+    setStatusText("Word DOCX downloaded.");
+  } catch (err: any) {
+    setStatusText(err?.message || "Word DOCX download failed.");
+  }
+}
+
+async function shareEditedDocx() {
+  try {
+    setStatusText("Preparing Word DOCX to share...");
+
+    const res = await fetch(`${apiBase}/export/text-docx`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text: editedText || "",
+        filename: "az-scanner-edited-text",
+      }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      throw new Error(data?.error || "Failed to create Word DOCX.");
+    }
+
+    const blob = await res.blob();
+    const shared = await shareBlobFile(
+      "az-scanner-edited-text.docx",
+      blob,
+      "AZ Scanner Word DOCX"
+    );
+
+    if (shared) {
+      setStatusText("Word DOCX shared.");
+      return;
+    }
+
+    downloadBlobFile("az-scanner-edited-text.docx", blob);
+    setStatusText("Sharing is not supported here. Word DOCX downloaded instead.");
+  } catch (err: any) {
+    setStatusText(err?.message || "Word DOCX share failed.");
+  }
+}
+
 
   function updateEditedLine(id: string, text: string) {
     setEditedLines((current) => {
@@ -827,6 +894,8 @@ function resetOcrText() {
               onShareOriginalPdf={shareOriginalPdf}
               onShareEditedTxt={shareEditedTxt}
               onShareEditedPdf={shareEditedPdf}
+              onDownloadEditedDocx={downloadEditedDocx}
+              onShareEditedDocx={shareEditedDocx}
             />
           ) : null}
         </section>
