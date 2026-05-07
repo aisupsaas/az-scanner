@@ -305,7 +305,7 @@ onResetOcrText,
               <div>
                 <div className="az-section-label">ORIGINAL PDF SETTINGS</div>
                 <div className="az-section-copy">
-                  Page {activePageIndex + 1} of {pageCount}. Edit each page, then Apply before downloading.
+                  Page {activePageIndex + 1} of {pageCount} • {imageEdit.applied ? "Saved" : "Unsaved changes"}
                 </div>
               </div>
 
