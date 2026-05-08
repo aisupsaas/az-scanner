@@ -55,6 +55,12 @@ function linesToText(lines: OcrLine[]) {
     .join("\n");
 }
 
+type ExportAction = {
+  title: string;
+  defaultName: string;
+  run: (filenameBase: string) => void | Promise<void>;
+};
+
 export default function HomePage() {
   const apiBase = useMemo(
     () => process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000",
@@ -92,7 +98,9 @@ export default function HomePage() {
 
   const [applyAllModalOpen, setApplyAllModalOpen] = useState(false);
   
-
+  const [exportAction, setExportAction] = useState<ExportAction | null>(null);
+  const [exportFilename, setExportFilename] = useState("az-scanner-document");
+  
   const originalImageUrls =
     result?.files?.originalPdfImageUrls?.map((url) => `${apiBase}${url}`) ||
     (result?.files?.originalPdfImageUrl ? [`${apiBase}${result.files.originalPdfImageUrl}`] : []);
@@ -479,14 +487,45 @@ function compressImageForOcr(file: File): Promise<File> {
     }
   }
 
-  function downloadEditedTxt() {
-  downloadTextFile("az-scanner-edited-text.txt", editedText || "");
+  function cleanFilenameBase(value: string) {
+  return String(value || "az-scanner-document")
+    .trim()
+    .replace(/\.[^/.]+$/, "")
+    .replace(/[^a-zA-Z0-9-_ ]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 60) || "az-scanner-document";
+}
+
+function requestExportName(action: ExportAction) {
+  setExportAction(action);
+  setExportFilename(action.defaultName);
+}
+
+async function confirmExportName() {
+  if (!exportAction) return;
+
+  const filenameBase = cleanFilenameBase(exportFilename);
+  const action = exportAction;
+
+  setExportAction(null);
+  await action.run(filenameBase);
+}
+
+function cancelExportName() {
+  setExportAction(null);
+}
+
+  function downloadEditedTxt(filenameBase = "az-scanner-edited-text") {
+  downloadTextFile(`${cleanFilenameBase(filenameBase)}.txt`, editedText || "");
   setStatusText("Text TXT downloaded.");
 }
 
-  async function shareEditedTxt() {
+  async function shareEditedTxt(filenameBase = "az-scanner-edited-text") {
+  const safeName = cleanFilenameBase(filenameBase);
+
   const shared = await shareTextFile(
-    "az-scanner-edited-text.txt",
+    `${safeName}.txt`,
     editedText || "",
     "AZ Scanner Text"
   );
@@ -496,11 +535,11 @@ function compressImageForOcr(file: File): Promise<File> {
     return;
   }
 
-  downloadTextFile("az-scanner-edited-text.txt", editedText || "");
+  downloadTextFile(`${safeName}.txt`, editedText || "");
   setStatusText("Sharing is not supported here. Text TXT downloaded instead.");
 }
 
-  async function downloadOriginalPdf() {
+  async function downloadOriginalPdf(filenameBase = "az-scanner-original") {
     try {
       const originalUrls = result?.files?.originalPdfImageUrls || [];
       const cleanedUrls = result?.files?.cleanedImageUrls || [];
@@ -529,9 +568,10 @@ function compressImageForOcr(file: File): Promise<File> {
         headers: {
           "Content-Type": "application/json",
         },
+
         body: JSON.stringify({
           pages,
-          filename: "az-scanner-original",
+          filename: cleanFilenameBase(filenameBase),
         }),
       });
 
@@ -541,14 +581,14 @@ function compressImageForOcr(file: File): Promise<File> {
       }
 
       const blob = await res.blob();
-      downloadBlobFile("az-scanner-original.pdf", blob);
+      downloadBlobFile(`${cleanFilenameBase(filenameBase)}.pdf`, blob);
       setStatusText("Original PDF downloaded.");
     } catch (err: any) {
       setStatusText(err?.message || "Original PDF download failed.");
     }
   }
 
-  async function shareOriginalPdf() {
+  async function shareOriginalPdf(filenameBase = "az-scanner-original") {
   try {
     const originalUrls = result?.files?.originalPdfImageUrls || [];
     const cleanedUrls = result?.files?.cleanedImageUrls || [];
@@ -579,7 +619,7 @@ function compressImageForOcr(file: File): Promise<File> {
       },
       body: JSON.stringify({
         pages,
-        filename: "az-scanner-original",
+        filename: cleanFilenameBase(filenameBase),
       }),
     });
 
@@ -589,21 +629,21 @@ function compressImageForOcr(file: File): Promise<File> {
     }
 
     const blob = await res.blob();
-    const shared = await shareBlobFile("az-scanner-original.pdf", blob, "AZ Scanner Original PDF");
+    const shared = await shareBlobFile(`${cleanFilenameBase(filenameBase)}.pdf`, blob, "AZ Scanner Original PDF");
 
     if (shared) {
       setStatusText("Original PDF shared.");
       return;
     }
 
-    downloadBlobFile("az-scanner-original.pdf", blob);
+    downloadBlobFile(`${cleanFilenameBase(filenameBase)}.pdf`, blob);
     setStatusText("Sharing is not supported here. Original PDF downloaded instead.");
   } catch (err: any) {
     setStatusText(err?.message || "Original PDF share failed.");
   }
 }
 
-  async function downloadEditedPdf() {
+  async function downloadEditedPdf(filenameBase = "az-scanner-edited-text") {
     try {
       setStatusText("Preparing text PDF...");
 
@@ -614,7 +654,7 @@ function compressImageForOcr(file: File): Promise<File> {
         },
         body: JSON.stringify({
           text: editedText || "",
-          filename: "az-scanner-edited-text",
+          filename: cleanFilenameBase(filenameBase),
         }),
       });
 
@@ -623,14 +663,14 @@ function compressImageForOcr(file: File): Promise<File> {
         throw new Error(data?.error || "Failed to create text PDF.");
       }
       const blob = await res.blob();
-      downloadBlobFile("az-scanner-edited-text.pdf", blob);
+      downloadBlobFile(`${cleanFilenameBase(filenameBase)}.pdf`, blob);
       setStatusText("Text PDF downloaded.");
     } catch (err: any) {
       setStatusText(err?.message || "Text PDF download failed.");
     }
   }
 
-  async function shareEditedPdf() {
+  async function shareEditedPdf(filenameBase = "az-scanner-edited-text") {
   try {
     setStatusText("Preparing Text PDF to share...");
 
@@ -641,7 +681,7 @@ function compressImageForOcr(file: File): Promise<File> {
       },
       body: JSON.stringify({
         text: editedText || "",
-        filename: "az-scanner-edited-text",
+        filename: cleanFilenameBase(filenameBase),
       }),
     });
 
@@ -651,21 +691,21 @@ function compressImageForOcr(file: File): Promise<File> {
     }
 
     const blob = await res.blob();
-    const shared = await shareBlobFile("az-scanner-edited-text.pdf", blob, "AZ Scanner Text PDF");
+    const shared = await shareBlobFile(`${cleanFilenameBase(filenameBase)}.pdf`, blob, "AZ Scanner Text PDF");
 
     if (shared) {
       setStatusText("Text PDF shared.");
       return;
     }
 
-    downloadBlobFile("az-scanner-edited-text.pdf", blob);
+    downloadBlobFile(`${cleanFilenameBase(filenameBase)}.pdf`, blob);
     setStatusText("Sharing is not supported here. Text PDF downloaded instead.");
   } catch (err: any) {
     setStatusText(err?.message || "Text PDF share failed.");
   }
 }
 
-async function downloadEditedDocx() {
+async function downloadEditedDocx(filenameBase = "az-scanner-edited-text") {
   try {
     setStatusText("Preparing Word DOCX...");
 
@@ -676,7 +716,7 @@ async function downloadEditedDocx() {
       },
       body: JSON.stringify({
         text: editedText || "",
-        filename: "az-scanner-edited-text",
+        filename: cleanFilenameBase(filenameBase),
       }),
     });
 
@@ -686,14 +726,14 @@ async function downloadEditedDocx() {
     }
 
     const blob = await res.blob();
-    downloadBlobFile("az-scanner-edited-text.docx", blob);
+    downloadBlobFile(`${cleanFilenameBase(filenameBase)}.docx`, blob);
     setStatusText("Word DOCX downloaded.");
   } catch (err: any) {
     setStatusText(err?.message || "Word DOCX download failed.");
   }
 }
 
-async function shareEditedDocx() {
+async function shareEditedDocx(filenameBase = "az-scanner-edited-text") {
   try {
     setStatusText("Preparing Word DOCX to share...");
 
@@ -704,7 +744,7 @@ async function shareEditedDocx() {
       },
       body: JSON.stringify({
         text: editedText || "",
-        filename: "az-scanner-edited-text",
+        filename: cleanFilenameBase(filenameBase),
       }),
     });
 
@@ -715,7 +755,7 @@ async function shareEditedDocx() {
 
     const blob = await res.blob();
     const shared = await shareBlobFile(
-      "az-scanner-edited-text.docx",
+      `${cleanFilenameBase(filenameBase)}.docx`,
       blob,
       "AZ Scanner Word DOCX"
     );
@@ -725,7 +765,7 @@ async function shareEditedDocx() {
       return;
     }
 
-    downloadBlobFile("az-scanner-edited-text.docx", blob);
+    downloadBlobFile(`${cleanFilenameBase(filenameBase)}.docx`, blob);
     setStatusText("Sharing is not supported here. Word DOCX downloaded instead.");
   } catch (err: any) {
     setStatusText(err?.message || "Word DOCX share failed.");
@@ -888,17 +928,65 @@ function resetOcrText() {
               onSelectPage={setActivePageIndex}
               onResultTabChange={setResultTab}
               onCompareViewChange={setCompareView}
-              onDownloadOriginalPdf={downloadOriginalPdf}
-              onDownloadEditedTxt={downloadEditedTxt}
-              onDownloadEditedPdf={downloadEditedPdf}
-              onShareOriginalPdf={shareOriginalPdf}
-              onShareEditedTxt={shareEditedTxt}
-              onShareEditedPdf={shareEditedPdf}
-              onDownloadEditedDocx={downloadEditedDocx}
-              onShareEditedDocx={shareEditedDocx}
+              onDownloadOriginalPdf={() =>
+                requestExportName({
+                  title: "Name Original PDF",
+                  defaultName: "az-scanner-original",
+                  run: downloadOriginalPdf,
+                })
+              }
+              onDownloadEditedTxt={() =>
+                requestExportName({
+                  title: "Name Text TXT",
+                  defaultName: "az-scanner-edited-text",
+                  run: downloadEditedTxt,
+                })
+              }
+              onDownloadEditedPdf={() =>
+                requestExportName({
+                  title: "Name Text PDF",
+                  defaultName: "az-scanner-edited-text",
+                  run: downloadEditedPdf,
+                })
+              }
+              onShareOriginalPdf={() =>
+                requestExportName({
+                  title: "Name Original PDF to share",
+                  defaultName: "az-scanner-original",
+                  run: shareOriginalPdf,
+                })
+              }
+              onShareEditedTxt={() =>
+                requestExportName({
+                  title: "Name Text TXT to share",
+                  defaultName: "az-scanner-edited-text",
+                  run: shareEditedTxt,
+                })
+              }
+              onShareEditedPdf={() =>
+                requestExportName({
+                  title: "Name Text PDF to share",
+                  defaultName: "az-scanner-edited-text",
+                  run: shareEditedPdf,
+                })
+              }
+              onDownloadEditedDocx={() =>
+                requestExportName({
+                  title: "Name Word DOCX",
+                  defaultName: "az-scanner-edited-text",
+                  run: downloadEditedDocx,
+                })
+              }
+              onShareEditedDocx={() =>
+                requestExportName({
+                  title: "Name Word DOCX to share",
+                  defaultName: "az-scanner-edited-text",
+                  run: shareEditedDocx,
+                })
+              }
             />
           ) : null}
-        </section>
+      </section>
 
         <BottomBar
           mode={mode}
@@ -917,6 +1005,35 @@ function resetOcrText() {
         />
       </div>
 
+          {exportAction ? (
+            <div className="az-modal-backdrop" role="dialog" aria-modal="true">
+              <div className="az-download-modal">
+                <div className="az-download-modal-kicker">FILE NAME</div>
+                <h2 className="az-download-modal-title">{exportAction.title}</h2>
+                <p className="az-download-modal-copy">
+                  Choose a clean file name. The correct file extension will be added automatically.
+                </p>
+
+                <input
+                  value={exportFilename}
+                  onChange={(e) => setExportFilename(e.target.value)}
+                  className="az-filename-input"
+                  autoFocus
+                />
+
+                <div className="az-download-modal-actions">
+                  <button type="button" onClick={cancelExportName} className="az-secondary-button">
+                    Cancel
+                  </button>
+
+                  <button type="button" onClick={confirmExportName} className="az-primary-button">
+                    Continue
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : null}
+        
         {applyAllModalOpen ? (
           <div className="az-modal-backdrop" role="dialog" aria-modal="true">
             <div className="az-download-modal">

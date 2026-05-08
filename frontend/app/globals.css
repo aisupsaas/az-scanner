@@ -1610,3 +1610,32 @@ textarea {
     flex: 1;
   }
 }
+
+.az-filename-input {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 0.9rem;
+  border-radius: 14px;
+  border: 1px solid rgba(50, 92, 140, 0.12);
+  background: rgba(255, 255, 255, 0.9);
+  color: #1f2937;
+  padding: 0 0.9rem;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.az-filename-input:focus {
+  border-color: rgba(96, 165, 250, 0.65);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.14);
+}
+
+.az-app-pro .az-filename-input {
+  border-color: rgba(67, 137, 122, 0.2);
+  background: rgba(248, 252, 250, 0.92);
+  color: #314f4a;
+}
+
+.az-app-pro .az-filename-input:focus {
+  border-color: rgba(83, 196, 177, 0.72);
+  box-shadow: 0 0 0 3px rgba(83, 196, 177, 0.16);
+}
