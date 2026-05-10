@@ -205,7 +205,7 @@ ResultScreenProps) {
 
       <div className="az-panel-card az-panel-card-fill">
 
-              <div className="az-export-card">
+      <div className="az-export-card">
           <div>
             <div className="az-section-label">EXPORT</div>
             <div className="az-section-copy">
@@ -215,9 +215,12 @@ ResultScreenProps) {
 
           <div className="az-export-list">
             <div className="az-export-row">
-              <div>
-                <div className="az-export-title">Original PDF</div>
-                <div className="az-export-subtitle">Edited scan pages</div>
+              <div className="az-export-info">
+                <span className="az-format-badge az-format-badge-pdf">PDF</span>
+                <div>
+                  <div className="az-export-title">Original PDF</div>
+                  <div className="az-export-subtitle">Edited scan pages</div>
+                </div>
               </div>
 
               <div className="az-export-actions">
@@ -231,9 +234,12 @@ ResultScreenProps) {
             </div>
 
             <div className="az-export-row">
-              <div>
-                <div className="az-export-title">Text TXT</div>
-                <div className="az-export-subtitle">Plain editable text</div>
+              <div className="az-export-info">
+                <span className="az-format-badge az-format-badge-txt">TXT</span>
+                <div>
+                  <div className="az-export-title">Text TXT</div>
+                  <div className="az-export-subtitle">Plain editable text</div>
+                </div>
               </div>
 
               <div className="az-export-actions">
@@ -247,9 +253,12 @@ ResultScreenProps) {
             </div>
 
             <div className="az-export-row">
-              <div>
-                <div className="az-export-title">Text PDF</div>
-                <div className="az-export-subtitle">Clean text document</div>
+              <div className="az-export-info">
+                <span className="az-format-badge az-format-badge-pdf">PDF</span>
+                <div>
+                  <div className="az-export-title">Text PDF</div>
+                  <div className="az-export-subtitle">Clean text document</div>
+                </div>
               </div>
 
               <div className="az-export-actions">
@@ -263,9 +272,12 @@ ResultScreenProps) {
             </div>
 
             <div className="az-export-row">
-              <div>
-                <div className="az-export-title">Word DOCX</div>
-                <div className="az-export-subtitle">Microsoft Word format</div>
+              <div className="az-export-info">
+                <span className="az-format-badge az-format-badge-word">W</span>
+                <div>
+                  <div className="az-export-title">Word DOCX</div>
+                  <div className="az-export-subtitle">Microsoft Word format</div>
+                </div>
               </div>
 
               <div className="az-export-actions">
