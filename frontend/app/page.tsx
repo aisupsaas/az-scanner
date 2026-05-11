@@ -929,6 +929,7 @@ function resetOcrText() {
               error={error}
               onSelectPage={setActivePageIndex}
               onRemovePage={removePage}
+              onMovePage={movePage}
             />
           ) : null}
 

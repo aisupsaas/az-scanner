@@ -1751,3 +1751,36 @@ textarea {
 .az-page-pill-draggable:hover {
   transform: translateY(-1px);
 }
+
+.az-review-actions {
+  margin-top: 0.85rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.az-review-actions .az-remove-page-button {
+  grid-column: 1 / -1;
+}
+
+.az-review-move-button {
+  min-height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(50, 92, 140, 0.1);
+  background: rgba(255, 255, 255, 0.84);
+  color: #27313d;
+  padding: 0 1rem;
+  font-size: 0.88rem;
+  font-weight: 400;
+}
+
+.az-review-move-button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.az-app-pro .az-review-move-button {
+  border-color: rgba(67, 137, 122, 0.18);
+  background: rgba(248, 252, 250, 0.86);
+  color: #314f4a;
+}

@@ -9,8 +9,11 @@ export default function ReviewScreen(props: {
   error: string;
   onSelectPage: (index: number) => void;
   onRemovePage: (index: number) => void;
+  onMovePage: (fromIndex: number, toIndex: number) => void;
 }) {
   const activePreview = props.sourcePreviews[props.activePageIndex] || "";
+  const canMoveLeft = props.activePageIndex > 0;
+  const canMoveRight = props.activePageIndex < props.sourcePreviews.length - 1;
 
   return (
     <div className="az-screen">
@@ -19,7 +22,7 @@ export default function ReviewScreen(props: {
           <div>
             <div className="az-section-label">IMAGE REVIEW</div>
             <div className="az-section-copy">
-             {props.selectedPlan === "pro"
+              {props.selectedPlan === "pro"
                 ? "Review your uploaded pages. All pages will combine into one Original PDF."
                 : "Review up to 10 images. All pages will combine into one Original PDF."}
             </div>
@@ -56,14 +59,32 @@ export default function ReviewScreen(props: {
         </div>
 
         {activePreview ? (
-          <div className="az-text-actions">
+          <div className="az-review-actions">
             <button
-                type="button"
-                onClick={() => props.onRemovePage(props.activePageIndex)}
-                className="az-remove-page-button"
-              >
-                Remove page
-              </button>
+              type="button"
+              onClick={() => props.onMovePage(props.activePageIndex, props.activePageIndex - 1)}
+              disabled={!canMoveLeft}
+              className="az-review-move-button"
+            >
+              ← Move left
+            </button>
+
+            <button
+              type="button"
+              onClick={() => props.onMovePage(props.activePageIndex, props.activePageIndex + 1)}
+              disabled={!canMoveRight}
+              className="az-review-move-button"
+            >
+              Move right →
+            </button>
+
+            <button
+              type="button"
+              onClick={() => props.onRemovePage(props.activePageIndex)}
+              className="az-remove-page-button"
+            >
+              Remove page
+            </button>
           </div>
         ) : null}
 
