@@ -97,6 +97,7 @@ ResultScreenProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const [dragging, setDragging] = useState<Corner | null>(null);
+  const [exportOpen, setExportOpen] = useState(true);
 
   function cycleRotate() {
     const next = ((imageEdit.rotate + 90) % 360) as ImageEditSettings["rotate"];
@@ -206,91 +207,105 @@ ResultScreenProps) {
       <div className="az-panel-card az-panel-card-fill">
 
       <div className="az-export-card">
-          <div>
-            <div className="az-section-label">EXPORT</div>
-            <div className="az-section-copy">
-              Choose a format, then download or share it.
+  <div className="az-export-head">
+    <div>
+      <div className="az-section-label">EXPORT</div>
+      <div className="az-section-copy">
+        {exportOpen
+          ? "Choose a format, then download or share it."
+          : "4 formats available."}
+      </div>
+    </div>
+
+    <button
+      type="button"
+      onClick={() => setExportOpen((current) => !current)}
+      className="az-export-collapse-button"
+    >
+      {exportOpen ? "Hide" : "Show"}
+    </button>
+  </div>
+
+    {exportOpen ? (
+      <div className="az-export-list">
+        <div className="az-export-row">
+          <div className="az-export-info">
+            <span className="az-format-badge az-format-badge-pdf">PDF</span>
+            <div>
+              <div className="az-export-title">Original PDF</div>
+              <div className="az-export-subtitle">Edited scan pages</div>
             </div>
           </div>
 
-          <div className="az-export-list">
-            <div className="az-export-row">
-              <div className="az-export-info">
-                <span className="az-format-badge az-format-badge-pdf">PDF</span>
-                <div>
-                  <div className="az-export-title">Original PDF</div>
-                  <div className="az-export-subtitle">Edited scan pages</div>
-                </div>
-              </div>
-
-              <div className="az-export-actions">
-                <button type="button" onClick={onDownloadOriginalPdf} className="az-export-action-button">
-                  Download
-                </button>
-                <button type="button" onClick={onShareOriginalPdf} className="az-export-icon-button" aria-label="Share Original PDF">
-                  ↗
-                </button>
-              </div>
-            </div>
-
-            <div className="az-export-row">
-              <div className="az-export-info">
-                <span className="az-format-badge az-format-badge-txt">TXT</span>
-                <div>
-                  <div className="az-export-title">Text TXT</div>
-                  <div className="az-export-subtitle">Plain editable text</div>
-                </div>
-              </div>
-
-              <div className="az-export-actions">
-                <button type="button" onClick={onDownloadEditedTxt} className="az-export-action-button">
-                  Download
-                </button>
-                <button type="button" onClick={onShareEditedTxt} className="az-export-icon-button" aria-label="Share Text TXT">
-                  ↗
-                </button>
-              </div>
-            </div>
-
-            <div className="az-export-row">
-              <div className="az-export-info">
-                <span className="az-format-badge az-format-badge-pdf">PDF</span>
-                <div>
-                  <div className="az-export-title">Text PDF</div>
-                  <div className="az-export-subtitle">Clean text document</div>
-                </div>
-              </div>
-
-              <div className="az-export-actions">
-                <button type="button" onClick={onDownloadEditedPdf} className="az-export-action-button">
-                  Download
-                </button>
-                <button type="button" onClick={onShareEditedPdf} className="az-export-icon-button" aria-label="Share Text PDF">
-                  ↗
-                </button>
-              </div>
-            </div>
-
-            <div className="az-export-row">
-              <div className="az-export-info">
-                <span className="az-format-badge az-format-badge-word">W</span>
-                <div>
-                  <div className="az-export-title">Word DOCX</div>
-                  <div className="az-export-subtitle">Microsoft Word format</div>
-                </div>
-              </div>
-
-              <div className="az-export-actions">
-                <button type="button" onClick={onDownloadEditedDocx} className="az-export-action-button">
-                  Download
-                </button>
-                <button type="button" onClick={onShareEditedDocx} className="az-export-icon-button" aria-label="Share Word DOCX">
-                  ↗
-                </button>
-              </div>
-            </div>
+          <div className="az-export-actions">
+            <button type="button" onClick={onDownloadOriginalPdf} className="az-export-action-button">
+              Download
+            </button>
+            <button type="button" onClick={onShareOriginalPdf} className="az-export-icon-button" aria-label="Share Original PDF">
+              ↗
+            </button>
           </div>
         </div>
+
+        <div className="az-export-row">
+          <div className="az-export-info">
+            <span className="az-format-badge az-format-badge-txt">TXT</span>
+            <div>
+              <div className="az-export-title">Text TXT</div>
+              <div className="az-export-subtitle">Plain editable text</div>
+            </div>
+          </div>
+
+          <div className="az-export-actions">
+            <button type="button" onClick={onDownloadEditedTxt} className="az-export-action-button">
+              Download
+            </button>
+            <button type="button" onClick={onShareEditedTxt} className="az-export-icon-button" aria-label="Share Text TXT">
+              ↗
+            </button>
+          </div>
+        </div>
+
+        <div className="az-export-row">
+          <div className="az-export-info">
+            <span className="az-format-badge az-format-badge-pdf">PDF</span>
+            <div>
+              <div className="az-export-title">Text PDF</div>
+              <div className="az-export-subtitle">Clean text document</div>
+            </div>
+          </div>
+
+          <div className="az-export-actions">
+            <button type="button" onClick={onDownloadEditedPdf} className="az-export-action-button">
+              Download
+            </button>
+            <button type="button" onClick={onShareEditedPdf} className="az-export-icon-button" aria-label="Share Text PDF">
+              ↗
+            </button>
+          </div>
+        </div>
+
+        <div className="az-export-row">
+          <div className="az-export-info">
+            <span className="az-format-badge az-format-badge-word">W</span>
+            <div>
+              <div className="az-export-title">Word DOCX</div>
+              <div className="az-export-subtitle">Microsoft Word format</div>
+            </div>
+          </div>
+
+          <div className="az-export-actions">
+            <button type="button" onClick={onDownloadEditedDocx} className="az-export-action-button">
+              Download
+            </button>
+            <button type="button" onClick={onShareEditedDocx} className="az-export-icon-button" aria-label="Share Word DOCX">
+              ↗
+            </button>
+          </div>
+        </div>
+      </div>
+    ) : null}
+  </div>
 
         {resultTab === "text" ? (
           <>
