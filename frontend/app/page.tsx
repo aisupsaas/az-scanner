@@ -236,6 +236,38 @@ export default function HomePage() {
     });
   }
 
+  function movePage(fromIndex: number, toIndex: number) {
+  if (fromIndex === toIndex) return;
+  if (fromIndex < 0 || toIndex < 0) return;
+
+  setFiles((currentFiles) => {
+    if (fromIndex >= currentFiles.length || toIndex >= currentFiles.length) {
+      return currentFiles;
+    }
+
+    const moveItem = <T,>(items: T[]) => {
+      const next = [...items];
+      const [item] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, item);
+      return next;
+    };
+
+    setSourcePreviews((current) => moveItem(current));
+    setImageEdits((current) => moveItem(current));
+
+    setActivePageIndex((current) => {
+      if (current === fromIndex) return toIndex;
+      if (fromIndex < current && toIndex >= current) return current - 1;
+      if (fromIndex > current && toIndex <= current) return current + 1;
+      return current;
+    });
+
+    setStatusText(`Moved page ${fromIndex + 1} to position ${toIndex + 1}.`);
+
+    return moveItem(currentFiles);
+  });
+}
+
   function toBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -926,6 +958,7 @@ function resetOcrText() {
               onImageEditChange={updateActiveImageEdit}
               onApplyEditToAllPages={requestApplyEditToAllPages}
               onSelectPage={setActivePageIndex}
+              onMovePage={movePage}
               onResultTabChange={setResultTab}
               onCompareViewChange={setCompareView}
               onDownloadOriginalPdf={() =>

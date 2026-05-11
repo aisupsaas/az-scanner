@@ -47,6 +47,7 @@ type ResultScreenProps = {
   onImageEditChange: (settings: ImageEditSettings) => void;
   onApplyEditToAllPages: () => void;
   onSelectPage: (index: number) => void;
+  onMovePage: (fromIndex: number, toIndex: number) => void;
   onResultTabChange: (tab: ResultTab) => void;
   onCompareViewChange: (view: CompareView) => void;
 };
@@ -84,6 +85,7 @@ export default function ResultScreen({
   onImageEditChange,
   onApplyEditToAllPages,
   onSelectPage,
+  onMovePage,
   onResultTabChange,
   onCompareViewChange,
 }: 
@@ -455,9 +457,26 @@ ResultScreenProps) {
                 <button
                   key={index}
                   type="button"
+                  draggable
                   onClick={() => onSelectPage(index)}
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData("text/plain", String(index));
+                    e.dataTransfer.effectAllowed = "move";
+                  }}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = "move";
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    const fromIndex = Number(e.dataTransfer.getData("text/plain"));
+                    if (Number.isFinite(fromIndex)) {
+                      onMovePage(fromIndex, index);
+                    }
+                  }}
                   className={[
                     "az-page-pill",
+                    "az-page-pill-draggable",
                     activePageIndex === index ? "az-page-pill-active" : "",
                   ].join(" ")}
                 >
