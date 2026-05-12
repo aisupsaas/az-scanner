@@ -522,10 +522,6 @@ app.post("/export/original-pdf", async (req, res) => {
       return res.status(400).json({ error: "No PDF pages provided." });
     }
 
-    if (pages.length > 10) {
-      return res.status(400).json({ error: "Maximum 10 pages allowed." });
-    }
-
     const pdfBuffer = await createMultiPageScanPdfBuffer(pages);
     const filename = safeName(req.body?.filename || "az-scanner-original");
 
