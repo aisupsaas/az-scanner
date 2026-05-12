@@ -927,15 +927,20 @@ function resetOcrText() {
   return (
     <main className={`az-app ${selectedPlan === "pro" ? "az-app-pro" : ""}`}>
       <div className="az-shell">
-        <header className="az-topbar">
+       <header className="az-topbar">
           <div>
             <img
-                src="/az-logo.png"
-                alt="AZ Scanner"
-                className="az-topbar-logo"
-              />
-            <div className="az-topbar-title">{topTitle}</div>
-            <div className="az-topbar-subtitle">{statusText}</div>
+              src="/az-logo.png"
+              alt="AZ Scanner"
+              className="az-topbar-logo"
+            />
+
+            {mode !== "result" ? (
+              <>
+                <div className="az-topbar-title">{topTitle}</div>
+                <div className="az-topbar-subtitle">{statusText}</div>
+              </>
+            ) : null}
           </div>
         </header>
         <section className="az-content">

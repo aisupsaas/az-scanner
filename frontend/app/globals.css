@@ -1875,22 +1875,11 @@ body {
 }
 
 .az-scan-source-toggle {
-  display: inline-grid;
-  grid-auto-flow: column;
-  gap: 0.22rem;
-  padding: 0.18rem;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.035);
+  width: auto;
 }
 
 .az-scan-source-toggle button {
-  border: none !important;
-  background: transparent !important;
-}
-
-.az-scan-source-toggle .az-scan-source-active {
-  background: #111111 !important;
-  color: #ffffff !important;
+  min-width: 66px;
 }
 
 .az-scan-apply {
