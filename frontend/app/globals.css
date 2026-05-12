@@ -1929,3 +1929,80 @@ body {
     font-size: 0.76rem;
   }
 }
+
+/* Keep Result Scan preview visible in fullscreen layout */
+.az-export-card {
+  margin-bottom: 0.55rem !important;
+  padding: 0.65rem !important;
+  gap: 0.55rem !important;
+}
+
+.az-result-tabs {
+  margin-bottom: 0.45rem !important;
+}
+
+.az-panel-header {
+  gap: 0.45rem !important;
+}
+
+.az-page-strip {
+  margin: 0.35rem 0 0.45rem !important;
+  padding-bottom: 0.45rem !important;
+}
+
+.az-scan-controls {
+  margin: 0.45rem 0 !important;
+  gap: 0.45rem !important;
+}
+
+.az-scan-controls button,
+.az-mini-toggle button,
+.az-apply-button,
+.az-apply-all-button {
+  min-height: 34px !important;
+}
+
+.az-brightness-control {
+  gap: 0.35rem !important;
+}
+
+.az-compare-stage {
+  margin-top: 0.45rem !important;
+  min-height: 180px !important;
+}
+
+.az-crop-container {
+  min-height: 180px !important;
+}
+
+.az-crop-image-wrap,
+.az-crop-image-wrap .az-crop-image {
+  max-height: 32dvh !important;
+}
+
+@media (max-height: 760px) {
+  .az-section-copy {
+    margin-top: 0.22rem !important;
+  }
+
+  .az-export-card {
+    margin-bottom: 0.4rem !important;
+  }
+
+  .az-scan-controls {
+    grid-template-columns: 1fr !important;
+  }
+
+  .az-compare-stage {
+    min-height: 150px !important;
+  }
+
+  .az-crop-container {
+    min-height: 150px !important;
+  }
+
+  .az-crop-image-wrap,
+  .az-crop-image-wrap .az-crop-image {
+    max-height: 26dvh !important;
+  }
+}
