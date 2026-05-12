@@ -485,6 +485,83 @@ ResultScreenProps) {
               ))}
             </div>
 
+            <div
+              className={[
+                "az-compare-stage",
+                compareView === "split" ? "az-compare-stage-split" : "",
+              ].join(" ")}
+              >
+              {(compareView === "split" || compareView === "original") && (
+                <div className="az-compare-panel">
+                  <div className="az-compare-label">Edit crop</div>
+                  <div
+                    ref={containerRef}
+                    className="az-crop-container"
+                    onPointerMove={handleDragMove}
+                    onPointerUp={handleDragEnd}
+                    onPointerCancel={handleDragEnd}
+                    onPointerLeave={handleDragEnd}
+                  >
+                    {previewImage ? (
+                      <div className="az-crop-image-wrap">
+                        <img
+                          ref={imageRef}
+                          src={previewImage}
+                          alt="Original document preview"
+                          className="az-crop-image"
+                          style={{
+                            transform: `rotate(${imageEdit.rotate}deg)`,
+                            filter: `brightness(${imageEdit.brightness})`,
+                          }}
+                        />
+
+                        <div className="az-crop-box" style={cropBoxStyle}>
+                          <div className="az-grid" />
+
+                          <div
+                            className="az-handle tl"
+                            onPointerDown={(e) => handleDragStart("tl", e)}
+                          />
+                          <div
+                            className="az-handle tr"
+                            onPointerDown={(e) => handleDragStart("tr", e)}
+                          />
+                          <div
+                            className="az-handle bl"
+                            onPointerDown={(e) => handleDragStart("bl", e)}
+                          />
+                          <div
+                            className="az-handle br"
+                            onPointerDown={(e) => handleDragStart("br", e)}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="az-empty-note">Original preview is not available.</div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {compareView === "split" && (
+                <div className="az-compare-panel">
+                  <div className="az-compare-label">Preview</div>
+                  <div className="az-compare-frame">
+                    {previewImage ? (
+                      <img
+                        src={previewImage}
+                        alt="Edited scan preview"
+                        className="az-main-preview"
+                        style={editedPreviewStyle}
+                      />
+                    ) : (
+                      <div className="az-empty-note">Preview is not available.</div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="az-scan-controls">
               <div className="az-edit-row">
                 <button type="button" onClick={cycleRotate}>
@@ -563,83 +640,6 @@ ResultScreenProps) {
             </div>
             </div>
 
-            <div
-              className={[
-                "az-compare-stage",
-                compareView === "split" ? "az-compare-stage-split" : "",
-              ].join(" ")}
-            >
-              {(compareView === "split" || compareView === "original") && (
-                <div className="az-compare-panel">
-                  <div className="az-compare-label">Edit crop</div>
-                  <div
-                    ref={containerRef}
-                    className="az-crop-container"
-                    onPointerMove={handleDragMove}
-                    onPointerUp={handleDragEnd}
-                    onPointerCancel={handleDragEnd}
-                    onPointerLeave={handleDragEnd}
-                  >
-                    {previewImage ? (
-                      <div className="az-crop-image-wrap">
-                        <img
-                          ref={imageRef}
-                          src={previewImage}
-                          alt="Original document preview"
-                          className="az-crop-image"
-                          style={{
-                            transform: `rotate(${imageEdit.rotate}deg)`,
-                            filter: `brightness(${imageEdit.brightness})`,
-                          }}
-                        />
-
-                        <div className="az-crop-box" style={cropBoxStyle}>
-                          <div className="az-grid" />
-
-                          <div
-                            className="az-handle tl"
-                            onPointerDown={(e) => handleDragStart("tl", e)}
-                          />
-                          <div
-                            className="az-handle tr"
-                            onPointerDown={(e) => handleDragStart("tr", e)}
-                          />
-                          <div
-                            className="az-handle bl"
-                            onPointerDown={(e) => handleDragStart("bl", e)}
-                          />
-                          <div
-                            className="az-handle br"
-                            onPointerDown={(e) => handleDragStart("br", e)}
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="az-empty-note">Original preview is not available.</div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {compareView === "split" && (
-                <div className="az-compare-panel">
-                  <div className="az-compare-label">Preview</div>
-                  <div className="az-compare-frame">
-                    {previewImage ? (
-                      <img
-                        src={previewImage}
-                        alt="Edited scan preview"
-                        className="az-main-preview"
-                        style={editedPreviewStyle}
-                      />
-                    ) : (
-                      <div className="az-empty-note">Preview is not available.</div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-            </div>
           </>
         )}
       </div>
