@@ -1964,3 +1964,183 @@ body {
     padding: 0 !important;
   }
 }
+
+/* Result screen compact masthead */
+.az-result-masthead {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.45rem;
+}
+
+.az-result-title {
+  font-size: 1.05rem;
+  line-height: 1.1;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: #111111;
+}
+
+.az-result-subtitle {
+  margin-top: 0.16rem;
+  font-size: 0.76rem;
+  line-height: 1.25;
+  font-weight: 300;
+  color: #6b7280;
+}
+
+.az-result-toggle {
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.2rem;
+  padding: 0.18rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.az-result-toggle button {
+  min-height: 28px;
+  min-width: 52px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: #5f6670;
+  padding: 0 0.62rem;
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
+.az-result-toggle .az-result-toggle-active {
+  background: #111111;
+  color: #ffffff;
+}
+
+/* Move app logo to the right and tighten top space */
+.az-topbar {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: max(0.45rem, env(safe-area-inset-top)) !important;
+  padding-bottom: 0.28rem !important;
+}
+
+.az-topbar-logo {
+  margin-left: auto;
+  width: 44px !important;
+}
+
+/* Give editor more room */
+.az-panel-card-fill {
+  padding-top: 0.58rem !important;
+}
+
+.az-compare-stage {
+  margin-top: 0.32rem !important;
+  min-height: 240px !important;
+}
+
+.az-crop-container {
+  min-height: 240px !important;
+}
+
+.az-crop-image-wrap,
+.az-crop-image-wrap .az-crop-image {
+  max-height: 42dvh !important;
+}
+
+/* Easier crop handles */
+.az-handle {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 999px !important;
+  background: #ffffff !important;
+  border: 2px solid rgba(17, 17, 17, 0.22) !important;
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.az-handle.tl { top: -19px !important; left: -19px !important; }
+.az-handle.tr { top: -19px !important; right: -19px !important; }
+.az-handle.bl { bottom: -19px !important; left: -19px !important; }
+.az-handle.br { bottom: -19px !important; right: -19px !important; }
+
+/* Bottom export: compact, not giant top card */
+.az-export-card-bottom {
+  position: static !important;
+  justify-self: end;
+  width: min(100%, 420px);
+  margin: 0.45rem 0 0 !important;
+  padding: 0.55rem !important;
+  border-radius: 14px !important;
+}
+
+.az-export-card-bottom .az-export-head {
+  grid-template-columns: 1fr auto;
+}
+
+.az-export-list-compact {
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.38rem !important;
+}
+
+.az-export-chip {
+  min-height: 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(50, 92, 140, 0.1);
+  background: rgba(255, 255, 255, 0.86);
+  color: #27313d;
+  padding: 0 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
+.az-export-chip-soft {
+  color: #5f6670;
+}
+
+.az-app-pro .az-result-toggle .az-result-toggle-active {
+  background: rgba(35, 92, 81, 0.94);
+}
+
+.az-app-pro .az-export-chip {
+  border-color: rgba(67, 137, 122, 0.18);
+  background: rgba(255, 255, 255, 0.74);
+  color: #314f4a;
+}
+
+@media (max-width: 640px) {
+  .az-result-masthead {
+    margin-bottom: 0.35rem;
+  }
+
+  .az-result-toggle button {
+    min-width: 48px;
+    padding: 0 0.5rem;
+  }
+
+  .az-compare-stage {
+    min-height: 260px !important;
+  }
+
+  .az-crop-container {
+    min-height: 260px !important;
+  }
+
+  .az-crop-image-wrap,
+  .az-crop-image-wrap .az-crop-image {
+    max-height: 46dvh !important;
+  }
+
+  .az-export-card-bottom {
+    width: 100%;
+  }
+
+  .az-export-list-compact {
+    justify-content: flex-start;
+  }
+}

@@ -57,7 +57,6 @@ export default function ResultScreen({
   loading,
   resultTab,
   compareView,
-  selectedPlan,
   sourcePreview,
   originalImageHref,
   cleanedImageHref,
@@ -78,9 +77,7 @@ export default function ResultScreen({
   onDownloadEditedPdf,
   onShareOriginalPdf,
   onShareEditedTxt,
-  onShareEditedPdf,
   onDownloadEditedDocx,
-  onShareEditedDocx,
   onApplyTextTool,
   onImageEditChange,
   onApplyEditToAllPages,
@@ -88,9 +85,7 @@ export default function ResultScreen({
   onMovePage,
   onResultTabChange,
   onCompareViewChange,
-}: 
-
-ResultScreenProps) {
+}: ResultScreenProps) {
   const previewImage =
     imageEdit.pdfSource === "cleaned" && cleanedImageHref
       ? cleanedImageHref
@@ -188,127 +183,35 @@ ResultScreenProps) {
 
   return (
     <div className="az-screen">
-      <div className="az-result-tabs">
-        <button
-          type="button"
-          onClick={() => onResultTabChange("compare")}
-          className={["az-tab-button", resultTab === "compare" ? "az-tab-button-active" : ""].join(" ")}
-        >
-          Scan
-        </button>
+      <div className="az-result-masthead">
+        <div>
+          <div className="az-result-title">Result</div>
+          <div className="az-result-subtitle">
+            Page {activePageIndex + 1} of {pageCount} •{" "}
+            {imageEdit.applied ? "Saved" : "Unsaved"}
+          </div>
+        </div>
 
-        <button
-          type="button"
-          onClick={() => onResultTabChange("text")}
-          className={["az-tab-button", resultTab === "text" ? "az-tab-button-active" : ""].join(" ")}
-        >
-          Text
-        </button>
+        <div className="az-result-toggle">
+          <button
+            type="button"
+            onClick={() => onResultTabChange("compare")}
+            className={resultTab === "compare" ? "az-result-toggle-active" : ""}
+          >
+            Scan
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onResultTabChange("text")}
+            className={resultTab === "text" ? "az-result-toggle-active" : ""}
+          >
+            Text
+          </button>
+        </div>
       </div>
 
       <div className="az-panel-card az-panel-card-fill">
-
-      <div className="az-export-card">
-  <div className="az-export-head">
-    <div>
-      <div className="az-section-label">EXPORT</div>
-      <div className="az-section-copy">
-        {exportOpen
-          ? "Choose a format, then download or share it."
-          : "4 formats available."}
-      </div>
-    </div>
-
-    <button
-      type="button"
-      onClick={() => setExportOpen((current) => !current)}
-      className="az-export-collapse-button"
-    >
-      {exportOpen ? "Hide" : "Show"}
-    </button>
-  </div>
-
-    {exportOpen ? (
-      <div className="az-export-list">
-        <div className="az-export-row">
-          <div className="az-export-info">
-            <span className="az-format-badge az-format-badge-pdf">PDF</span>
-            <div>
-              <div className="az-export-title">Original PDF</div>
-              <div className="az-export-subtitle">Edited scan pages</div>
-            </div>
-          </div>
-
-          <div className="az-export-actions">
-            <button type="button" onClick={onDownloadOriginalPdf} className="az-export-action-button">
-              Download
-            </button>
-            <button type="button" onClick={onShareOriginalPdf} className="az-export-icon-button" aria-label="Share Original PDF">
-              ↗
-            </button>
-          </div>
-        </div>
-
-        <div className="az-export-row">
-          <div className="az-export-info">
-            <span className="az-format-badge az-format-badge-txt">TXT</span>
-            <div>
-              <div className="az-export-title">Text TXT</div>
-              <div className="az-export-subtitle">Plain editable text</div>
-            </div>
-          </div>
-
-          <div className="az-export-actions">
-            <button type="button" onClick={onDownloadEditedTxt} className="az-export-action-button">
-              Download
-            </button>
-            <button type="button" onClick={onShareEditedTxt} className="az-export-icon-button" aria-label="Share Text TXT">
-              ↗
-            </button>
-          </div>
-        </div>
-
-        <div className="az-export-row">
-          <div className="az-export-info">
-            <span className="az-format-badge az-format-badge-pdf">PDF</span>
-            <div>
-              <div className="az-export-title">Text PDF</div>
-              <div className="az-export-subtitle">Clean text document</div>
-            </div>
-          </div>
-
-          <div className="az-export-actions">
-            <button type="button" onClick={onDownloadEditedPdf} className="az-export-action-button">
-              Download
-            </button>
-            <button type="button" onClick={onShareEditedPdf} className="az-export-icon-button" aria-label="Share Text PDF">
-              ↗
-            </button>
-          </div>
-        </div>
-
-        <div className="az-export-row">
-          <div className="az-export-info">
-            <span className="az-format-badge az-format-badge-word">W</span>
-            <div>
-              <div className="az-export-title">Word DOCX</div>
-              <div className="az-export-subtitle">Microsoft Word format</div>
-            </div>
-          </div>
-
-          <div className="az-export-actions">
-            <button type="button" onClick={onDownloadEditedDocx} className="az-export-action-button">
-              Download
-            </button>
-            <button type="button" onClick={onShareEditedDocx} className="az-export-icon-button" aria-label="Share Word DOCX">
-              ↗
-            </button>
-          </div>
-        </div>
-      </div>
-    ) : null}
-  </div>
-
         {resultTab === "text" ? (
           <>
             <div className="az-panel-header az-panel-header-wrap">
@@ -318,58 +221,59 @@ ResultScreenProps) {
                   Edit detected lines, remove bad OCR guesses, then export TXT or Text PDF.
                 </div>
               </div>
-            <div className="az-text-tool-row">
-              <button
-                type="button"
-                onClick={() => onApplyTextTool("clean")}
-                className="az-text-tool-button"
-              >
-                Smart clean
-              </button>
 
-              <button
-                type="button"
-                onClick={() => onApplyTextTool("spacing")}
-                className="az-text-tool-button"
-              >
-                Spacing
-              </button>
+              <div className="az-text-tool-row">
+                <button
+                  type="button"
+                  onClick={() => onApplyTextTool("clean")}
+                  className="az-text-tool-button"
+                >
+                  Smart clean
+                </button>
 
-              <button
-                type="button"
-                onClick={() => onApplyTextTool("blankLines")}
-                className="az-text-tool-button"
-              >
-                Lines
-              </button>
+                <button
+                  type="button"
+                  onClick={() => onApplyTextTool("spacing")}
+                  className="az-text-tool-button"
+                >
+                  Spacing
+                </button>
 
-              <button
-                type="button"
-                onClick={() => onApplyTextTool("mergeLines")}
-                className="az-text-tool-button"
-              >
-                Merge
-              </button>
+                <button
+                  type="button"
+                  onClick={() => onApplyTextTool("blankLines")}
+                  className="az-text-tool-button"
+                >
+                  Lines
+                </button>
 
-              <button
-                type="button"
-                onClick={onUndoText}
-                disabled={!canUndoText}
-                className="az-text-tool-button az-text-tool-button-soft"
-              >
-                Undo
-              </button>
+                <button
+                  type="button"
+                  onClick={() => onApplyTextTool("mergeLines")}
+                  className="az-text-tool-button"
+                >
+                  Merge
+                </button>
 
-              <button
-                type="button"
-                onClick={onResetOcrText}
-                className="az-text-tool-button az-text-tool-button-soft"
-              >
-                Reset OCR
-              </button>
+                <button
+                  type="button"
+                  onClick={onUndoText}
+                  disabled={!canUndoText}
+                  className="az-text-tool-button az-text-tool-button-soft"
+                >
+                  Undo
+                </button>
+
+                <button
+                  type="button"
+                  onClick={onResetOcrText}
+                  className="az-text-tool-button az-text-tool-button-soft"
+                >
+                  Reset OCR
+                </button>
+              </div>
             </div>
 
-          </div>
             {result?.warning ? (
               <div className="az-inline-error">
                 <div className="az-inline-error-title">OCR warning</div>
@@ -423,14 +327,14 @@ ResultScreenProps) {
               </button>
             </div>
           </>
-          
         ) : (
           <>
             <div className="az-panel-header az-panel-header-wrap">
               <div>
                 <div className="az-section-label">ORIGINAL PDF SETTINGS</div>
                 <div className="az-section-copy">
-                  Page {activePageIndex + 1} of {pageCount} • {imageEdit.applied ? "Saved" : "Unsaved changes"}
+                  Page {activePageIndex + 1} of {pageCount} •{" "}
+                  {imageEdit.applied ? "Saved" : "Unsaved changes"}
                 </div>
               </div>
 
@@ -438,14 +342,21 @@ ResultScreenProps) {
                 <button
                   type="button"
                   onClick={() => onCompareViewChange("split")}
-                  className={["az-segment-button", compareView === "split" ? "az-segment-button-active" : ""].join(" ")}
+                  className={[
+                    "az-segment-button",
+                    compareView === "split" ? "az-segment-button-active" : "",
+                  ].join(" ")}
                 >
                   Edit + Preview
                 </button>
+
                 <button
                   type="button"
                   onClick={() => onCompareViewChange("original")}
-                  className={["az-segment-button", compareView === "original" ? "az-segment-button-active" : ""].join(" ")}
+                  className={[
+                    "az-segment-button",
+                    compareView === "original" ? "az-segment-button-active" : "",
+                  ].join(" ")}
                 >
                   Edit
                 </button>
@@ -490,10 +401,11 @@ ResultScreenProps) {
                 "az-compare-stage",
                 compareView === "split" ? "az-compare-stage-split" : "",
               ].join(" ")}
-              >
+            >
               {(compareView === "split" || compareView === "original") && (
                 <div className="az-compare-panel">
                   <div className="az-compare-label">Edit crop</div>
+
                   <div
                     ref={containerRef}
                     className="az-crop-container"
@@ -546,6 +458,7 @@ ResultScreenProps) {
               {compareView === "split" && (
                 <div className="az-compare-panel">
                   <div className="az-compare-label">Preview</div>
+
                   <div className="az-compare-frame">
                     {previewImage ? (
                       <img
@@ -563,74 +476,138 @@ ResultScreenProps) {
             </div>
 
             <div className="az-scan-toolbar">
-                <button type="button" onClick={cycleRotate} className="az-scan-icon-button" aria-label="Rotate page">
-                  ↻
+              <button
+                type="button"
+                onClick={cycleRotate}
+                className="az-scan-icon-button"
+                aria-label="Rotate page"
+              >
+                ↻
+              </button>
+
+              <button type="button" onClick={resetCrop} className="az-scan-compact-button">
+                Crop reset
+              </button>
+
+              <label className="az-scan-brightness">
+                <span>Brightness</span>
+                <input
+                  type="range"
+                  min="0.75"
+                  max="1.35"
+                  step="0.05"
+                  value={imageEdit.brightness}
+                  onChange={(e) =>
+                    onImageEditChange({
+                      ...imageEdit,
+                      brightness: Number(e.target.value),
+                      applied: false,
+                    })
+                  }
+                />
+              </label>
+
+              <div className="az-scan-source-toggle">
+                <button
+                  type="button"
+                  onClick={() =>
+                    onImageEditChange({
+                      ...imageEdit,
+                      pdfSource: "original",
+                      applied: false,
+                    })
+                  }
+                  className={imageEdit.pdfSource === "original" ? "az-scan-source-active" : ""}
+                >
+                  Color
                 </button>
 
-                <button type="button" onClick={resetCrop} className="az-scan-compact-button">
-                  Crop reset
+                <button
+                  type="button"
+                  onClick={() =>
+                    onImageEditChange({
+                      ...imageEdit,
+                      pdfSource: "cleaned",
+                      applied: false,
+                    })
+                  }
+                  className={imageEdit.pdfSource === "cleaned" ? "az-scan-source-active" : ""}
+                >
+                  Cleaned
                 </button>
+              </div>
 
-                <label className="az-scan-brightness">
-                  <span>Brightness</span>
-                  <input
-                    type="range"
-                    min="0.75"
-                    max="1.35"
-                    step="0.05"
-                    value={imageEdit.brightness}
-                    onChange={(e) =>
-                      onImageEditChange({
-                        ...imageEdit,
-                        brightness: Number(e.target.value),
-                        applied: false,
-                      })
-                    }
-                  />
-                </label>
+              <button
+                type="button"
+                onClick={applyScanEdit}
+                className={
+                  imageEdit.applied
+                    ? "az-scan-apply az-scan-apply-saved"
+                    : "az-scan-apply"
+                }
+              >
+                {imageEdit.applied ? "Saved" : "Apply"}
+              </button>
 
-                <div className="az-scan-source-toggle">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      onImageEditChange({
-                        ...imageEdit,
-                        pdfSource: "original",
-                        applied: false,
-                      })
-                    }
-                    className={imageEdit.pdfSource === "original" ? "az-scan-source-active" : ""}
-                  >
-                    Color
-                  </button>
+              <button type="button" onClick={onApplyEditToAllPages} className="az-scan-apply-all">
+                All
+              </button>
+            </div>
 
-                  <button
-                    type="button"
-                    onClick={() =>
-                      onImageEditChange({
-                        ...imageEdit,
-                        pdfSource: "cleaned",
-                        applied: false,
-                      })
-                    }
-                    className={imageEdit.pdfSource === "cleaned" ? "az-scan-source-active" : ""}
-                  >
-                    Cleaned
-                  </button>
+            <div className="az-export-card az-export-card-bottom">
+              <div className="az-export-head">
+                <div>
+                  <div className="az-section-label">EXPORT</div>
+                  <div className="az-section-copy">
+                    {exportOpen ? "Download or share." : "4 formats available."}
+                  </div>
                 </div>
 
                 <button
                   type="button"
-                  onClick={applyScanEdit}
-                  className={imageEdit.applied ? "az-scan-apply az-scan-apply-saved" : "az-scan-apply"}
+                  onClick={() => setExportOpen((current) => !current)}
+                  className="az-export-collapse-button"
                 >
-                  {imageEdit.applied ? "Saved" : "Apply"}
+                  {exportOpen ? "Hide" : "Show"}
                 </button>
+              </div>
 
-                <button type="button" onClick={onApplyEditToAllPages} className="az-scan-apply-all">
-                  All
-                </button>
-              </div>                  
+              {exportOpen ? (
+                <div className="az-export-list az-export-list-compact">
+                  <button type="button" onClick={onDownloadOriginalPdf} className="az-export-chip">
+                    PDF
+                  </button>
+
+                  <button type="button" onClick={onDownloadEditedTxt} className="az-export-chip">
+                    TXT
+                  </button>
+
+                  <button type="button" onClick={onDownloadEditedPdf} className="az-export-chip">
+                    Text PDF
+                  </button>
+
+                  <button type="button" onClick={onDownloadEditedDocx} className="az-export-chip">
+                    DOCX
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={onShareOriginalPdf}
+                    className="az-export-chip az-export-chip-soft"
+                  >
+                    Share PDF
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={onShareEditedTxt}
+                    className="az-export-chip az-export-chip-soft"
+                  >
+                    Share TXT
+                  </button>
+                </div>
+              ) : null}
+            </div>
           </>
         )}
       </div>
