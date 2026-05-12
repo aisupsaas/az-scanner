@@ -33,9 +33,7 @@ export default function BottomBar({
 }: BottomBarProps) {
   return (
     <footer className="az-bottom-area">
-      <div className="az-bottom-actions">
-        {mode === "start" ? null : null}
-
+      <div className={mode === "review" ? "az-bottom-actions az-bottom-actions-row" : "az-bottom-actions"}>
         {mode === "review" ? (
           <>
             <button type="button" onClick={onOpenCamera} className="az-line-action-button">
@@ -74,7 +72,7 @@ export default function BottomBar({
         ) : null}
       </div>
 
-      <nav className="az-bottom-nav az-line-nav" aria-label="Workflow navigation">
+      <nav className="az-line-nav" aria-label="Workflow navigation">
         <button
           type="button"
           onClick={onGoToStart}
