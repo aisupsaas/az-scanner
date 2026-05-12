@@ -38,11 +38,11 @@ export default function BottomBar({
 
         {mode === "review" ? (
           <>
-            <button type="button" onClick={onOpenCamera} className="az-secondary-button">
-              Add photo
+            <button type="button" onClick={onOpenCamera} className="az-line-action-button">
+              Camera
             </button>
 
-            <label className="az-secondary-button az-file-label">
+            <label className="az-line-action-button az-file-label">
               Add files
               <input
                 type="file"
@@ -60,7 +60,7 @@ export default function BottomBar({
               type="button"
               onClick={onProcess}
               disabled={loading || fileCount < 1}
-              className="az-primary-button disabled:cursor-not-allowed disabled:opacity-50"
+              className="az-line-action-button disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? "Processing..." : "Process"}
             </button>

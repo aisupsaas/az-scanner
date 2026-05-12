@@ -804,6 +804,40 @@ textarea {
     0 8px 18px rgba(20, 184, 166, 0.18);
 }
 
+.az-page-thumb-wrap {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.az-thumb-trash {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 240, 240, 0.96);
+  color: #b43838;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 8px 18px rgba(180, 56, 56, 0.14),
+    0 2px 6px rgba(0, 0, 0, 0.06);
+  z-index: 3;
+}
+
+.az-thumb-trash:active {
+  transform: scale(0.94);
+}
+
+.az-app-pro .az-thumb-trash {
+  background: rgba(255, 235, 235, 0.96);
+  color: #b43838;
+}
+
 .az-page-pill {
   position: relative;
   min-height: 30px;
@@ -2051,8 +2085,11 @@ body {
 }
 
 .az-result-masthead {
-  grid-template-columns: auto auto !important;
-  justify-content: start !important;
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: start;
+  align-items: center;
+  gap: 1rem;
   padding-right: 4.8rem;
 }
 

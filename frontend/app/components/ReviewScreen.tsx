@@ -31,18 +31,34 @@ export default function ReviewScreen(props: {
 
         <div className="az-page-strip">
           {props.sourcePreviews.map((preview, index) => (
-            <button
+            <div
               key={preview}
-              type="button"
-              onClick={() => props.onSelectPage(index)}
               className={[
-                "az-page-thumb",
-                props.activePageIndex === index ? "az-page-thumb-active" : "",
+                "az-page-thumb-wrap",
+                props.activePageIndex === index ? "az-page-thumb-wrap-active" : "",
               ].join(" ")}
             >
-              <img src={preview} alt={`Page ${index + 1}`} />
-              <span>{index + 1}</span>
-            </button>
+              <button
+                type="button"
+                onClick={() => props.onSelectPage(index)}
+                className={[
+                  "az-page-thumb",
+                  props.activePageIndex === index ? "az-page-thumb-active" : "",
+                ].join(" ")}
+              >
+                <img src={preview} alt={`Page ${index + 1}`} />
+                <span>{index + 1}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => props.onRemovePage(index)}
+                className="az-thumb-trash"
+                aria-label={`Remove page ${index + 1}`}
+              >
+                🗑
+              </button>
+            </div>
           ))}
         </div>
 
@@ -76,14 +92,6 @@ export default function ReviewScreen(props: {
               className="az-review-move-button"
             >
               Move right →
-            </button>
-
-            <button
-              type="button"
-              onClick={() => props.onRemovePage(props.activePageIndex)}
-              className="az-remove-page-button"
-            >
-              Remove page
             </button>
           </div>
         ) : null}
