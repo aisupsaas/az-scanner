@@ -236,7 +236,7 @@ export default function HomePage() {
     });
   }
 
-  function movePage(fromIndex: number, toIndex: number) {
+ function movePage(fromIndex: number, toIndex: number) {
   if (fromIndex === toIndex) return;
   if (fromIndex < 0 || toIndex < 0) return;
 
@@ -252,19 +252,19 @@ export default function HomePage() {
       return next;
     };
 
-    setSourcePreviews((current) => moveItem(current));
-    setImageEdits((current) => moveItem(current));
+    const nextFiles = moveItem(currentFiles);
 
-    setActivePageIndex((current) => {
-      if (current === fromIndex) return toIndex;
-      if (fromIndex < current && toIndex >= current) return current - 1;
-      if (fromIndex > current && toIndex <= current) return current + 1;
-      return current;
+    setSourcePreviews((currentPreviews) => {
+      for (const url of currentPreviews) URL.revokeObjectURL(url);
+      return nextFiles.map((file) => URL.createObjectURL(file));
     });
 
+    setImageEdits((current) => moveItem(current));
+
+    setActivePageIndex(toIndex);
     setStatusText(`Moved page ${fromIndex + 1} to position ${toIndex + 1}.`);
 
-    return moveItem(currentFiles);
+    return nextFiles;
   });
 }
 
