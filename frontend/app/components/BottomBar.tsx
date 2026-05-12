@@ -34,27 +34,7 @@ export default function BottomBar({
   return (
     <footer className="az-bottom-area">
       <div className="az-bottom-actions">
-        {mode === "start" ? (
-          <>
-            <button type="button" onClick={onOpenCamera} className="az-primary-button">
-              Open camera
-            </button>
-
-            <label className="az-secondary-button az-file-label">
-              Choose files
-              <input
-                type="file"
-                multiple
-                accept="image/png,image/jpeg,image/webp,image/tiff,image/heic,image/heif"
-                className="hidden"
-                onChange={(e) => {
-                  if (e.target.files) onChooseFiles(e.target.files);
-                  e.currentTarget.value = "";
-                }}
-              />
-            </label>
-          </>
-        ) : null}
+        {mode === "start" ? null : null}
 
         {mode === "review" ? (
           <>
