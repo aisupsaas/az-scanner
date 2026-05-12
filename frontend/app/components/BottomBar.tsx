@@ -88,17 +88,17 @@ export default function BottomBar({
         ) : null}
 
         {mode === "result" ? (
-          <button type="button" onClick={onNewScan} className="az-primary-button az-bottom-single-button">
+          <button type="button" onClick={onNewScan} className="az-line-action-button">
             New scan
           </button>
         ) : null}
       </div>
 
-      <nav className="az-bottom-nav" aria-label="Workflow navigation">
+      <nav className="az-bottom-nav az-line-nav" aria-label="Workflow navigation">
         <button
           type="button"
           onClick={onGoToStart}
-          className={["az-nav-item", mode === "start" ? "az-nav-item-active" : ""].join(" ")}
+          className={["az-line-nav-item", mode === "start" ? "az-line-nav-item-active" : ""].join(" ")}
         >
           Start
         </button>
@@ -107,7 +107,7 @@ export default function BottomBar({
           type="button"
           onClick={onGoToReview}
           disabled={!canOpenReview}
-          className={["az-nav-item", mode === "review" ? "az-nav-item-active" : ""].join(" ")}
+          className={["az-line-nav-item", mode === "review" ? "az-line-nav-item-active" : ""].join(" ")}
         >
           Review
         </button>
@@ -116,7 +116,7 @@ export default function BottomBar({
           type="button"
           onClick={onGoToResult}
           disabled={!canOpenResult}
-          className={["az-nav-item", mode === "result" ? "az-nav-item-active" : ""].join(" ")}
+          className={["az-line-nav-item", mode === "result" ? "az-line-nav-item-active" : ""].join(" ")}
         >
           Result
         </button>
