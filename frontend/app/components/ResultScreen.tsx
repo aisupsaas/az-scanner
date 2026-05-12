@@ -94,7 +94,8 @@ export default function ResultScreen({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const [dragging, setDragging] = useState<Corner | null>(null);
-  const [exportOpen, setExportOpen] = useState(true);
+  const [downloadOpen, setDownloadOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   function cycleRotate() {
     const next = ((imageEdit.rotate + 90) % 360) as ImageEditSettings["rotate"];
@@ -329,34 +330,27 @@ export default function ResultScreen({
           </>
         ) : (
           <>
-            <div className="az-panel-header az-panel-header-wrap">
+            <div className="az-scan-settings-head">
               <div>
                 <div className="az-section-label">ORIGINAL PDF SETTINGS</div>
                 <div className="az-section-copy">
-                  Page {activePageIndex + 1} of {pageCount} •{" "}
-                  {imageEdit.applied ? "Saved" : "Unsaved changes"}
+                  Page {activePageIndex + 1} of {pageCount} • {imageEdit.applied ? "Saved" : "Unsaved changes"}
                 </div>
               </div>
 
-              <div className="az-compare-toggle">
+              <div className="az-result-toggle az-scan-mode-toggle">
                 <button
                   type="button"
                   onClick={() => onCompareViewChange("split")}
-                  className={[
-                    "az-segment-button",
-                    compareView === "split" ? "az-segment-button-active" : "",
-                  ].join(" ")}
+                  className={compareView === "split" ? "az-result-toggle-active" : ""}
                 >
-                  Edit + Preview
+                  Preview
                 </button>
 
                 <button
                   type="button"
                   onClick={() => onCompareViewChange("original")}
-                  className={[
-                    "az-segment-button",
-                    compareView === "original" ? "az-segment-button-active" : "",
-                  ].join(" ")}
+                  className={compareView === "original" ? "az-result-toggle-active" : ""}
                 >
                   Edit
                 </button>
@@ -486,7 +480,7 @@ export default function ResultScreen({
               </button>
 
               <button type="button" onClick={resetCrop} className="az-scan-compact-button">
-                Crop reset
+                Reset
               </button>
 
               <label className="az-scan-brightness">
@@ -554,59 +548,48 @@ export default function ResultScreen({
               </button>
             </div>
 
-            <div className="az-export-card az-export-card-bottom">
-              <div className="az-export-head">
-                <div>
-                  <div className="az-section-label">EXPORT</div>
-                  <div className="az-section-copy">
-                    {exportOpen ? "Download or share." : "4 formats available."}
-                  </div>
-                </div>
-
+            <div className="az-export-compact">
+              <div className="az-export-popover-wrap">
                 <button
                   type="button"
-                  onClick={() => setExportOpen((current) => !current)}
-                  className="az-export-collapse-button"
+                  onClick={() => {
+                    setDownloadOpen((current) => !current);
+                    setShareOpen(false);
+                  }}
+                  className="az-export-main-button"
                 >
-                  {exportOpen ? "Hide" : "Show"}
+                  Download
                 </button>
+
+                {downloadOpen ? (
+                  <div className="az-export-popover">
+                    <button type="button" onClick={onDownloadOriginalPdf}>Original PDF</button>
+                    <button type="button" onClick={onDownloadEditedTxt}>TXT</button>
+                    <button type="button" onClick={onDownloadEditedPdf}>Text PDF</button>
+                    <button type="button" onClick={onDownloadEditedDocx}>DOCX</button>
+                  </div>
+                ) : null}
               </div>
 
-              {exportOpen ? (
-                <div className="az-export-list az-export-list-compact">
-                  <button type="button" onClick={onDownloadOriginalPdf} className="az-export-chip">
-                    PDF
-                  </button>
+              <div className="az-export-popover-wrap">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShareOpen((current) => !current);
+                    setDownloadOpen(false);
+                  }}
+                  className="az-export-main-button az-export-main-button-soft"
+                >
+                  Share
+                </button>
 
-                  <button type="button" onClick={onDownloadEditedTxt} className="az-export-chip">
-                    TXT
-                  </button>
-
-                  <button type="button" onClick={onDownloadEditedPdf} className="az-export-chip">
-                    Text PDF
-                  </button>
-
-                  <button type="button" onClick={onDownloadEditedDocx} className="az-export-chip">
-                    DOCX
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={onShareOriginalPdf}
-                    className="az-export-chip az-export-chip-soft"
-                  >
-                    Share PDF
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={onShareEditedTxt}
-                    className="az-export-chip az-export-chip-soft"
-                  >
-                    Share TXT
-                  </button>
-                </div>
-              ) : null}
+                {shareOpen ? (
+                  <div className="az-export-popover">
+                    <button type="button" onClick={onShareOriginalPdf}>Original PDF</button>
+                    <button type="button" onClick={onShareEditedTxt}>TXT</button>
+                  </div>
+                ) : null}
+              </div>
             </div>
           </>
         )}

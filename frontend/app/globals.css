@@ -2020,15 +2020,19 @@ body {
 
 /* Move app logo to the right and tighten top space */
 .az-topbar {
-  display: flex;
-  justify-content: flex-end;
+  position: relative;
+  display: block;
   padding-top: max(0.45rem, env(safe-area-inset-top)) !important;
+  padding-right: 5rem !important;
   padding-bottom: 0.28rem !important;
 }
 
 .az-topbar-logo {
-  margin-left: auto;
+  position: absolute;
+  top: max(0.45rem, env(safe-area-inset-top));
+  right: 1rem;
   width: 44px !important;
+  margin: 0 !important;
 }
 
 /* Give editor more room */
@@ -2143,4 +2147,91 @@ body {
   .az-export-list-compact {
     justify-content: flex-start;
   }
+}
+
+.az-scan-settings-head {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: start;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.az-scan-mode-toggle button {
+  min-width: 58px;
+}
+
+.az-scan-toolbar {
+  grid-template-columns: auto auto minmax(90px, 150px) auto auto auto !important;
+}
+
+.az-scan-compact-button {
+  padding-inline: 0.55rem !important;
+}
+
+.az-scan-brightness {
+  max-width: 150px;
+}
+
+.az-scan-brightness span {
+  display: none;
+}
+
+.az-export-compact {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  margin-top: 0.45rem;
+}
+
+.az-export-popover-wrap {
+  position: relative;
+}
+
+.az-export-main-button {
+  min-height: 34px;
+  border-radius: 999px;
+  border: 1px solid #111111;
+  background: #111111;
+  color: #ffffff;
+  padding: 0 0.95rem;
+  font-size: 0.84rem;
+  font-weight: 400;
+}
+
+.az-export-main-button-soft {
+  border-color: rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.84);
+  color: #111111;
+}
+
+.az-export-popover {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 0.4rem);
+  z-index: 50;
+  width: 160px;
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.35rem;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12);
+}
+
+.az-export-popover button {
+  min-height: 34px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  text-align: left;
+  padding: 0 0.65rem;
+  color: #222;
+  font-size: 0.82rem;
+}
+
+.az-export-popover button:active {
+  background: rgba(0, 0, 0, 0.06);
 }
