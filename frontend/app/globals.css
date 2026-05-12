@@ -24,13 +24,6 @@
   box-sizing: border-box;
 }
 
-html,
-body {
-  margin: 0;
-  min-height: 100%;
-  background: #edf6ff;
-}
-
 body {
   color: #171717;
   font-family:
@@ -640,30 +633,6 @@ textarea {
   font-weight: 300;
 }
 
-.az-scan-controls {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.75rem;
-  align-items: center;
-  margin: 0.9rem 0;
-}
-
-.az-edit-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.65rem;
-}
-
-.az-scan-controls button {
-  min-height: 38px;
-  border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.085);
-  background: rgba(255, 255, 255, 0.88);
-  color: #1f1f1f;
-  padding: 0 1rem;
-  font-size: 0.9rem;
-}
-
 .az-crop-container {
   position: relative;
   width: 100%;
@@ -761,11 +730,6 @@ textarea {
   .az-crop-container {
     min-height: 320px;
   }
-
-  .az-scan-controls {
-    grid-template-columns: 1fr;
-  } 
-
 }
 
 .az-panel-card,
@@ -775,16 +739,17 @@ textarea {
   min-width: 0;
 }
 
-  .az-page-strip {
+ .az-page-strip {
   display: flex;
+  flex: 0 0 auto;
   gap: 0.65rem;
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  margin: 1rem 0 1.05rem;
+  margin: 0.55rem 0 0.55rem;
   overflow-x: auto;
-  overflow-y: visible; /* 🔥 FIX */
-  padding: 0.25rem 0 0.9rem; /* 🔥 more bottom space for underline */
+  overflow-y: visible;
+  padding: 0.25rem 0 0.55rem;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
   overscroll-behavior-x: contain;
@@ -795,14 +760,7 @@ textarea {
   scroll-snap-align: start;
 }
 
-  .az-page-thumb,
-  .az-page-pill {
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    background: rgba(255, 255, 255, 0.78);
-    color: #4e4e4e;
-  }
-
-  .az-page-thumb {
+.az-page-thumb {
   position: relative;
   width: 72px;
   height: 96px;
@@ -810,33 +768,33 @@ textarea {
   overflow: hidden;
   flex: 0 0 72px;
   padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.78);
+  color: #4e4e4e;
 }
 
 .az-page-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   border-radius: 7px;
   overflow: hidden;
 }
- 
-.az-page-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
 
-  .az-page-thumb span {
-    position: absolute;
-    left: 0.3rem;
-    bottom: 0.3rem;
-    min-width: 1.2rem;
-    height: 1.2rem;
-    border-radius: 999px;
-    background: rgba(17, 17, 17, 0.85);
-    color: #fff;
-    font-size: 0.72rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
+.az-page-thumb span {
+  position: absolute;
+  left: 0.3rem;
+  bottom: 0.3rem;
+  min-width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 999px;
+  background: rgba(17, 17, 17, 0.85);
+  color: #ffffff;
+  font-size: 0.72rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .az-page-thumb-active {
   border-color: rgba(96, 165, 250, 0.95);
@@ -852,14 +810,29 @@ textarea {
     0 8px 18px rgba(20, 184, 166, 0.18);
 }
 
-.az-page-pill-active {
-  color: #4d6f96 !important;
-  border-bottom: none !important; /* 🔥 remove old underline */
+.az-page-pill {
+  position: relative;
+  min-height: 30px;
+  border: none !important;
+  border-bottom: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
   box-shadow: none !important;
+  padding: 0 0.45rem 0.38rem !important;
+  flex: 0 0 auto;
+  font-size: 0.84rem;
+  color: #6b7280;
+  position: relative;
+  min-height: 30px;
+  flex: 0 0 auto;
+  font-size: 0.84rem;
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease;
 }
 
 .az-page-pill-active {
-  position: relative;
+  color: #4d6f96 !important;
 }
 
 .az-page-pill-active::after {
@@ -867,7 +840,7 @@ textarea {
   position: absolute;
   left: 6px;
   right: 6px;
-  bottom: -6px; /* 🔥 moves underline below container edge */
+  bottom: -6px;
   height: 3px;
   border-radius: 2px;
   background: rgba(96, 165, 250, 0.9);
@@ -875,19 +848,6 @@ textarea {
 
 .az-app-pro .az-page-pill-active::after {
   background: rgba(83, 196, 177, 0.95);
-}
-
-  .az-page-pill {
-  min-height: 30px;
-  border: none;
-  border-radius: 0;
-  background: transparent;
-  padding: 0 0.45rem 0.35rem;
-  flex: 0 0 auto;
-  font-size: 0.84rem;
-  color: #6b7280;
-
-  border-bottom: 3px solid transparent; /* 👈 IMPORTANT */
 }
 
   .az-line-editor-index {
@@ -913,56 +873,6 @@ textarea {
     font-size: 0.82rem;
   }
 
-  .az-brightness-control {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0.65rem;
-    align-items: center;
-    color: #525252;
-    font-size: 0.86rem;
-  }
-
-  .az-mini-toggle {
-    display: inline-grid;
-    grid-auto-flow: column;
-    gap: 0.35rem;
-  }
-
-  .az-mini-toggle button {
-    min-height: 38px;
-    border-radius: 999px;
-    border: 1px solid rgba(0, 0, 0, 0.085);
-    background: rgba(255, 255, 255, 0.84);
-    color: #4f4f4f;
-    padding: 0 0.85rem;
-    font-size: 0.86rem;
-  }
-
-  .az-mini-toggle .az-mini-toggle-active {
-    background: #111111;
-    border-color: #111111;
-    color: #ffffff;
-  }
-
-  .az-apply-button {
-    min-height: 38px;
-    border-radius: 999px;
-    border: 1px solid #111111;
-    background: #111111;
-    color: #ffffff;
-    padding: 0 1rem;
-    font-size: 0.9rem;
-  }
-
-  .az-apply-button-saved {
-  border-color: rgba(22, 101, 52, 0.34);
-  background: rgba(34, 197, 94, 0.92);
-  color: #ffffff;
-  box-shadow:
-    0 10px 22px rgba(22, 101, 52, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22);
-}
-
   .az-crop-image-wrap {
     position: relative;
     width: min(100%, 620px);
@@ -978,30 +888,6 @@ textarea {
     max-width: 100%;
     max-height: 62vh;
   }
-
-  @media (max-width: 640px) {
-    .az-brightness-control {
-      grid-template-columns: 1fr;
-    }
-
-    .az-mini-toggle {
-      grid-auto-flow: row;
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-
-  .az-page-pill {
-  border: none !important;
-  border-bottom: none !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  padding: 0 0.45rem 0.38rem !important;
-  color: #6b7280;
-  transition:
-    color 0.18s ease,
-    border-color 0.18s ease;
-}
 
 .az-remove-page-button {
   min-height: 42px;
@@ -1408,66 +1294,6 @@ textarea {
   background: rgba(222, 244, 238, 0.94) !important;
 }
 
-.az-app-pro .az-page-pill {
-  color: #60716e !important;
-}
-
-.az-app-pro .az-page-pill-active {
-  color: #2f675f !important;
-}
-
-.az-app-pro .az-scan-controls button,
-.az-app-pro .az-mini-toggle button,
-.az-app-pro .az-apply-button {
-  background: rgba(248, 252, 250, 0.88);
-  border-color: rgba(67, 137, 122, 0.18);
-  color: #314f4a;
-  box-shadow:
-    0 8px 18px rgba(45, 104, 92, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7);
-}
-
-.az-app-pro .az-mini-toggle .az-mini-toggle-active {
-  background: rgba(35, 92, 81, 0.94);
-  border-color: rgba(35, 92, 81, 0.94);
-  color: #ffffff;
-  box-shadow:
-    0 10px 22px rgba(35, 92, 81, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
-}
-
-.az-app-pro .az-apply-button-saved {
-  background: rgba(71, 184, 153, 0.92);
-  border-color: rgba(71, 184, 153, 0.42);
-  color: #ffffff;
-  box-shadow:
-    0 10px 22px rgba(45, 104, 92, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22);
-}
-
-.az-app-pro .az-brightness-control input {
-  accent-color: #3f8f7f;
-}
-
-.az-apply-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.65rem;
-}
-
-.az-apply-all-button {
-  min-height: 38px;
-  border-radius: 999px;
-  border: 1px solid rgba(67, 137, 122, 0.18);
-  background: rgba(248, 252, 250, 0.88);
-  color: #314f4a;
-  padding: 0 1rem;
-  font-size: 0.9rem;
-  box-shadow:
-    0 8px 18px rgba(45, 104, 92, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7);
-}
-
 .az-export-menu {
   margin-top: 1rem;
   display: grid;
@@ -1786,10 +1612,14 @@ textarea {
 }
 
 /* Full-screen app polish: page itself should not scroll */
+
 html,
 body {
+  margin: 0;
+  min-height: 100%;
   height: 100%;
   overflow: hidden;
+  background: #edf6ff;
 }
 
 .az-app,
@@ -1842,12 +1672,6 @@ body {
 .az-section-copy {
   font-size: 0.82rem;
   line-height: 1.28;
-}
-
-.az-page-strip {
-  flex: 0 0 auto;
-  margin: 0.55rem 0 0.55rem !important;
-  padding-bottom: 0.55rem !important;
 }
 
 .az-preview-stage,
@@ -1945,27 +1769,6 @@ body {
   gap: 0.45rem !important;
 }
 
-.az-page-strip {
-  margin: 0.35rem 0 0.45rem !important;
-  padding-bottom: 0.45rem !important;
-}
-
-.az-scan-controls {
-  margin: 0.45rem 0 !important;
-  gap: 0.45rem !important;
-}
-
-.az-scan-controls button,
-.az-mini-toggle button,
-.az-apply-button,
-.az-apply-all-button {
-  min-height: 34px !important;
-}
-
-.az-brightness-control {
-  gap: 0.35rem !important;
-}
-
 .az-compare-stage {
   margin-top: 0.45rem !important;
   min-height: 180px !important;
@@ -1987,10 +1790,6 @@ body {
 
   .az-export-card {
     margin-bottom: 0.4rem !important;
-  }
-
-  .az-scan-controls {
-    grid-template-columns: 1fr !important;
   }
 
   .az-compare-stage {
@@ -2019,4 +1818,149 @@ body {
 
 .az-bottom-area {
   z-index: 30;
+}
+
+/* Result Scan compact minimalist toolbar */
+.az-scan-toolbar {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: auto auto minmax(110px, 1fr) auto auto auto;
+  gap: 0.38rem;
+  align-items: center;
+  margin: 0.45rem 0 0;
+  padding: 0.42rem;
+  border-radius: 999px;
+  border: 1px solid rgba(50, 92, 140, 0.08);
+  background: rgba(255, 255, 255, 0.74);
+  backdrop-filter: blur(14px);
+}
+
+.az-scan-icon-button,
+.az-scan-compact-button,
+.az-scan-source-toggle button,
+.az-scan-apply,
+.az-scan-apply-all {
+  min-height: 30px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(0, 0, 0, 0.075) !important;
+  background: rgba(255, 255, 255, 0.76) !important;
+  color: #2f3742 !important;
+  font-size: 0.78rem !important;
+  font-weight: 400 !important;
+  padding: 0 0.62rem !important;
+  white-space: nowrap;
+}
+
+.az-scan-icon-button {
+  width: 32px;
+  padding: 0 !important;
+  font-size: 1rem !important;
+}
+
+.az-scan-brightness {
+  display: grid;
+  grid-template-columns: auto minmax(70px, 1fr);
+  gap: 0.38rem;
+  align-items: center;
+  min-width: 0;
+  color: #5d6672;
+  font-size: 0.74rem;
+  font-weight: 300;
+}
+
+.az-scan-brightness input {
+  width: 100%;
+  min-width: 0;
+  accent-color: #111111;
+}
+
+.az-scan-source-toggle {
+  display: inline-grid;
+  grid-auto-flow: column;
+  gap: 0.22rem;
+  padding: 0.18rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.035);
+}
+
+.az-scan-source-toggle button {
+  border: none !important;
+  background: transparent !important;
+}
+
+.az-scan-source-toggle .az-scan-source-active {
+  background: #111111 !important;
+  color: #ffffff !important;
+}
+
+.az-scan-apply {
+  background: #111111 !important;
+  border-color: #111111 !important;
+  color: #ffffff !important;
+}
+
+.az-scan-apply-saved {
+  background: rgba(34, 197, 94, 0.92) !important;
+  border-color: rgba(22, 101, 52, 0.34) !important;
+  color: #ffffff !important;
+}
+
+.az-scan-apply-all {
+  color: #5f6b78 !important;
+}
+
+.az-app-pro .az-scan-toolbar {
+  border-color: rgba(67, 137, 122, 0.16);
+  background: rgba(248, 252, 250, 0.72);
+}
+
+.az-app-pro .az-scan-icon-button,
+.az-app-pro .az-scan-compact-button,
+.az-app-pro .az-scan-source-toggle button,
+.az-app-pro .az-scan-apply-all {
+  border-color: rgba(67, 137, 122, 0.16) !important;
+  background: rgba(255, 255, 255, 0.68) !important;
+  color: #314f4a !important;
+}
+
+.az-app-pro .az-scan-source-toggle .az-scan-source-active,
+.az-app-pro .az-scan-apply {
+  background: rgba(35, 92, 81, 0.94) !important;
+  border-color: rgba(35, 92, 81, 0.94) !important;
+  color: #ffffff !important;
+}
+
+.az-app-pro .az-scan-apply-saved {
+  background: rgba(71, 184, 153, 0.92) !important;
+  border-color: rgba(71, 184, 153, 0.42) !important;
+}
+
+.az-app-pro .az-scan-brightness input {
+  accent-color: #3f8f7f;
+}
+
+@media (max-width: 640px) {
+  .az-scan-toolbar {
+    grid-template-columns: auto auto 1fr auto;
+    border-radius: 18px;
+  }
+
+  .az-scan-brightness {
+    grid-column: 1 / -1;
+    order: 2;
+  }
+
+  .az-scan-source-toggle {
+    order: 1;
+  }
+
+  .az-scan-apply {
+    order: 1;
+  }
+
+  .az-scan-apply-all {
+    order: 1;
+    width: 34px;
+    padding: 0 !important;
+  }
 }

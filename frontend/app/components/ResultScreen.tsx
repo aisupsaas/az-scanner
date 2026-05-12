@@ -562,84 +562,75 @@ ResultScreenProps) {
               )}
             </div>
 
-            <div className="az-scan-controls">
-              <div className="az-edit-row">
-                <button type="button" onClick={cycleRotate}>
-                  Rotate
+            <div className="az-scan-toolbar">
+                <button type="button" onClick={cycleRotate} className="az-scan-icon-button" aria-label="Rotate page">
+                  ↻
                 </button>
 
-                <button type="button" onClick={resetCrop}>
-                  Reset crop
+                <button type="button" onClick={resetCrop} className="az-scan-compact-button">
+                  Crop reset
                 </button>
-              </div>
 
-              <label className="az-brightness-control">
-                Brightness
-                <input
-                  type="range"
-                  min="0.75"
-                  max="1.35"
-                  step="0.05"
-                  value={imageEdit.brightness}
-                  onChange={(e) =>
-                    onImageEditChange({
-                      ...imageEdit,
-                      brightness: Number(e.target.value),
-                      applied: false,
-                    })
-                  }
-                />
-              </label>
+                <label className="az-scan-brightness">
+                  <span>Brightness</span>
+                  <input
+                    type="range"
+                    min="0.75"
+                    max="1.35"
+                    step="0.05"
+                    value={imageEdit.brightness}
+                    onChange={(e) =>
+                      onImageEditChange({
+                        ...imageEdit,
+                        brightness: Number(e.target.value),
+                        applied: false,
+                      })
+                    }
+                  />
+                </label>
 
-              <div className="az-mini-toggle">
+                <div className="az-scan-source-toggle">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onImageEditChange({
+                        ...imageEdit,
+                        pdfSource: "original",
+                        applied: false,
+                      })
+                    }
+                    className={imageEdit.pdfSource === "original" ? "az-scan-source-active" : ""}
+                  >
+                    Color
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onImageEditChange({
+                        ...imageEdit,
+                        pdfSource: "cleaned",
+                        applied: false,
+                      })
+                    }
+                    className={imageEdit.pdfSource === "cleaned" ? "az-scan-source-active" : ""}
+                  >
+                    Cleaned
+                  </button>
+                </div>
+
                 <button
                   type="button"
-                  onClick={() =>
-                    onImageEditChange({
-                      ...imageEdit,
-                      pdfSource: "original",
-                      applied: false,
-                    })
-                  }
-                  className={imageEdit.pdfSource === "original" ? "az-mini-toggle-active" : ""}
+                  onClick={applyScanEdit}
+                  className={imageEdit.applied ? "az-scan-apply az-scan-apply-saved" : "az-scan-apply"}
                 >
-                  Color
+                  {imageEdit.applied ? "Saved" : "Apply"}
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() =>
-                    onImageEditChange({
-                      ...imageEdit,
-                      pdfSource: "cleaned",
-                      applied: false,
-                    })
-                  }
-                  className={imageEdit.pdfSource === "cleaned" ? "az-mini-toggle-active" : ""}
-                >
-                  Cleaned
+                <button type="button" onClick={onApplyEditToAllPages} className="az-scan-apply-all">
+                  All
                 </button>
-              </div>
-
-              <div className="az-apply-row">
-              <button
-                type="button"
-                onClick={applyScanEdit}
-                className={imageEdit.applied ? "az-apply-button az-apply-button-saved" : "az-apply-button"}
-              >
-                {imageEdit.applied ? "Saved" : "Apply"}
-              </button>
-
-              <button
-                type="button"
-                onClick={onApplyEditToAllPages}
-                className="az-apply-all-button"
-              >
-                Apply to all
-              </button>
-            </div>
-            </div>
-
+              </div>                  
           </>
         )}
       </div>
