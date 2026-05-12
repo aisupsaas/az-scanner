@@ -2103,71 +2103,66 @@ body {
 
 .az-bottom-actions-row,
 .az-line-nav {
-  position: relative;
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.45rem;
   border: none !important;
   background: transparent !important;
   padding: 0 !important;
 }
 
-.az-bottom-actions-row::before,
-.az-line-nav::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 3px;
-  border-radius: 999px;
-  background: rgba(49, 93, 156, 0.52);
-  box-shadow: 0 1px 8px rgba(49, 93, 156, 0.12);
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-
 .az-line-action-button,
 .az-line-nav-item {
-  position: relative;
-  z-index: 1;
-  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 100%;
   min-height: 34px;
   border: none;
-  background: #eaf3ff;
-  color: #315d9c;
+  background: transparent;
+  color: #5f7290;
   font-size: clamp(0.82rem, 2.8vw, 0.95rem);
   font-weight: 400;
-  padding: 0 0.72rem;
+  padding: 0;
   text-align: center;
   white-space: nowrap;
 }
 
+.az-line-action-button::before,
+.az-line-action-button::after,
+.az-line-nav-item::before,
+.az-line-nav-item::after {
+  content: "";
+  flex: 1;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(124, 152, 194, 0.68);
+  box-shadow: 0 1px 8px rgba(124, 152, 194, 0.16);
+}
+
 .az-line-nav-item {
-  color: #53605d;
+  color: #6d7d91;
 }
 
 .az-line-nav-item-active {
-  color: #315d9c;
+  color: #2f4f78;
 }
 
 .az-line-nav-item:disabled {
   opacity: 0.38;
 }
 
-.az-app-pro .az-bottom-actions-row::before,
-.az-app-pro .az-line-nav::before {
-  background: rgba(15, 90, 76, 0.52);
-  box-shadow: 0 1px 8px rgba(15, 90, 76, 0.12);
-}
-
-.az-app-pro .az-line-action-button,
-.az-app-pro .az-line-nav-item {
-  background: #b9ddd3;
-}
-
 .az-app-pro .az-line-action-button,
 .az-app-pro .az-line-nav-item-active {
   color: #0f3f37;
+}
+
+.az-app-pro .az-line-action-button::before,
+.az-app-pro .az-line-action-button::after,
+.az-app-pro .az-line-nav-item::before,
+.az-app-pro .az-line-nav-item::after {
+  background: rgba(15, 90, 76, 0.52);
+  box-shadow: 0 1px 8px rgba(15, 90, 76, 0.12);
 }
