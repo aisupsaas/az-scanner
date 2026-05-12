@@ -1784,3 +1784,110 @@ textarea {
   background: rgba(248, 252, 250, 0.86);
   color: #314f4a;
 }
+
+/* Full-screen app polish: page itself should not scroll */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+.az-app,
+.az-shell {
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+.az-topbar {
+  flex: 0 0 auto;
+  padding-top: max(0.55rem, env(safe-area-inset-top));
+  padding-bottom: 0.45rem;
+}
+
+.az-topbar-logo {
+  width: 54px;
+}
+
+.az-topbar-title {
+  margin-top: 0.45rem;
+  font-size: 1.35rem;
+}
+
+.az-topbar-subtitle {
+  margin-top: 0.22rem;
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+
+.az-content {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.az-screen,
+.az-panel-card-fill {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.az-panel-card {
+  padding: 0.75rem;
+}
+
+.az-panel-header {
+  flex: 0 0 auto;
+}
+
+.az-section-copy {
+  font-size: 0.82rem;
+  line-height: 1.28;
+}
+
+.az-page-strip {
+  flex: 0 0 auto;
+  margin: 0.55rem 0 0.55rem !important;
+  padding-bottom: 0.55rem !important;
+}
+
+.az-preview-stage,
+.az-compare-stage,
+.az-scroll-panel {
+  flex: 1 1 auto;
+  min-height: 0 !important;
+}
+
+.az-scroll-panel {
+  overflow: auto;
+  padding: 0.75rem !important;
+}
+
+.az-text-actions,
+.az-review-actions {
+  flex: 0 0 auto;
+  margin-top: 0.55rem;
+}
+
+.az-bottom-area {
+  flex: 0 0 auto;
+  padding-top: 0.45rem;
+  padding-bottom: max(0.55rem, env(safe-area-inset-bottom));
+  gap: 0.45rem;
+}
+
+.az-bottom-actions {
+  gap: 0.45rem;
+}
+
+.az-primary-button,
+.az-secondary-button {
+  min-height: 42px;
+}
+
+.az-bottom-nav {
+  padding: 0.25rem;
+}
+
+.az-nav-item {
+  min-height: 36px;
+}
