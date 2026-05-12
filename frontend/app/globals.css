@@ -2006,3 +2006,17 @@ body {
     max-height: 26dvh !important;
   }
 }
+
+/* Result scan: keep controls visible, allow preview area inside card to scroll */
+.az-panel-card-fill {
+  overflow: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.az-app .az-panel-card-fill {
+  max-height: 100%;
+}
+
+.az-bottom-area {
+  z-index: 30;
+}
