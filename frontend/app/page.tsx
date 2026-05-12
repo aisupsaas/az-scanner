@@ -332,93 +332,120 @@ function compressImageForOcr(file: File): Promise<File> {
 }
 
   async function processSelectedFiles() {
-    if (!files.length) {
-      setError("Please choose an image first.");
-      return;
-    }
+  if (!files.length) {
+    setError("Please choose an image first.");
+    return;
+  }
 
-    setLoading(true);
-    setError("");
-    setResult(null);
-    setEditedText("");
-    setEditedLines([]);
-    setStatusText(
-  selectedPlan === "pro"
-    ? `Preparing ${files.length} page${files.length === 1 ? "" : "s"} for Pro OCR...`
-    : `Preparing ${files.length} image${files.length === 1 ? "" : "s"}...`
-);
-    setMode("review");
+  setLoading(true);
+  setError("");
+  setResult(null);
+  setEditedText("");
+  setEditedLines([]);
+  setStatusText(
+    selectedPlan === "pro"
+      ? `Preparing ${files.length} page${files.length === 1 ? "" : "s"} for Pro OCR...`
+      : `Preparing ${files.length} image${files.length === 1 ? "" : "s"}...`
+  );
+  setMode("review");
 
-    try {
-      const formData = new FormData();
-      for (const item of files) {
-        formData.append("files", item);
-      }
+  try {
+    const compressedBase64Files = await Promise.all(
+      files.map(async (file, index) => {
+        setStatusText(
+          selectedPlan === "pro"
+            ? `Preparing page ${index + 1} of ${files.length} for upload...`
+            : `Preparing image ${index + 1} of ${files.length}...`
+        );
 
-      const res = await fetch(`https://az-scanner-production.up.railway.app/process-pro`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        const compressed = await compressImageForOcr(file);
+        return toBase64(compressed);
+      })
+    );
 
-       body: JSON.stringify({
-        files: await Promise.all(
-          files.map(async (file, index) => {
-            setStatusText(
-              selectedPlan === "pro"
-                ? `Preparing page ${index + 1} of ${files.length} for Pro OCR...`
-                : `Preparing image ${index + 1} of ${files.length}...`
-            );
+    setStatusText("Starting OCR...");
 
-            const compressed = await compressImageForOcr(file);
-            return toBase64(compressed);
-          })
-        ),
+    const res = await fetch(`https://az-scanner-production.up.railway.app/process-pro/stream`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        files: compressedBase64Files,
       }),
     });
 
-      setStatusText("Running OCR and building your scan...");
-
-      const contentType = res.headers.get("content-type") || "";
-      let data: ProcessResponse = {};
-
-      if (contentType.includes("application/json")) {
-        data = await res.json();
-      } else {
-        throw new Error("Server returned a non-JSON response.");
-      }
-
-      if (!res.ok) throw new Error(data?.error || "Processing failed.");
-
-      const nextLines = Array.isArray(data.lines) ? data.lines : [];
-      const pageCount = data.files?.originalPdfImageUrls?.length || files.length;
-      const nextText = nextLines.length ? linesToText(nextLines) : data?.text || "";
-
-      setResult(data);
-      setEditedLines(nextLines);
-      setEditedText(nextText);
-      setOriginalOcrLines(nextLines);
-      setOriginalOcrText(nextText);
-      setTextHistory([]);
-      setImageEdits(makeDefaultEdits(pageCount));
-      setStatusText(
-  selectedPlan === "pro"
-    ? `Pro OCR complete. ${pageCount} page${pageCount === 1 ? "" : "s"} processed.`
-    : `Processed ${pageCount} page${pageCount === 1 ? "" : "s"}.`
-);
-      setMode("result");
-      setResultTab("compare");
-      setCompareView("split");
-    } 
-      catch (err: any) {
-      const message = err?.message || "Load failed";
-      setError(message);
-      setStatusText("Processing failed.");
-      setMode("review");
-    } finally {
-      setLoading(false);
+    if (!res.ok || !res.body) {
+      const data = await res.json().catch(() => null);
+      throw new Error(data?.error || "Processing failed.");
     }
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let finalData: ProcessResponse | null = null;
+
+    while (true) {
+      const { value, done } = await reader.read();
+
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() || "";
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+
+        const event = JSON.parse(trimmed);
+
+        if (event.type === "progress" && event.message) {
+          setStatusText(event.message);
+        }
+
+        if (event.type === "error") {
+          throw new Error(event.message || "OCR failed.");
+        }
+
+        if (event.type === "complete") {
+          finalData = event.result;
+        }
+      }
+    }
+
+    if (!finalData) {
+      throw new Error("Processing finished without a result.");
+    }
+
+    const nextLines = Array.isArray(finalData.lines) ? finalData.lines : [];
+    const pageCount = finalData.files?.originalPdfImageUrls?.length || files.length;
+    const nextText = nextLines.length ? linesToText(nextLines) : finalData?.text || "";
+
+    setResult(finalData);
+    setEditedLines(nextLines);
+    setEditedText(nextText);
+    setOriginalOcrLines(nextLines);
+    setOriginalOcrText(nextText);
+    setTextHistory([]);
+    setImageEdits(makeDefaultEdits(pageCount));
+    setStatusText(
+      selectedPlan === "pro"
+        ? `Pro OCR complete. ${pageCount} page${pageCount === 1 ? "" : "s"} processed.`
+        : `Processed ${pageCount} page${pageCount === 1 ? "" : "s"}.`
+    );
+    setMode("result");
+    setResultTab("compare");
+    setCompareView("split");
+  } catch (err: any) {
+    const message = err?.message || "Processing failed.";
+    setError(message);
+    setStatusText("Processing failed.");
+    setMode("review");
+  } finally {
+    setLoading(false);
   }
+}
 
   async function openCamera() {
     setCameraOpen(true);
