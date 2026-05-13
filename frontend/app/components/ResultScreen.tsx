@@ -97,11 +97,9 @@ export default function ResultScreen({
   const imageRef = useRef<HTMLImageElement | null>(null);
   const [dragging, setDragging] = useState<Corner | null>(null);
   const [downloadOpen, setDownloadOpen] = useState(false);
-  const [shareOpen, setShareOpen] = useState(false);
 
   const [pageDragFromIndex, setPageDragFromIndex] = useState<number | null>(null);
   const [pageDragOverIndex, setPageDragOverIndex] = useState<number | null>(null);
-  const pageHoldTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function cycleRotate() {
     const next = ((imageEdit.rotate + 90) % 360) as ImageEditSettings["rotate"];
@@ -188,49 +186,6 @@ export default function ResultScreen({
     clipPath: `inset(${imageEdit.crop.top}% ${imageEdit.crop.right}% ${imageEdit.crop.bottom}% ${imageEdit.crop.left}%)`,
   };
 
-  function clearPageHoldTimer() {
-  if (pageHoldTimerRef.current) {
-    clearTimeout(pageHoldTimerRef.current);
-    pageHoldTimerRef.current = null;
-  }
-}
-
-function startPageHold(index: number) {
-  clearPageHoldTimer();
-
-  pageHoldTimerRef.current = setTimeout(() => {
-    setPageDragFromIndex(index);
-    setPageDragOverIndex(index);
-  }, 260);
-}
-
-function finishPageHold(e: React.PointerEvent, index: number) {
-  clearPageHoldTimer();
-
-  if (pageDragFromIndex === null) {
-    onSelectPage(index);
-    return;
-  }
-
-  const target = document
-    .elementFromPoint(e.clientX, e.clientY)
-    ?.closest("[data-result-page-index]");
-
-  const toIndexRaw = target?.getAttribute("data-result-page-index");
-  const toIndex = Number(toIndexRaw);
-
-  if (
-    Number.isFinite(toIndex) &&
-    toIndex >= 0 &&
-    toIndex < pageCount &&
-    toIndex !== pageDragFromIndex
-  ) {
-    onMovePage(pageDragFromIndex, toIndex);
-  }
-
-  setPageDragFromIndex(null);
-  setPageDragOverIndex(null);
-}
 
   return (
     <div className="az-screen">
@@ -414,32 +369,64 @@ function finishPageHold(e: React.PointerEvent, index: number) {
                     key={index}
                     type="button"
                     data-result-page-index={index}
-                    onPointerDown={() => startPageHold(index)}
-                    onPointerMove={(e) => {
-                      if (pageDragFromIndex === null) return;
+                    onPointerDown={(e) => {
+                      const startX = e.clientX;
+                      let moved = false;
 
-                      const target = document
-                        .elementFromPoint(e.clientX, e.clientY)
-                        ?.closest("[data-result-page-index]");
+                      setPageDragFromIndex(index);
 
-                      const overIndex = Number(target?.getAttribute("data-result-page-index"));
+                      const handleMove = (moveEvent: PointerEvent) => {
+                        if (Math.abs(moveEvent.clientX - startX) > 8) {
+                          moved = true;
 
-                      if (Number.isFinite(overIndex)) {
-                        setPageDragOverIndex(overIndex);
-                      }
-                    }}
-                    onPointerUp={(e) => finishPageHold(e, index)}
-                    onPointerCancel={() => {
-                      clearPageHoldTimer();
-                      setPageDragFromIndex(null);
-                      setPageDragOverIndex(null);
+                          const target = document
+                            .elementFromPoint(moveEvent.clientX, moveEvent.clientY)
+                            ?.closest("[data-result-page-index]");
+
+                          const overIndex = Number(
+                            target?.getAttribute("data-result-page-index")
+                          );
+
+                          if (
+                            Number.isFinite(overIndex) &&
+                            overIndex !== pageDragOverIndex
+                          ) {
+                            setPageDragOverIndex(overIndex);
+                          }
+                        }
+                      };
+
+                      const handleUp = () => {
+                        window.removeEventListener("pointermove", handleMove);
+                        window.removeEventListener("pointerup", handleUp);
+
+                        if (
+                          moved &&
+                          pageDragFromIndex !== null &&
+                          pageDragOverIndex !== null &&
+                          pageDragFromIndex !== pageDragOverIndex
+                        ) {
+                          onMovePage(pageDragFromIndex, pageDragOverIndex);
+                        } else {
+                          onSelectPage(index);
+                        }
+
+                        setPageDragFromIndex(null);
+                        setPageDragOverIndex(null);
+                      };
+
+                      window.addEventListener("pointermove", handleMove);
+                      window.addEventListener("pointerup", handleUp);
                     }}
                     className={[
                       "az-page-pill",
                       "az-page-pill-draggable",
                       activePageIndex === index ? "az-page-pill-active" : "",
-                      pageDragFromIndex === index ? "az-page-pill-dragging" : "",
-                      pageDragOverIndex === index && pageDragFromIndex !== null
+                      pageDragFromIndex === index
+                        ? "az-page-pill-dragging"
+                        : "",
+                      pageDragOverIndex === index &&
+                      pageDragFromIndex !== null
                         ? "az-page-pill-drop-target"
                         : "",
                     ].join(" ")}
@@ -545,9 +532,8 @@ function finishPageHold(e: React.PointerEvent, index: number) {
     <button
       type="button"
       onClick={() => {
-        setDownloadOpen((current) => !current);
-        setShareOpen(false);
-      }}
+          setDownloadOpen((current) => !current);
+        }}
       className="az-export-icon-minimal"
       aria-label="Download"
     >
@@ -576,22 +562,40 @@ function finishPageHold(e: React.PointerEvent, index: number) {
       />
       <span className="az-brightness-icon-big">☀</span>
     </label>
-
-    <button
-      type="button"
-      onClick={() => {
-        setShareOpen((current) => !current);
-        setDownloadOpen(false);
-      }}
-      className="az-export-icon-minimal"
-      aria-label="Share"
-    >
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 16V5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        <path d="M8 9L12 5L16 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M6 13V18C6 18.5523 6.44772 19 7 19H17C17.5523 19 18 18.5523 18 18V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      </svg>
-    </button>
+<button
+  type="button"
+  className="az-export-icon-minimal"
+  aria-label="Share"
+  onClick={onShareOriginalPdf}
+>
+  <svg
+    width="32"
+    height="32"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M12 16V5"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+    <path
+      d="M8 9L12 5L16 9"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M6 13V18C6 18.5523 6.44772 19 7 19H17C17.5523 19 18 18.5523 18 18V13"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+  </svg>
+</button>
   </div>
 
   {downloadOpen ? (
@@ -612,30 +616,6 @@ function finishPageHold(e: React.PointerEvent, index: number) {
       </button>
 
       <button type="button" onClick={onDownloadEditedDocx}>
-        <span>DOCX</span>
-        <small>Word DOCX</small>
-      </button>
-    </div>
-  ) : null}
-
-  {shareOpen ? (
-    <div className="az-export-drawer">
-      <button type="button" onClick={onShareOriginalPdf}>
-        <span>PDF</span>
-        <small>Original</small>
-      </button>
-
-      <button type="button" onClick={onShareEditedTxt}>
-        <span>TXT</span>
-        <small>Text TXT</small>
-      </button>
-
-      <button type="button" onClick={onShareEditedPdf}>
-        <span>PDF</span>
-        <small>Text PDF</small>
-      </button>
-
-      <button type="button" onClick={onShareEditedDocx}>
         <span>DOCX</span>
         <small>Word DOCX</small>
       </button>

@@ -2184,3 +2184,106 @@ body {
 .az-page-pill-drop-target::after {
   background: rgba(57, 104, 199, 1) !important;
 }
+
+/* Bigger editor/preview area */
+.az-result-masthead {
+  margin-bottom: 0.2rem !important;
+}
+
+.az-panel-card {
+  padding-top: 0.45rem !important;
+}
+
+.az-scan-settings-head {
+  margin-bottom: 0.18rem !important;
+}
+
+.az-page-strip {
+  margin-top: 0.2rem !important;
+  margin-bottom: 0.2rem !important;
+}
+
+.az-scan-toolbar {
+  margin-top: 0.2rem !important;
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.1rem !important;
+}
+
+.az-export-zone {
+  margin-top: 0.15rem !important;
+}
+
+.az-compare-stage,
+.az-scroll-panel,
+.az-preview-stage {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+}
+
+.az-crop-container {
+  min-height: 320px !important;
+}
+
+.az-compare-stage {
+  min-height: 320px !important;
+}
+
+.az-scroll-panel {
+  min-height: 320px !important;
+}
+
+/* Pro mode: unify remaining blue controls into jade */
+.az-app-pro .az-result-title,
+.az-app-pro .az-result-subtitle,
+.az-app-pro .az-section-copy,
+.az-app-pro .az-compare-label {
+  color: #244d45;
+}
+
+.az-app-pro .az-page-pill {
+  color: rgba(36, 77, 69, 0.72) !important;
+}
+
+.az-app-pro .az-page-pill-active {
+  color: #0f4f43 !important;
+}
+
+.az-app-pro .az-page-pill-active::after {
+  background: rgba(43, 134, 115, 0.9) !important;
+}
+
+.az-app-pro .az-scan-icon-button,
+.az-app-pro .az-scan-compact-button,
+.az-app-pro .az-scan-apply,
+.az-app-pro .az-scan-apply-all {
+  color: rgba(36, 96, 83, 0.92) !important;
+}
+
+.az-app-pro .az-brightness-icon-small,
+.az-app-pro .az-brightness-icon-big {
+  color: rgba(55, 145, 126, 0.9) !important;
+}
+
+.az-app-pro .az-scan-brightness input {
+  accent-color: rgba(55, 145, 126, 0.92) !important;
+}
+
+.az-app-pro .az-export-icon-minimal {
+  color: rgba(73, 91, 94, 0.9) !important;
+}
+
+.az-app-pro .az-line-action-button,
+.az-app-pro .az-line-nav-item {
+  color: rgba(36, 77, 69, 0.72) !important;
+}
+
+.az-app-pro .az-line-nav-item-active {
+  color: #0f4f43 !important;
+}
+
+.az-app-pro .az-line-action-button::before,
+.az-app-pro .az-line-action-button::after,
+.az-app-pro .az-line-nav-item::before,
+.az-app-pro .az-line-nav-item::after {
+  background: rgba(43, 134, 115, 0.78) !important;
+}
