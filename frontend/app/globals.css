@@ -2027,17 +2027,28 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 80;
-  min-height: 148px;
-  padding: 1.15rem 1rem max(1rem, env(safe-area-inset-bottom));
+  z-index: 79;
+  height: 132px;
+  padding: 1rem 1rem max(0.9rem, env(safe-area-inset-bottom));
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.8rem;
-  background: rgba(244, 249, 255, 0.96);
+  align-items: center;
+  background: rgba(244, 249, 255, 0.97);
   backdrop-filter: blur(18px);
   border-top: 1px solid rgba(83, 113, 172, 0.16);
-  box-shadow: 0 -18px 42px rgba(42, 91, 150, 0.14);
-  animation: azDrawerUp 0.18s ease-out both;
+  box-shadow: 0 -14px 34px rgba(42, 91, 150, 0.12);
+  animation: azDrawerDown 0.18s ease-out both;
+}
+
+.az-export-zone {
+  position: relative;
+  z-index: 90;
+}
+
+.az-bottom-export-row {
+  position: relative;
+  z-index: 91;
 }
 
 .az-export-drawer button {
@@ -2076,14 +2087,14 @@ body {
 }
 
 .az-app-pro .az-export-drawer {
-  background: rgba(228, 244, 239, 0.96);
+  background: rgba(228, 244, 239, 0.97);
   border-top-color: rgba(43, 134, 115, 0.18);
 }
 
-@keyframes azDrawerUp {
+@keyframes azDrawerDown {
   from {
-    transform: translateY(100%);
-    opacity: 0.6;
+    transform: translateY(-14px);
+    opacity: 0;
   }
   to {
     transform: translateY(0);
@@ -2136,4 +2147,21 @@ body {
 .az-page-pill-draggable:active {
   cursor: grabbing;
   transform: scale(0.96);
+}
+
+/* Processing state = red */
+.az-line-action-button-processing,
+.az-line-nav-item-processing {
+  color: #d64545 !important;
+}
+
+.az-line-action-button-processing::before,
+.az-line-action-button-processing::after,
+.az-line-nav-item-processing::before,
+.az-line-nav-item-processing::after {
+  background: rgba(214, 69, 69, 0.92) !important;
+}
+
+.az-topbar-subtitle-processing {
+  color: #d64545 !important;
 }

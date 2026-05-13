@@ -938,7 +938,15 @@ function resetOcrText() {
             {mode !== "result" ? (
               <>
                 <div className="az-topbar-title">{topTitle}</div>
-                <div className="az-topbar-subtitle">{statusText}</div>
+                <div
+                  className={
+                    loading
+                      ? "az-topbar-subtitle az-topbar-subtitle-processing"
+                      : "az-topbar-subtitle"
+                  }
+                  >
+                  {statusText}
+                </div>
               </>
             ) : null}
           </div>
