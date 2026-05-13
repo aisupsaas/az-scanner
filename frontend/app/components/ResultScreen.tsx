@@ -357,6 +357,36 @@ export default function ResultScreen({
                   Edit
                 </button>
               </div>
+
+              <div className="az-result-toggle az-scan-source-toggle">
+                <button
+                  type="button"
+                  onClick={() =>
+                    onImageEditChange({
+                      ...imageEdit,
+                      pdfSource: "original",
+                      applied: false,
+                    })
+                  }
+                  className={imageEdit.pdfSource === "original" ? "az-result-toggle-active" : ""}
+                >
+                  Color
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    onImageEditChange({
+                      ...imageEdit,
+                      pdfSource: "cleaned",
+                      applied: false,
+                    })
+                  }
+                  className={imageEdit.pdfSource === "cleaned" ? "az-result-toggle-active" : ""}
+                >
+                  Cleaned
+                </button>
+              </div>
             </div>
 
             <div className="az-page-strip">
@@ -502,35 +532,6 @@ export default function ResultScreen({
                   }
                 />
               </label>
-                <div className="az-result-toggle az-scan-source-toggle">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      onImageEditChange({
-                        ...imageEdit,
-                        pdfSource: "original",
-                        applied: false,
-                      })
-                    }
-                    className={imageEdit.pdfSource === "original" ? "az-result-toggle-active" : ""}
-                  >
-                    Color
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      onImageEditChange({
-                        ...imageEdit,
-                        pdfSource: "cleaned",
-                        applied: false,
-                      })
-                    }
-                    className={imageEdit.pdfSource === "cleaned" ? "az-result-toggle-active" : ""}
-                  >
-                    Cleaned
-                  </button>
-                </div>
 
               <button
                 type="button"

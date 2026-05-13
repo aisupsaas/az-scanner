@@ -2003,7 +2003,7 @@ body {
 
 .az-scan-settings-head {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: auto auto auto;
   justify-content: start;
   align-items: center;
   gap: 0.75rem;
