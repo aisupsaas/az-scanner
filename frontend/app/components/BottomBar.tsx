@@ -61,9 +61,11 @@ export default function BottomBar({
               className={[
                 "az-line-action-button",
                 loading ? "az-line-action-button-processing" : "",
-                loading || fileCount < 1 ? "disabled:cursor-not-allowed disabled:opacity-50" : "",
+                !loading && fileCount < 1
+                  ? "disabled:cursor-not-allowed disabled:opacity-50"
+                  : "",
               ].join(" ")}
-              >
+            >
               <span>{loading ? "Processing..." : "Process"}</span>
             </button>
           </>

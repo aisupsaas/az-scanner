@@ -2287,3 +2287,94 @@ body {
 .az-app-pro .az-line-nav-item::after {
   background: rgba(43, 134, 115, 0.78) !important;
 }
+
+/* Processing state: keep red even when disabled */
+.az-line-action-button-processing,
+.az-line-action-button-processing:disabled {
+  color: #d64545 !important;
+  opacity: 1 !important;
+}
+
+.az-line-action-button-processing::before,
+.az-line-action-button-processing::after,
+.az-line-action-button-processing:disabled::before,
+.az-line-action-button-processing:disabled::after {
+  background: rgba(214, 69, 69, 0.92) !important;
+}
+
+/* Result editor/preview: even, full image, not cut */
+.az-compare-stage-split {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 0.75rem !important;
+  align-items: stretch !important;
+}
+
+.az-compare-panel {
+  min-height: 0 !important;
+}
+
+.az-crop-container,
+.az-compare-frame {
+  height: clamp(330px, 43dvh, 500px) !important;
+  min-height: 330px !important;
+  max-height: 500px !important;
+}
+
+.az-crop-image-wrap {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+}
+
+.az-crop-image-wrap .az-crop-image,
+.az-main-preview {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+  object-fit: contain !important;
+}
+
+/* Give export row enough room; prevent drawer overlap/cutting */
+.az-export-zone {
+  margin-top: 0.25rem !important;
+}
+
+.az-bottom-export-row {
+  margin-top: 0.35rem !important;
+  padding-bottom: 0.2rem !important;
+}
+
+/* Drawer: move format icons upward so labels do not collide with slider */
+.az-export-drawer {
+  height: 150px !important;
+  padding-top: 0.55rem !important;
+  padding-bottom: max(1.15rem, env(safe-area-inset-bottom)) !important;
+  align-items: start !important;
+}
+
+.az-export-drawer button {
+  align-self: start !important;
+  transform: translateY(-0.2rem);
+}
+
+.az-export-drawer button span {
+  width: 52px !important;
+  height: 52px !important;
+}
+
+.az-export-drawer button small {
+  margin-top: 0.05rem !important;
+}
+
+/* Mobile: keep split boxes even */
+@media (max-width: 640px) {
+  .az-compare-stage-split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  }
+
+  .az-crop-container,
+  .az-compare-frame {
+    height: clamp(320px, 42dvh, 470px) !important;
+    min-height: 320px !important;
+  }
+}
