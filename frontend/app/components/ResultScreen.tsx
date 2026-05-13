@@ -462,10 +462,10 @@ export default function ResultScreen({
                           alt="Original document preview"
                           className="az-crop-image"
                           style={{
-                            transform: `rotate(${imageEdit.rotate}deg)`,
+                            transform: "none",
                             filter: `brightness(${imageEdit.brightness})`,
                           }}
-                        />
+                            />
 
                         <div className="az-crop-box" style={cropBoxStyle}>
                           <div className="az-grid" />
