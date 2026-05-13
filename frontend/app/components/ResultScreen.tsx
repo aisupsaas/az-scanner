@@ -99,6 +99,10 @@ export default function ResultScreen({
   const [downloadOpen, setDownloadOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
 
+  const [pageDragFromIndex, setPageDragFromIndex] = useState<number | null>(null);
+  const [pageDragOverIndex, setPageDragOverIndex] = useState<number | null>(null);
+  const pageHoldTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   function cycleRotate() {
     const next = ((imageEdit.rotate + 90) % 360) as ImageEditSettings["rotate"];
     onImageEditChange({
@@ -183,6 +187,50 @@ export default function ResultScreen({
     filter: `brightness(${imageEdit.brightness})`,
     clipPath: `inset(${imageEdit.crop.top}% ${imageEdit.crop.right}% ${imageEdit.crop.bottom}% ${imageEdit.crop.left}%)`,
   };
+
+  function clearPageHoldTimer() {
+  if (pageHoldTimerRef.current) {
+    clearTimeout(pageHoldTimerRef.current);
+    pageHoldTimerRef.current = null;
+  }
+}
+
+function startPageHold(index: number) {
+  clearPageHoldTimer();
+
+  pageHoldTimerRef.current = setTimeout(() => {
+    setPageDragFromIndex(index);
+    setPageDragOverIndex(index);
+  }, 260);
+}
+
+function finishPageHold(e: React.PointerEvent, index: number) {
+  clearPageHoldTimer();
+
+  if (pageDragFromIndex === null) {
+    onSelectPage(index);
+    return;
+  }
+
+  const target = document
+    .elementFromPoint(e.clientX, e.clientY)
+    ?.closest("[data-result-page-index]");
+
+  const toIndexRaw = target?.getAttribute("data-result-page-index");
+  const toIndex = Number(toIndexRaw);
+
+  if (
+    Number.isFinite(toIndex) &&
+    toIndex >= 0 &&
+    toIndex < pageCount &&
+    toIndex !== pageDragFromIndex
+  ) {
+    onMovePage(pageDragFromIndex, toIndex);
+  }
+
+  setPageDragFromIndex(null);
+  setPageDragOverIndex(null);
+}
 
   return (
     <div className="az-screen">
@@ -360,36 +408,46 @@ export default function ResultScreen({
               </div>
             </div>
 
-            <div className="az-page-strip">
-              {Array.from({ length: pageCount }).map((_, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  draggable
-                  onClick={() => onSelectPage(index)}
-                  onDragStart={(e) => {
-                    e.dataTransfer.setData("text/plain", String(index));
-                    e.dataTransfer.effectAllowed = "move";
-                  }}
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = "move";
-                  }}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    const fromIndex = Number(e.dataTransfer.getData("text/plain"));
-                    if (Number.isFinite(fromIndex)) onMovePage(fromIndex, index);
-                  }}
-                  className={[
-                    "az-page-pill",
-                    "az-page-pill-draggable",
-                    activePageIndex === index ? "az-page-pill-active" : "",
-                  ].join(" ")}
-                >
-                  Page {index + 1}
-                </button>
-              ))}
-            </div>
+              <div className="az-page-strip">
+                {Array.from({ length: pageCount }).map((_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    data-result-page-index={index}
+                    onPointerDown={() => startPageHold(index)}
+                    onPointerMove={(e) => {
+                      if (pageDragFromIndex === null) return;
+
+                      const target = document
+                        .elementFromPoint(e.clientX, e.clientY)
+                        ?.closest("[data-result-page-index]");
+
+                      const overIndex = Number(target?.getAttribute("data-result-page-index"));
+
+                      if (Number.isFinite(overIndex)) {
+                        setPageDragOverIndex(overIndex);
+                      }
+                    }}
+                    onPointerUp={(e) => finishPageHold(e, index)}
+                    onPointerCancel={() => {
+                      clearPageHoldTimer();
+                      setPageDragFromIndex(null);
+                      setPageDragOverIndex(null);
+                    }}
+                    className={[
+                      "az-page-pill",
+                      "az-page-pill-draggable",
+                      activePageIndex === index ? "az-page-pill-active" : "",
+                      pageDragFromIndex === index ? "az-page-pill-dragging" : "",
+                      pageDragOverIndex === index && pageDragFromIndex !== null
+                        ? "az-page-pill-drop-target"
+                        : "",
+                    ].join(" ")}
+                  >
+                    Page {index + 1}
+                  </button>
+                ))}
+              </div>
 
             <div
               className={[

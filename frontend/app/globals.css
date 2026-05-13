@@ -2165,3 +2165,22 @@ body {
 .az-topbar-subtitle-processing {
   color: #d64545 !important;
 }
+
+.az-page-pill-draggable {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.az-page-pill-dragging {
+  opacity: 0.55;
+  transform: scale(0.94);
+}
+
+.az-page-pill-drop-target {
+  color: rgba(57, 104, 199, 1) !important;
+}
+
+.az-page-pill-drop-target::after {
+  background: rgba(57, 104, 199, 1) !important;
+}
