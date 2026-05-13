@@ -2103,60 +2103,55 @@ body {
 
 .az-bottom-actions-row,
 .az-line-nav {
-  position: relative;
   display: grid !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   align-items: center;
-  gap: 0;
+  width: 100%;
+  gap: 0 !important;
   border: none !important;
   background: transparent !important;
   padding: 0 !important;
 }
 
-.az-bottom-actions-row::before,
-.az-line-nav::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 3px;
-  border-radius: 999px;
-  background: rgba(124, 152, 194, 0.68);
-  transform: translateY(-50%);
-  pointer-events: none;
-  z-index: 0;
+.az-bottom-actions-row > *:last-child:nth-child(odd) {
+  grid-column: auto !important;
 }
 
 .az-line-action-button,
 .az-line-nav-item {
-  position: relative;
-  z-index: 2;
-  display: flex !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  justify-content: center;
+  gap: 0.42rem;
   width: 100%;
   min-height: 34px;
   border: none !important;
   background: transparent !important;
+  padding: 0 !important;
   color: #5f7290;
   font-size: clamp(0.82rem, 2.8vw, 0.95rem);
   font-weight: 400;
-  padding: 0 !important;
   text-align: center;
   white-space: nowrap;
 }
 
+.az-line-action-button::before,
+.az-line-action-button::after,
+.az-line-nav-item::before,
+.az-line-nav-item::after {
+  content: "";
+  display: block;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(124, 152, 194, 0.68);
+}
+
 .az-line-action-button span,
 .az-line-nav-item span {
-  position: relative;
-  z-index: 5;
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  background: #dcecff !important;
-  padding: 0 0.85rem;
-  line-height: 1.25;
+  display: inline-block !important;
+  background: transparent !important;
+  padding: 0 !important;
+  line-height: 1.2;
 }
 
 .az-line-nav-item {
@@ -2171,17 +2166,14 @@ body {
   opacity: 0.38;
 }
 
-.az-app-pro .az-bottom-actions-row::before,
-.az-app-pro .az-line-nav::before {
+.az-app-pro .az-line-action-button::before,
+.az-app-pro .az-line-action-button::after,
+.az-app-pro .az-line-nav-item::before,
+.az-app-pro .az-line-nav-item::after {
   background: rgba(15, 90, 76, 0.52);
 }
 
 .az-app-pro .az-line-action-button,
 .az-app-pro .az-line-nav-item-active {
   color: #0f3f37;
-}
-
-.az-app-pro .az-line-action-button span,
-.az-app-pro .az-line-nav-item span {
-  background: #cfe8df !important;
 }
