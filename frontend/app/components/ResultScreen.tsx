@@ -550,21 +550,6 @@ export default function ResultScreen({
                       }
                     />
                   </label>
-              <button
-                type="button"
-                onClick={applyScanEdit}
-                className={
-                  imageEdit.applied
-                    ? "az-scan-apply az-scan-apply-saved"
-                    : "az-scan-apply"
-                }
-              >
-                {imageEdit.applied ? "Saved" : "Apply"}
-              </button>
-
-              <button type="button" onClick={onApplyEditToAllPages} className="az-scan-apply-all">
-                All
-              </button>
             </div>
 
             <div className="az-export-compact">
