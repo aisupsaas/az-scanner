@@ -2147,7 +2147,7 @@ body {
   display: block;
   height: 3px;
   border-radius: 999px;
-  background: rgba(102, 153, 255, 0.9);
+  background: rgba(57, 104, 199, 0.9);
 }
 
 .az-line-action-button span,
@@ -2180,4 +2180,62 @@ body {
 .az-app-pro .az-line-action-button,
 .az-app-pro .az-line-nav-item-active {
   color: #0f3f37;
+}
+
+.az-scan-toolbar {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 0.75rem !important;
+  justify-items: center !important;
+  padding: 0.7rem !important;
+}
+
+.az-scan-button-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  width: 100%;
+}
+
+.az-scan-brightness {
+  width: 78% !important;
+  max-width: 620px !important;
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+}
+
+.az-scan-brightness input {
+  width: 100% !important;
+  height: 32px;
+}
+
+.az-scan-apply {
+  background: #dbeafe !important;
+  border-color: rgba(96, 165, 250, 0.45) !important;
+  color: #1e3a8a !important;
+}
+
+.az-scan-apply:active {
+  background: #3b82f6 !important;
+  border-color: #2563eb !important;
+  color: #ffffff !important;
+}
+
+.az-scan-apply-saved {
+  background: #2563eb !important;
+  border-color: #1d4ed8 !important;
+  color: #ffffff !important;
+}
+
+.az-scan-settings-head {
+  display: grid !important;
+  grid-template-columns: auto auto auto !important;
+  justify-content: start !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+}
+
+.az-scan-source-toggle {
+  display: inline-grid !important;
 }
