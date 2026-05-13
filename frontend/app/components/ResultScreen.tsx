@@ -226,52 +226,27 @@ export default function ResultScreen({
               </div>
 
               <div className="az-text-tool-row">
-                <button
-                  type="button"
-                  onClick={() => onApplyTextTool("clean")}
-                  className="az-text-tool-button"
-                >
+                <button type="button" onClick={() => onApplyTextTool("clean")} className="az-text-tool-button">
                   Smart clean
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => onApplyTextTool("spacing")}
-                  className="az-text-tool-button"
-                >
+                <button type="button" onClick={() => onApplyTextTool("spacing")} className="az-text-tool-button">
                   Spacing
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => onApplyTextTool("blankLines")}
-                  className="az-text-tool-button"
-                >
+                <button type="button" onClick={() => onApplyTextTool("blankLines")} className="az-text-tool-button">
                   Lines
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => onApplyTextTool("mergeLines")}
-                  className="az-text-tool-button"
-                >
+                <button type="button" onClick={() => onApplyTextTool("mergeLines")} className="az-text-tool-button">
                   Merge
                 </button>
 
-                <button
-                  type="button"
-                  onClick={onUndoText}
-                  disabled={!canUndoText}
-                  className="az-text-tool-button az-text-tool-button-soft"
-                >
+                <button type="button" onClick={onUndoText} disabled={!canUndoText} className="az-text-tool-button az-text-tool-button-soft">
                   Undo
                 </button>
 
-                <button
-                  type="button"
-                  onClick={onResetOcrText}
-                  className="az-text-tool-button az-text-tool-button-soft"
-                >
+                <button type="button" onClick={onResetOcrText} className="az-text-tool-button az-text-tool-button-soft">
                   Reset OCR
                 </button>
               </div>
@@ -311,11 +286,7 @@ export default function ResultScreen({
                 </div>
               ) : (
                 <textarea
-                  value={
-                    loading
-                      ? "Processing document..."
-                      : editedText || "Your extracted text will appear here."
-                  }
+                  value={loading ? "Processing document..." : editedText || "Your extracted text will appear here."}
                   disabled={loading}
                   onChange={(e) => onSetEditedText(e.target.value)}
                   className="az-text-editor"
@@ -407,9 +378,7 @@ export default function ResultScreen({
                   onDrop={(e) => {
                     e.preventDefault();
                     const fromIndex = Number(e.dataTransfer.getData("text/plain"));
-                    if (Number.isFinite(fromIndex)) {
-                      onMovePage(fromIndex, index);
-                    }
+                    if (Number.isFinite(fromIndex)) onMovePage(fromIndex, index);
                   }}
                   className={[
                     "az-page-pill",
@@ -456,22 +425,10 @@ export default function ResultScreen({
                         <div className="az-crop-box" style={cropBoxStyle}>
                           <div className="az-grid" />
 
-                          <div
-                            className="az-handle tl"
-                            onPointerDown={(e) => handleDragStart("tl", e)}
-                          />
-                          <div
-                            className="az-handle tr"
-                            onPointerDown={(e) => handleDragStart("tr", e)}
-                          />
-                          <div
-                            className="az-handle bl"
-                            onPointerDown={(e) => handleDragStart("bl", e)}
-                          />
-                          <div
-                            className="az-handle br"
-                            onPointerDown={(e) => handleDragStart("br", e)}
-                          />
+                          <div className="az-handle tl" onPointerDown={(e) => handleDragStart("tl", e)} />
+                          <div className="az-handle tr" onPointerDown={(e) => handleDragStart("tr", e)} />
+                          <div className="az-handle bl" onPointerDown={(e) => handleDragStart("bl", e)} />
+                          <div className="az-handle br" onPointerDown={(e) => handleDragStart("br", e)} />
                         </div>
                       </div>
                     ) : (
@@ -526,43 +483,32 @@ export default function ResultScreen({
             </div>
 
             <div className="az-bottom-export-row">
-              <button
-                type="button"
-                onClick={() => {
-                  setDownloadOpen((current) => !current);
-                  setShareOpen(false);
-                }}
-                className="az-export-icon-minimal"
-                aria-label="Download"
-              >
-                <svg
-  width="34"
-  height="34"
-  viewBox="0 0 24 24"
-  fill="none"
-  xmlns="http://www.w3.org/2000/svg"
->
-  <path
-    d="M12 4V15"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-  />
-  <path
-    d="M7 10L12 15L17 10"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  />
-  <path
-    d="M5 20H19"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-  />
-</svg>
-              </button>
+              <div className="az-export-popover-wrap">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDownloadOpen((current) => !current);
+                    setShareOpen(false);
+                  }}
+                  className="az-export-icon-minimal"
+                  aria-label="Download"
+                >
+                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 4V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <path d="M7 10L12 15L17 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M5 20H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                </button>
+
+                {downloadOpen ? (
+                  <div className="az-export-popover">
+                    <button type="button" onClick={onDownloadOriginalPdf}>Original Adobe PDF</button>
+                    <button type="button" onClick={onDownloadEditedTxt}>Text TXT</button>
+                    <button type="button" onClick={onDownloadEditedPdf}>Text PDF</button>
+                    <button type="button" onClick={onDownloadEditedDocx}>Word DOCX</button>
+                  </div>
+                ) : null}
+              </div>
 
               <label className="az-scan-brightness az-scan-brightness-bottom">
                 <span className="az-brightness-icon-small">☀</span>
@@ -585,43 +531,32 @@ export default function ResultScreen({
                 <span className="az-brightness-icon-big">☀</span>
               </label>
 
-              <button
-                type="button"
-                onClick={() => {
+              <div className="az-export-popover-wrap">
+                <button
+                  type="button"
+                  onClick={() => {
                     setShareOpen((current) => !current);
                     setDownloadOpen(false);
                   }}
-                className="az-export-icon-minimal"
-                aria-label="Share"
-              >
-                <svg
-  width="32"
-  height="32"
-  viewBox="0 0 24 24"
-  fill="none"
-  xmlns="http://www.w3.org/2000/svg"
->
-  <path
-    d="M12 16V5"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-  />
-  <path
-    d="M8 9L12 5L16 9"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  />
-  <path
-    d="M6 13V18C6 18.5523 6.44772 19 7 19H17C17.5523 19 18 18.5523 18 18V13"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-  />
-</svg>
-              </button>
+                  className="az-export-icon-minimal"
+                  aria-label="Share"
+                >
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 16V5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <path d="M8 9L12 5L16 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M6 13V18C6 18.5523 6.44772 19 7 19H17C17.5523 19 18 18.5523 18 18V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                </button>
+
+                {shareOpen ? (
+                  <div className="az-export-popover">
+                    <button type="button" onClick={onShareOriginalPdf}>Original PDF</button>
+                    <button type="button" onClick={onShareEditedTxt}>Text TXT</button>
+                    <button type="button" onClick={onShareEditedPdf}>Text PDF</button>
+                    <button type="button" onClick={onShareEditedDocx}>Word DOCX</button>
+                  </div>
+                ) : null}
+              </div>
             </div>
           </>
         )}
