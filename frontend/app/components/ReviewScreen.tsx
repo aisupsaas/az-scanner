@@ -56,7 +56,7 @@ export default function ReviewScreen(props: {
                 className="az-thumb-trash"
                 aria-label={`Remove page ${index + 1}`}
               >
-                🗑
+                ×
               </button>
             </div>
           ))}

@@ -811,31 +811,35 @@ textarea {
 
 .az-thumb-trash {
   position: absolute;
-  top: -6px;
-  right: -6px;
-  width: 28px;
-  height: 28px;
+  top: -7px;
+  right: -7px;
+  width: 30px;
+  height: 30px;
   border: none;
   border-radius: 999px;
-  background: rgba(255, 240, 240, 0.96);
-  color: #b43838;
-  font-size: 0.9rem;
+  background: rgba(255, 245, 245, 0.96);
+  color: #d64545;
+  font-size: 1rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   box-shadow:
-    0 8px 18px rgba(180, 56, 56, 0.14),
+    0 8px 18px rgba(214, 69, 69, 0.16),
     0 2px 6px rgba(0, 0, 0, 0.06);
   z-index: 3;
+  transition:
+    transform 0.14s ease,
+    background 0.14s ease,
+    color 0.14s ease;
+}
+
+.az-thumb-trash:hover {
+  background: rgba(255, 235, 235, 1);
+  color: #c62828;
 }
 
 .az-thumb-trash:active {
-  transform: scale(0.94);
-}
-
-.az-app-pro .az-thumb-trash {
-  background: rgba(255, 235, 235, 0.96);
-  color: #b43838;
+  transform: scale(0.92);
 }
 
 .az-page-pill {
@@ -2143,7 +2147,7 @@ body {
   display: block;
   height: 3px;
   border-radius: 999px;
-  background: rgba(124, 152, 194, 0.68);
+  background: rgba(102, 153, 255, 0.9);
 }
 
 .az-line-action-button span,
@@ -2170,7 +2174,7 @@ body {
 .az-app-pro .az-line-action-button::after,
 .az-app-pro .az-line-nav-item::before,
 .az-app-pro .az-line-nav-item::after {
-  background: rgba(15, 90, 76, 0.52);
+  background: rgba(45, 140, 120, 0.72);
 }
 
 .az-app-pro .az-line-action-button,
