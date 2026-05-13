@@ -854,10 +854,6 @@ textarea {
   flex: 0 0 auto;
   font-size: 0.84rem;
   color: #6b7280;
-  position: relative;
-  min-height: 30px;
-  flex: 0 0 auto;
-  font-size: 0.84rem;
   transition:
     color 0.18s ease,
     border-color 0.18s ease;
@@ -1801,32 +1797,6 @@ body {
   accent-color: #3f8f7f;
 }
 
-@media (max-width: 640px) {
-  .az-scan-toolbar {
-    grid-template-columns: auto auto 1fr auto;
-    border-radius: 18px;
-  }
-
-  .az-scan-brightness {
-    grid-column: 1 / -1;
-    order: 2;
-  }
-
-  .az-scan-source-toggle {
-    order: 1;
-  }
-
-  .az-scan-apply {
-    order: 1;
-  }
-
-  .az-scan-apply-all {
-    order: 1;
-    width: 34px;
-    padding: 0 !important;
-  }
-}
-
 .az-result-title {
   font-size: 1.05rem;
   line-height: 1.1;
@@ -2011,22 +1981,6 @@ body {
 
 .az-scan-mode-toggle button {
   min-width: 58px;
-}
-
-.az-scan-toolbar {
-  grid-template-columns: auto auto minmax(90px, 150px) auto auto auto !important;
-}
-
-.az-scan-compact-button {
-  padding-inline: 0.55rem !important;
-}
-
-.az-scan-brightness {
-  max-width: 150px;
-}
-
-.az-scan-brightness span {
-  display: none;
 }
 
 .az-export-compact {
