@@ -501,55 +501,47 @@ export default function ResultScreen({
               )}
             </div>
 
-             <div className="az-scan-toolbar">
-                  <div className="az-scan-button-row">
-                    <button
-                      type="button"
-                      onClick={cycleRotate}
-                      className="az-scan-icon-button"
-                      aria-label="Rotate page"
-                    >
-                      ↻
-                    </button>
+            <div className="az-scan-toolbar">
+              <div className="az-scan-button-row">
+                <button type="button" onClick={cycleRotate} className="az-scan-icon-button" aria-label="Rotate page">
+                  ↻
+                </button>
 
-                    <button type="button" onClick={resetCrop} className="az-scan-compact-button">
-                      Reset
-                    </button>
+                <button type="button" onClick={resetCrop} className="az-scan-compact-button">
+                  Reset
+                </button>
 
-                    <button
-                      type="button"
-                      onClick={applyScanEdit}
-                      className={
-                        imageEdit.applied
-                          ? "az-scan-apply az-scan-apply-saved"
-                          : "az-scan-apply"
-                      }
-                    >
-                      {imageEdit.applied ? "Saved" : "Apply"}
-                    </button>
+                <button
+                  type="button"
+                  onClick={applyScanEdit}
+                  className={imageEdit.applied ? "az-scan-apply az-scan-apply-saved" : "az-scan-apply"}
+                >
+                  {imageEdit.applied ? "Saved" : "Apply"}
+                </button>
 
-                    <button type="button" onClick={onApplyEditToAllPages} className="az-scan-apply-all">
-                      All
-                    </button>
-                  </div>
+                <button type="button" onClick={onApplyEditToAllPages} className="az-scan-apply-all">
+                  All
+                </button>
+              </div>
 
-                  <label className="az-scan-brightness">
-                    <span>Brightness</span>
-                    <input
-                      type="range"
-                      min="0.75"
-                      max="1.35"
-                      step="0.05"
-                      value={imageEdit.brightness}
-                      onChange={(e) =>
-                        onImageEditChange({
-                          ...imageEdit,
-                          brightness: Number(e.target.value),
-                          applied: false,
-                        })
-                      }
-                    />
-                  </label>
+              <label className="az-scan-brightness">
+                <span className="az-brightness-icon-small">☀</span>
+                <input
+                  type="range"
+                  min="0.75"
+                  max="1.35"
+                  step="0.05"
+                  value={imageEdit.brightness}
+                  onChange={(e) =>
+                    onImageEditChange({
+                      ...imageEdit,
+                      brightness: Number(e.target.value),
+                      applied: false,
+                    })
+                  }
+                />
+                <span className="az-brightness-icon-big">☀</span>
+              </label>
             </div>
 
             <div className="az-export-compact">

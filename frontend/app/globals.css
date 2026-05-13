@@ -2101,7 +2101,7 @@ body {
   display: block;
   height: 3px;
   border-radius: 999px;
-  background: rgba(57, 104, 199, 0.9);
+  background: rgba(83, 113, 172, 0.9);
 }
 
 .az-line-action-button span,
@@ -2128,7 +2128,7 @@ body {
 .az-app-pro .az-line-action-button::after,
 .az-app-pro .az-line-nav-item::before,
 .az-app-pro .az-line-nav-item::after {
-  background: rgba(45, 140, 120, 0.72);
+  background: rgba(43, 134, 115, 0.72);
 }
 
 .az-app-pro .az-line-action-button,
@@ -2192,4 +2192,72 @@ body {
 
 .az-scan-source-toggle {
   display: inline-grid !important;
+}
+
+.az-scan-toolbar {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 0.8rem !important;
+  justify-items: center !important;
+  margin-top: 0.65rem !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.az-scan-button-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 1.35rem !important;
+  width: 100% !important;
+}
+
+.az-scan-icon-button,
+.az-scan-compact-button,
+.az-scan-apply,
+.az-scan-apply-all {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: rgba(83, 113, 172, 0.9) !important;
+  font-size: 1rem !important;
+  font-weight: 400 !important;
+  padding: 0 !important;
+  min-height: 30px !important;
+}
+
+.az-scan-icon-button {
+  width: auto !important;
+  font-size: 1.18rem !important;
+}
+
+.az-scan-brightness {
+  width: 78% !important;
+  max-width: 620px !important;
+  display: grid !important;
+  grid-template-columns: auto 1fr auto !important;
+  align-items: center !important;
+  gap: 0.65rem !important;
+}
+
+.az-scan-brightness input {
+  width: 100% !important;
+  height: 34px !important;
+  accent-color: rgba(83, 113, 172, 0.9) !important;
+}
+
+.az-brightness-icon-small {
+  color: rgba(83, 113, 172, 0.9);
+  font-size: 0.82rem;
+  line-height: 1;
+}
+
+.az-brightness-icon-big {
+  color: rgba(83, 113, 172, 0.9);
+  font-size: 1.22rem;
+  line-height: 1;
 }
