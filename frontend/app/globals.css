@@ -2247,17 +2247,51 @@ body {
 .az-scan-brightness input {
   width: 100% !important;
   height: 34px !important;
-  accent-color: rgba(83, 113, 172, 0.9) !important;
+  accent-color: rgba(135, 173, 248, 0.9) !important;
 }
 
 .az-brightness-icon-small {
-  color: rgba(83, 113, 172, 0.9);
-  font-size: 0.82rem;
+  color: rgba(135, 173, 248, 0.9);
+  font-size: 0.96rem;
   line-height: 1;
 }
 
 .az-brightness-icon-big {
-  color: rgba(83, 113, 172, 0.9);
-  font-size: 1.22rem;
+  color: rgba(135, 173, 248, 0.9);
+  font-size: 1.52rem;
   line-height: 1;
+}
+
+.az-bottom-export-row {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.az-export-icon-minimal {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  min-width: 34px;
+  min-height: 34px;
+  color: rgba(83, 113, 172, 0.92);
+  font-size: 2rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.az-export-icon-minimal:active {
+  transform: scale(0.94);
+}
+
+.az-scan-brightness-bottom {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
 }

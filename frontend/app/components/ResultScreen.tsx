@@ -544,48 +544,45 @@ export default function ResultScreen({
               </label>
             </div>
 
-            <div className="az-export-compact">
-              <div className="az-export-popover-wrap">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDownloadOpen((current) => !current);
-                    setShareOpen(false);
-                  }}
-                  className="az-export-main-button"
-                >
-                  Download
-                </button>
+            <div className="az-bottom-export-row">
+              <button
+                type="button"
+                onClick={() => setShowExportMenu((v) => !v)}
+                className="az-export-icon-minimal"
+                aria-label="Download"
+              >
+                ↓
+              </button>
 
-                {downloadOpen ? (
-                  <div className="az-export-popover">
-                    <button type="button" onClick={onDownloadOriginalPdf}>Original PDF</button>
-                    <button type="button" onClick={onDownloadEditedTxt}>TXT</button>
-                    <button type="button" onClick={onDownloadEditedPdf}>Text PDF</button>
-                    <button type="button" onClick={onDownloadEditedDocx}>DOCX</button>
-                  </div>
-                ) : null}
-              </div>
+              <label className="az-scan-brightness az-scan-brightness-bottom">
+                <span className="az-brightness-icon-small">☀</span>
 
-              <div className="az-export-popover-wrap">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShareOpen((current) => !current);
-                    setDownloadOpen(false);
-                  }}
-                  className="az-export-main-button az-export-main-button-soft"
-                >
-                  Share
-                </button>
+                <input
+                  type="range"
+                  min="0.75"
+                  max="1.35"
+                  step="0.05"
+                  value={imageEdit.brightness}
+                  onChange={(e) =>
+                    onImageEditChange({
+                      ...imageEdit,
+                      brightness: Number(e.target.value),
+                      applied: false,
+                    })
+                  }
+                />
 
-                {shareOpen ? (
-                  <div className="az-export-popover">
-                    <button type="button" onClick={onShareOriginalPdf}>Original PDF</button>
-                    <button type="button" onClick={onShareEditedTxt}>TXT</button>
-                  </div>
-                ) : null}
-              </div>
+                <span className="az-brightness-icon-big">☀</span>
+              </label>
+
+              <button
+                type="button"
+                onClick={onShare}
+                className="az-export-icon-minimal"
+                aria-label="Share"
+              >
+                ↑
+              </button>
             </div>
           </>
         )}
