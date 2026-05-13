@@ -37,11 +37,11 @@ export default function BottomBar({
         {mode === "review" ? (
           <>
             <button type="button" onClick={onOpenCamera} className="az-line-action-button">
-              Camera
+              <span>Camera</span>
             </button>
 
             <label className="az-line-action-button az-file-label">
-              Add files
+              <span>Add files</span>
               <input
                 type="file"
                 multiple
@@ -60,14 +60,14 @@ export default function BottomBar({
               disabled={loading || fileCount < 1}
               className="az-line-action-button disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {loading ? "Processing..." : "Process"}
+              <span>{loading ? "Processing..." : "Process"}</span>
             </button>
           </>
         ) : null}
 
         {mode === "result" ? (
-          <button type="button" onClick={onNewScan} className="az-line-action-button">
-            New scan
+          <button type="button" onClick={onNewScan} className="az-line-action-button az-line-action-single">
+            <span>New scan</span>
           </button>
         ) : null}
       </div>
@@ -78,7 +78,7 @@ export default function BottomBar({
           onClick={onGoToStart}
           className={["az-line-nav-item", mode === "start" ? "az-line-nav-item-active" : ""].join(" ")}
         >
-          Start
+          <span>Start</span>
         </button>
 
         <button
@@ -87,7 +87,7 @@ export default function BottomBar({
           disabled={!canOpenReview}
           className={["az-line-nav-item", mode === "review" ? "az-line-nav-item-active" : ""].join(" ")}
         >
-          Review
+          <span>Review</span>
         </button>
 
         <button
@@ -96,7 +96,7 @@ export default function BottomBar({
           disabled={!canOpenResult}
           className={["az-line-nav-item", mode === "result" ? "az-line-nav-item-active" : ""].join(" ")}
         >
-          Result
+          <span>Result</span>
         </button>
       </nav>
     </footer>

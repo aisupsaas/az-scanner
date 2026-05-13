@@ -2108,9 +2108,9 @@ body {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: center;
   gap: 0;
-  padding: 0;
   border: none !important;
   background: transparent !important;
+  padding: 0 !important;
 }
 
 .az-bottom-actions-row::before,
@@ -2125,13 +2125,8 @@ body {
   background: rgba(124, 152, 194, 0.68);
   box-shadow: 0 1px 8px rgba(124, 152, 194, 0.16);
   transform: translateY(-50%);
+  pointer-events: none;
   z-index: 0;
-}
-
-.az-app-pro .az-bottom-actions-row::before,
-.az-app-pro .az-line-nav::before {
-  background: rgba(15, 90, 76, 0.52);
-  box-shadow: 0 1px 8px rgba(15, 90, 76, 0.12);
 }
 
 .az-line-action-button,
@@ -2141,6 +2136,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  justify-self: stretch;
   width: 100%;
   min-height: 34px;
   border: none;
@@ -2155,13 +2151,16 @@ body {
 
 .az-line-action-button span,
 .az-line-nav-item span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: #eaf3ff;
-  padding: 0 0.8rem;
+  padding: 0 0.72rem;
+  line-height: 1.2;
 }
 
-.az-app-pro .az-line-action-button span,
-.az-app-pro .az-line-nav-item span {
-  background: #b9ddd3;
+.az-line-action-single {
+  width: 100%;
 }
 
 .az-line-nav-item {
@@ -2176,7 +2175,18 @@ body {
   opacity: 0.38;
 }
 
+.az-app-pro .az-bottom-actions-row::before,
+.az-app-pro .az-line-nav::before {
+  background: rgba(15, 90, 76, 0.52);
+  box-shadow: 0 1px 8px rgba(15, 90, 76, 0.12);
+}
+
 .az-app-pro .az-line-action-button,
 .az-app-pro .az-line-nav-item-active {
   color: #0f3f37;
+}
+
+.az-app-pro .az-line-action-button span,
+.az-app-pro .az-line-nav-item span {
+  background: #b9ddd3;
 }
