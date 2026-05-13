@@ -1688,115 +1688,6 @@ body {
 .az-bottom-area {
   z-index: 30;
 }
-
-/* Result Scan compact minimalist toolbar */
-.az-scan-toolbar {
-  flex: 0 0 auto;
-  display: grid;
-  grid-template-columns: auto auto minmax(110px, 1fr) auto auto auto;
-  gap: 0.38rem;
-  align-items: center;
-  margin: 0.45rem 0 0;
-  padding: 0.42rem;
-  border-radius: 999px;
-  border: 1px solid rgba(50, 92, 140, 0.08);
-  background: rgba(255, 255, 255, 0.74);
-  backdrop-filter: blur(14px);
-}
-
-.az-scan-icon-button,
-.az-scan-compact-button,
-.az-scan-source-toggle button,
-.az-scan-apply,
-.az-scan-apply-all {
-  min-height: 30px !important;
-  border-radius: 999px !important;
-  border: 1px solid rgba(0, 0, 0, 0.075) !important;
-  background: rgba(255, 255, 255, 0.76) !important;
-  color: #2f3742 !important;
-  font-size: 0.78rem !important;
-  font-weight: 400 !important;
-  padding: 0 0.62rem !important;
-  white-space: nowrap;
-}
-
-.az-scan-icon-button {
-  width: 32px;
-  padding: 0 !important;
-  font-size: 1rem !important;
-}
-
-.az-scan-brightness {
-  display: grid;
-  grid-template-columns: auto minmax(70px, 1fr);
-  gap: 0.38rem;
-  align-items: center;
-  min-width: 0;
-  color: #5d6672;
-  font-size: 0.74rem;
-  font-weight: 300;
-}
-
-.az-scan-brightness input {
-  width: 100%;
-  min-width: 0;
-  accent-color: #111111;
-}
-
-.az-scan-source-toggle {
-  width: auto;
-}
-
-.az-scan-source-toggle button {
-  min-width: 66px;
-}
-
-.az-scan-apply {
-  background: #111111 !important;
-  border-color: #111111 !important;
-  color: #ffffff !important;
-}
-
-.az-scan-apply-saved {
-  background: rgba(34, 197, 94, 0.92) !important;
-  border-color: rgba(22, 101, 52, 0.34) !important;
-  color: #ffffff !important;
-}
-
-.az-scan-apply-all {
-  color: #5f6b78 !important;
-}
-
-.az-app-pro .az-scan-toolbar {
-  border-color: rgba(67, 137, 122, 0.16);
-  background: rgba(248, 252, 250, 0.72);
-}
-
-.az-app-pro .az-scan-icon-button,
-.az-app-pro .az-scan-compact-button,
-.az-app-pro .az-scan-source-toggle button,
-.az-app-pro .az-scan-apply-all {
-  border-color: rgba(67, 137, 122, 0.16) !important;
-  background: rgba(255, 255, 255, 0.68) !important;
-  color: #314f4a !important;
-}
-
-.az-app-pro .az-scan-source-toggle .az-scan-source-active,
-.az-app-pro .az-scan-apply {
-  background: rgba(35, 92, 81, 0.94) !important;
-  border-color: rgba(35, 92, 81, 0.94) !important;
-  color: #ffffff !important;
-}
-
-.az-app-pro .az-scan-apply-saved {
-  background: rgba(71, 184, 153, 0.92) !important;
-  border-color: rgba(71, 184, 153, 0.42) !important;
-}
-
-.az-app-pro .az-scan-brightness input {
-  accent-color: #3f8f7f;
-}
-
 .az-result-title {
   font-size: 1.05rem;
   line-height: 1.1;
@@ -1893,50 +1784,8 @@ body {
 .az-handle.bl { bottom: -19px !important; left: -19px !important; }
 .az-handle.br { bottom: -19px !important; right: -19px !important; }
 
-/* Bottom export: compact, not giant top card */
-.az-export-card-bottom {
-  position: static !important;
-  justify-self: end;
-  width: min(100%, 420px);
-  margin: 0.45rem 0 0 !important;
-  padding: 0.55rem !important;
-  border-radius: 14px !important;
-}
-
-.az-export-card-bottom .az-export-head {
-  grid-template-columns: 1fr auto;
-}
-
-.az-export-list-compact {
-  display: flex !important;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 0.38rem !important;
-}
-
-.az-export-chip {
-  min-height: 30px;
-  border-radius: 999px;
-  border: 1px solid rgba(50, 92, 140, 0.1);
-  background: rgba(255, 255, 255, 0.86);
-  color: #27313d;
-  padding: 0 0.7rem;
-  font-size: 0.78rem;
-  font-weight: 400;
-}
-
-.az-export-chip-soft {
-  color: #5f6670;
-}
-
 .az-app-pro .az-result-toggle .az-result-toggle-active {
   background: rgba(35, 92, 81, 0.94);
-}
-
-.az-app-pro .az-export-chip {
-  border-color: rgba(67, 137, 122, 0.18);
-  background: rgba(255, 255, 255, 0.74);
-  color: #314f4a;
 }
 
 @media (max-width: 640px) {
@@ -1969,77 +1818,6 @@ body {
   .az-export-list-compact {
     justify-content: flex-start;
   }
-}
-
-.az-scan-settings-head {
-  display: grid;
-  grid-template-columns: auto auto auto;
-  justify-content: start;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.az-scan-mode-toggle button {
-  min-width: 58px;
-}
-
-.az-export-compact {
-  position: relative;
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.45rem;
-  margin-top: 0.45rem;
-}
-
-.az-export-popover-wrap {
-  position: relative;
-}
-
-.az-export-main-button {
-  min-height: 34px;
-  border-radius: 999px;
-  border: 1px solid #111111;
-  background: #111111;
-  color: #ffffff;
-  padding: 0 0.95rem;
-  font-size: 0.84rem;
-  font-weight: 400;
-}
-
-.az-export-main-button-soft {
-  border-color: rgba(0, 0, 0, 0.1);
-  background: rgba(255, 255, 255, 0.84);
-  color: #111111;
-}
-
-.az-export-popover {
-  position: absolute;
-  right: 0;
-  bottom: calc(100% + 0.4rem);
-  z-index: 50;
-  width: 160px;
-  display: grid;
-  gap: 0.25rem;
-  padding: 0.35rem;
-  border-radius: 14px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12);
-}
-
-.az-export-popover button {
-  min-height: 34px;
-  border: none;
-  border-radius: 10px;
-  background: transparent;
-  text-align: left;
-  padding: 0 0.65rem;
-  color: #222;
-  font-size: 0.82rem;
-}
-
-.az-export-popover button:active {
-  background: rgba(0, 0, 0, 0.06);
 }
 
 .az-result-masthead {
@@ -2134,64 +1912,6 @@ body {
 .az-app-pro .az-line-action-button,
 .az-app-pro .az-line-nav-item-active {
   color: #0f3f37;
-}
-
-.az-scan-toolbar {
-  display: grid !important;
-  grid-template-columns: 1fr !important;
-  gap: 0.75rem !important;
-  justify-items: center !important;
-  padding: 0.7rem !important;
-}
-
-.az-scan-button-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.85rem;
-  width: 100%;
-}
-
-.az-scan-brightness {
-  width: 78% !important;
-  max-width: 620px !important;
-  display: grid !important;
-  grid-template-columns: 1fr !important;
-}
-
-.az-scan-brightness input {
-  width: 100% !important;
-  height: 32px;
-}
-
-.az-scan-apply {
-  background: #dbeafe !important;
-  border-color: rgba(96, 165, 250, 0.45) !important;
-  color: #1e3a8a !important;
-}
-
-.az-scan-apply:active {
-  background: #3b82f6 !important;
-  border-color: #2563eb !important;
-  color: #ffffff !important;
-}
-
-.az-scan-apply-saved {
-  background: #2563eb !important;
-  border-color: #1d4ed8 !important;
-  color: #ffffff !important;
-}
-
-.az-scan-settings-head {
-  display: grid !important;
-  grid-template-columns: auto auto auto !important;
-  justify-content: start !important;
-  align-items: center !important;
-  gap: 0.75rem !important;
-}
-
-.az-scan-source-toggle {
-  display: inline-grid !important;
 }
 
 .az-scan-toolbar {
@@ -2294,4 +2014,40 @@ body {
   width: 100% !important;
   max-width: none !important;
   margin: 0 !important;
+}
+
+.az-export-zone {
+  width: 100%;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.az-export-sheet {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+  padding: 0.75rem 0 0.25rem;
+}
+
+.az-export-sheet button {
+  min-height: 40px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: rgba(83, 113, 172, 0.95);
+  font-size: 0.9rem;
+  font-weight: 400;
+  text-align: center;
+}
+
+.az-export-sheet button:active {
+  transform: scale(0.96);
+  color: rgba(57, 104, 199, 1);
+}
+
+@media (max-width: 640px) {
+  .az-export-sheet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

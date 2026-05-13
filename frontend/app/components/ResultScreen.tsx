@@ -482,82 +482,78 @@ export default function ResultScreen({
               </div>
             </div>
 
-            <div className="az-bottom-export-row">
-              <div className="az-export-popover-wrap">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDownloadOpen((current) => !current);
-                    setShareOpen(false);
-                  }}
-                  className="az-export-icon-minimal"
-                  aria-label="Download"
-                >
-                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 4V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    <path d="M7 10L12 15L17 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M5 20H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                </button>
+            <div className="az-export-zone">
+  <div className="az-bottom-export-row">
+    <button
+      type="button"
+      onClick={() => {
+        setDownloadOpen((current) => !current);
+        setShareOpen(false);
+      }}
+      className="az-export-icon-minimal"
+      aria-label="Download"
+    >
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 4V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <path d="M7 10L12 15L17 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M5 20H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    </button>
 
-                {downloadOpen ? (
-                  <div className="az-export-popover">
-                    <button type="button" onClick={onDownloadOriginalPdf}>Original Adobe PDF</button>
-                    <button type="button" onClick={onDownloadEditedTxt}>Text TXT</button>
-                    <button type="button" onClick={onDownloadEditedPdf}>Text PDF</button>
-                    <button type="button" onClick={onDownloadEditedDocx}>Word DOCX</button>
-                  </div>
-                ) : null}
-              </div>
+    <label className="az-scan-brightness az-scan-brightness-bottom">
+      <span className="az-brightness-icon-small">☀</span>
+      <input
+        type="range"
+        min="0.75"
+        max="1.35"
+        step="0.05"
+        value={imageEdit.brightness}
+        onChange={(e) =>
+          onImageEditChange({
+            ...imageEdit,
+            brightness: Number(e.target.value),
+            applied: false,
+          })
+        }
+      />
+      <span className="az-brightness-icon-big">☀</span>
+    </label>
 
-              <label className="az-scan-brightness az-scan-brightness-bottom">
-                <span className="az-brightness-icon-small">☀</span>
+    <button
+      type="button"
+      onClick={() => {
+        setShareOpen((current) => !current);
+        setDownloadOpen(false);
+      }}
+      className="az-export-icon-minimal"
+      aria-label="Share"
+    >
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 16V5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <path d="M8 9L12 5L16 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M6 13V18C6 18.5523 6.44772 19 7 19H17C17.5523 19 18 18.5523 18 18V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    </button>
+  </div>
 
-                <input
-                  type="range"
-                  min="0.75"
-                  max="1.35"
-                  step="0.05"
-                  value={imageEdit.brightness}
-                  onChange={(e) =>
-                    onImageEditChange({
-                      ...imageEdit,
-                      brightness: Number(e.target.value),
-                      applied: false,
-                    })
-                  }
-                />
+  {downloadOpen ? (
+    <div className="az-export-sheet">
+      <button type="button" onClick={onDownloadOriginalPdf}>Adobe PDF</button>
+      <button type="button" onClick={onDownloadEditedTxt}>Text TXT</button>
+      <button type="button" onClick={onDownloadEditedPdf}>Text PDF</button>
+      <button type="button" onClick={onDownloadEditedDocx}>Word DOCX</button>
+    </div>
+  ) : null}
 
-                <span className="az-brightness-icon-big">☀</span>
-              </label>
-
-              <div className="az-export-popover-wrap">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShareOpen((current) => !current);
-                    setDownloadOpen(false);
-                  }}
-                  className="az-export-icon-minimal"
-                  aria-label="Share"
-                >
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 16V5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    <path d="M8 9L12 5L16 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M6 13V18C6 18.5523 6.44772 19 7 19H17C17.5523 19 18 18.5523 18 18V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                </button>
-
-                {shareOpen ? (
-                  <div className="az-export-popover">
-                    <button type="button" onClick={onShareOriginalPdf}>Original PDF</button>
-                    <button type="button" onClick={onShareEditedTxt}>Text TXT</button>
-                    <button type="button" onClick={onShareEditedPdf}>Text PDF</button>
-                    <button type="button" onClick={onShareEditedDocx}>Word DOCX</button>
-                  </div>
-                ) : null}
-              </div>
-            </div>
+  {shareOpen ? (
+    <div className="az-export-sheet">
+      <button type="button" onClick={onShareOriginalPdf}>Share Original PDF</button>
+      <button type="button" onClick={onShareEditedTxt}>Share Text TXT</button>
+      <button type="button" onClick={onShareEditedPdf}>Share Text PDF</button>
+      <button type="button" onClick={onShareEditedDocx}>Share Word DOCX</button>
+    </div>
+  ) : null}
+</div>
           </>
         )}
       </div>
