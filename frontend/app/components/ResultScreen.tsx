@@ -547,7 +547,10 @@ export default function ResultScreen({
             <div className="az-bottom-export-row">
               <button
                 type="button"
-                onClick={() => setShowExportMenu((v) => !v)}
+                onClick={() => {
+                  setDownloadOpen((current) => !current);
+                  setShareOpen(false);
+                }}
                 className="az-export-icon-minimal"
                 aria-label="Download"
               >
@@ -577,7 +580,10 @@ export default function ResultScreen({
 
               <button
                 type="button"
-                onClick={onShare}
+                onClick={() => {
+                    setShareOpen((current) => !current);
+                    setDownloadOpen(false);
+                  }}
                 className="az-export-icon-minimal"
                 aria-label="Share"
               >
