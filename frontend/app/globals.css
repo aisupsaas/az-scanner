@@ -2022,32 +2022,118 @@ body {
   gap: 0.75rem;
 }
 
-.az-export-sheet {
-  width: 100%;
+.az-export-drawer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 80;
+  min-height: 148px;
+  padding: 1.15rem 1rem max(1rem, env(safe-area-inset-bottom));
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.55rem;
-  padding: 0.75rem 0 0.25rem;
+  gap: 0.8rem;
+  background: rgba(244, 249, 255, 0.96);
+  backdrop-filter: blur(18px);
+  border-top: 1px solid rgba(83, 113, 172, 0.16);
+  box-shadow: 0 -18px 42px rgba(42, 91, 150, 0.14);
+  animation: azDrawerUp 0.18s ease-out both;
 }
 
-.az-export-sheet button {
-  min-height: 40px;
+.az-export-drawer button {
   border: none;
-  border-radius: 0;
   background: transparent;
   color: rgba(83, 113, 172, 0.95);
-  font-size: 0.9rem;
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  padding: 0;
+}
+
+.az-export-drawer button span {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(83, 113, 172, 0.14);
+  box-shadow: 0 10px 24px rgba(42, 91, 150, 0.1);
+  font-size: 0.78rem;
   font-weight: 400;
-  text-align: center;
 }
 
-.az-export-sheet button:active {
+.az-export-drawer button small {
+  font-size: 0.72rem;
+  line-height: 1.1;
+  color: rgba(68, 78, 94, 0.78);
+  font-weight: 300;
+}
+
+.az-export-drawer button:active {
   transform: scale(0.96);
-  color: rgba(57, 104, 199, 1);
 }
 
-@media (max-width: 640px) {
-  .az-export-sheet {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+.az-app-pro .az-export-drawer {
+  background: rgba(228, 244, 239, 0.96);
+  border-top-color: rgba(43, 134, 115, 0.18);
+}
+
+@keyframes azDrawerUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0.6;
   }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Result screen spacing polish */
+.az-scan-settings-head {
+  column-gap: 1.25rem !important;
+  row-gap: 0.65rem !important;
+}
+
+.az-scan-mode-toggle {
+  margin-right: 0.45rem !important;
+}
+
+.az-scan-button-row {
+  gap: 2rem !important;
+  margin-top: 0.1rem !important;
+  margin-bottom: 0.15rem !important;
+}
+
+.az-scan-icon-button,
+.az-scan-compact-button,
+.az-scan-apply,
+.az-scan-apply-all {
+  font-size: 1.08rem !important;
+}
+
+.az-compare-stage {
+  min-height: 255px !important;
+}
+
+.az-crop-container {
+  min-height: 255px !important;
+}
+
+.az-crop-image-wrap,
+.az-crop-image-wrap .az-crop-image {
+  max-height: 45dvh !important;
+}
+
+.az-page-pill-draggable {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.az-page-pill-draggable:active {
+  cursor: grabbing;
+  transform: scale(0.96);
 }

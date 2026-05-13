@@ -482,7 +482,7 @@ export default function ResultScreen({
               </div>
             </div>
 
-            <div className="az-export-zone">
+      <div className="az-export-zone">
   <div className="az-bottom-export-row">
     <button
       type="button"
@@ -537,20 +537,50 @@ export default function ResultScreen({
   </div>
 
   {downloadOpen ? (
-    <div className="az-export-sheet">
-      <button type="button" onClick={onDownloadOriginalPdf}>Adobe PDF</button>
-      <button type="button" onClick={onDownloadEditedTxt}>Text TXT</button>
-      <button type="button" onClick={onDownloadEditedPdf}>Text PDF</button>
-      <button type="button" onClick={onDownloadEditedDocx}>Word DOCX</button>
+    <div className="az-export-drawer">
+      <button type="button" onClick={onDownloadOriginalPdf}>
+        <span>PDF</span>
+        <small>Adobe PDF</small>
+      </button>
+
+      <button type="button" onClick={onDownloadEditedTxt}>
+        <span>TXT</span>
+        <small>Text TXT</small>
+      </button>
+
+      <button type="button" onClick={onDownloadEditedPdf}>
+        <span>PDF</span>
+        <small>Text PDF</small>
+      </button>
+
+      <button type="button" onClick={onDownloadEditedDocx}>
+        <span>DOCX</span>
+        <small>Word DOCX</small>
+      </button>
     </div>
   ) : null}
 
   {shareOpen ? (
-    <div className="az-export-sheet">
-      <button type="button" onClick={onShareOriginalPdf}>Share Original PDF</button>
-      <button type="button" onClick={onShareEditedTxt}>Share Text TXT</button>
-      <button type="button" onClick={onShareEditedPdf}>Share Text PDF</button>
-      <button type="button" onClick={onShareEditedDocx}>Share Word DOCX</button>
+    <div className="az-export-drawer">
+      <button type="button" onClick={onShareOriginalPdf}>
+        <span>PDF</span>
+        <small>Original</small>
+      </button>
+
+      <button type="button" onClick={onShareEditedTxt}>
+        <span>TXT</span>
+        <small>Text TXT</small>
+      </button>
+
+      <button type="button" onClick={onShareEditedPdf}>
+        <span>PDF</span>
+        <small>Text PDF</small>
+      </button>
+
+      <button type="button" onClick={onShareEditedDocx}>
+        <span>DOCX</span>
+        <small>Word DOCX</small>
+      </button>
     </div>
   ) : null}
 </div>
