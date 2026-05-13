@@ -523,25 +523,6 @@ export default function ResultScreen({
                   All
                 </button>
               </div>
-
-              <label className="az-scan-brightness">
-                <span className="az-brightness-icon-small">☀</span>
-                <input
-                  type="range"
-                  min="0.75"
-                  max="1.35"
-                  step="0.05"
-                  value={imageEdit.brightness}
-                  onChange={(e) =>
-                    onImageEditChange({
-                      ...imageEdit,
-                      brightness: Number(e.target.value),
-                      applied: false,
-                    })
-                  }
-                />
-                <span className="az-brightness-icon-big">☀</span>
-              </label>
             </div>
 
             <div className="az-bottom-export-row">
@@ -554,7 +535,33 @@ export default function ResultScreen({
                 className="az-export-icon-minimal"
                 aria-label="Download"
               >
-                ↓
+                <svg
+  width="34"
+  height="34"
+  viewBox="0 0 24 24"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path
+    d="M12 4V15"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+  />
+  <path
+    d="M7 10L12 15L17 10"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  />
+  <path
+    d="M5 20H19"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+  />
+</svg>
               </button>
 
               <label className="az-scan-brightness az-scan-brightness-bottom">
@@ -587,7 +594,33 @@ export default function ResultScreen({
                 className="az-export-icon-minimal"
                 aria-label="Share"
               >
-                ↑
+                <svg
+  width="32"
+  height="32"
+  viewBox="0 0 24 24"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path
+    d="M12 16V5"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+  />
+  <path
+    d="M8 9L12 5L16 9"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  />
+  <path
+    d="M6 13V18C6 18.5523 6.44772 19 7 19H17C17.5523 19 18 18.5523 18 18V13"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+  />
+</svg>
               </button>
             </div>
           </>
