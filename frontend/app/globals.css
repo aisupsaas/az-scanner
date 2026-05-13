@@ -2123,7 +2123,6 @@ body {
   height: 3px;
   border-radius: 999px;
   background: rgba(124, 152, 194, 0.68);
-  box-shadow: 0 1px 8px rgba(124, 152, 194, 0.16);
   transform: translateY(-50%);
   pointer-events: none;
   z-index: 0;
@@ -2132,35 +2131,32 @@ body {
 .az-line-action-button,
 .az-line-nav-item {
   position: relative;
-  z-index: 1;
-  display: inline-flex;
+  z-index: 2;
+  display: flex !important;
   align-items: center;
   justify-content: center;
-  justify-self: stretch;
   width: 100%;
   min-height: 34px;
-  border: none;
-  background: transparent;
+  border: none !important;
+  background: transparent !important;
   color: #5f7290;
   font-size: clamp(0.82rem, 2.8vw, 0.95rem);
   font-weight: 400;
-  padding: 0;
+  padding: 0 !important;
   text-align: center;
   white-space: nowrap;
 }
 
 .az-line-action-button span,
 .az-line-nav-item span {
-  display: inline-flex;
+  position: relative;
+  z-index: 5;
+  display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  background: #eaf3ff;
-  padding: 0 0.72rem;
-  line-height: 1.2;
-}
-
-.az-line-action-single {
-  width: 100%;
+  background: #dcecff !important;
+  padding: 0 0.85rem;
+  line-height: 1.25;
 }
 
 .az-line-nav-item {
@@ -2178,7 +2174,6 @@ body {
 .az-app-pro .az-bottom-actions-row::before,
 .az-app-pro .az-line-nav::before {
   background: rgba(15, 90, 76, 0.52);
-  box-shadow: 0 1px 8px rgba(15, 90, 76, 0.12);
 }
 
 .az-app-pro .az-line-action-button,
@@ -2188,5 +2183,5 @@ body {
 
 .az-app-pro .az-line-action-button span,
 .az-app-pro .az-line-nav-item span {
-  background: #b9ddd3;
+  background: #cfe8df !important;
 }
