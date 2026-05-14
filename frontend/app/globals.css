@@ -1479,8 +1479,7 @@ body {
 .az-screen-center .az-hero-card {
   flex: 1;
   min-height: 0;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
 }
 
 .az-home-plan-picker {

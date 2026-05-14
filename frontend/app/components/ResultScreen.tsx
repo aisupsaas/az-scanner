@@ -197,24 +197,6 @@ export default function ResultScreen({
             {imageEdit.applied ? "Saved" : "Unsaved"}
           </div>
         </div>
-
-        <div className="az-result-toggle">
-          <button
-            type="button"
-            onClick={() => onResultTabChange("compare")}
-            className={resultTab === "compare" ? "az-result-toggle-active" : ""}
-          >
-            Scan
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onResultTabChange("text")}
-            className={resultTab === "text" ? "az-result-toggle-active" : ""}
-          >
-            Text
-          </button>
-        </div>
       </div>
 
       <div className="az-panel-card az-panel-card-fill">
@@ -331,36 +313,43 @@ export default function ResultScreen({
                   Edit
                 </button>
               </div>
-
-              <div className="az-result-toggle az-scan-source-toggle">
+            
+              <div className="az-result-toggle">
                 <button
                   type="button"
-                  onClick={() =>
-                    onImageEditChange({
-                      ...imageEdit,
-                      pdfSource: "original",
-                      applied: false,
-                    })
-                  }
-                  className={imageEdit.pdfSource === "original" ? "az-result-toggle-active" : ""}
+                  onClick={() => onResultTabChange("compare")}
+                  className={resultTab === "compare" ? "az-result-toggle-active" : ""}
                 >
-                  Color
+                  Scan
                 </button>
 
                 <button
                   type="button"
-                  onClick={() =>
-                    onImageEditChange({
-                      ...imageEdit,
-                      pdfSource: "cleaned",
-                      applied: false,
-                    })
-                  }
-                  className={imageEdit.pdfSource === "cleaned" ? "az-result-toggle-active" : ""}
+                  onClick={() => onResultTabChange("text")}
+                  className=""
                 >
-                  Cleaned
+                  Text
                 </button>
               </div>
+            <button
+                type="button"
+                onClick={applyScanEdit}
+                className={[
+                  "az-scan-apply",
+                  imageEdit.applied ? "az-scan-apply-saved" : "",
+                  !imageEdit.applied ? "az-scan-apply-pulse" : "",
+                ].join(" ")}
+              >
+                {imageEdit.applied ? "Saved" : "Apply"}
+              </button>
+
+              <button
+                type="button"
+                onClick={onApplyEditToAllPages}
+                className="az-scan-apply-all"
+              >
+                All
+              </button>
             </div>
 
               <div className="az-page-strip">
@@ -513,126 +502,102 @@ export default function ResultScreen({
               )}
             </div>
 
-            <div className="az-scan-toolbar">
-              <div className="az-scan-button-row">
-                <button type="button" onClick={cycleRotate} className="az-scan-icon-button" aria-label="Rotate page">
-                  ↻
+      <div className="az-export-zone">
+        <div className="az-bottom-export-row">
+          <button
+            type="button"
+            onClick={() => {
+                setDownloadOpen((current) => !current);
+              }}
+            className="az-export-icon-minimal"
+            aria-label="Download"
+          >
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 4V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path d="M7 10L12 15L17 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M5 20H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
+
+          <label className="az-scan-brightness az-scan-brightness-bottom">
+            <span className="az-brightness-icon-small">☀</span>
+            <input
+              type="range"
+              min="0.75"
+              max="1.35"
+              step="0.05"
+              value={imageEdit.brightness}
+              onChange={(e) =>
+                onImageEditChange({
+                  ...imageEdit,
+                  brightness: Number(e.target.value),
+                  applied: false,
+                })
+              }
+            />
+            <span className="az-brightness-icon-big">☀</span>
+          </label>
+      <button
+          type="button"
+          className="az-export-icon-minimal"
+          aria-label="Share"
+          onClick={onShareOriginalPdf}
+        >
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 16V5"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <path
+              d="M8 9L12 5L16 9"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M6 13V18C6 18.5523 6.44772 19 7 19H17C17.5523 19 18 18.5523 18 18V13"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
+   </div>
+
+            {downloadOpen ? (
+              <div className="az-export-drawer">
+                <button type="button" onClick={onDownloadOriginalPdf}>
+                  <span>PDF</span>
+                  <small>Adobe PDF</small>
                 </button>
 
-                <button type="button" onClick={resetCrop} className="az-scan-compact-button">
-                  Reset
+                <button type="button" onClick={onDownloadEditedTxt}>
+                  <span>TXT</span>
+                  <small>Text TXT</small>
                 </button>
 
-                <button
-                  type="button"
-                  onClick={applyScanEdit}
-                  className={imageEdit.applied ? "az-scan-apply az-scan-apply-saved" : "az-scan-apply"}
-                >
-                  {imageEdit.applied ? "Saved" : "Apply"}
+                <button type="button" onClick={onDownloadEditedPdf}>
+                  <span>PDF</span>
+                  <small>Text PDF</small>
                 </button>
 
-                <button type="button" onClick={onApplyEditToAllPages} className="az-scan-apply-all">
-                  All
+                <button type="button" onClick={onDownloadEditedDocx}>
+                  <span>DOCX</span>
+                  <small>Word DOCX</small>
                 </button>
               </div>
-            </div>
-
-      <div className="az-export-zone">
-  <div className="az-bottom-export-row">
-    <button
-      type="button"
-      onClick={() => {
-          setDownloadOpen((current) => !current);
-        }}
-      className="az-export-icon-minimal"
-      aria-label="Download"
-    >
-      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 4V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        <path d="M7 10L12 15L17 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M5 20H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      </svg>
-    </button>
-
-    <label className="az-scan-brightness az-scan-brightness-bottom">
-      <span className="az-brightness-icon-small">☀</span>
-      <input
-        type="range"
-        min="0.75"
-        max="1.35"
-        step="0.05"
-        value={imageEdit.brightness}
-        onChange={(e) =>
-          onImageEditChange({
-            ...imageEdit,
-            brightness: Number(e.target.value),
-            applied: false,
-          })
-        }
-      />
-      <span className="az-brightness-icon-big">☀</span>
-    </label>
-<button
-  type="button"
-  className="az-export-icon-minimal"
-  aria-label="Share"
-  onClick={onShareOriginalPdf}
->
-  <svg
-    width="32"
-    height="32"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M12 16V5"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-    />
-    <path
-      d="M8 9L12 5L16 9"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M6 13V18C6 18.5523 6.44772 19 7 19H17C17.5523 19 18 18.5523 18 18V13"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-    />
-  </svg>
-</button>
-  </div>
-
-  {downloadOpen ? (
-    <div className="az-export-drawer">
-      <button type="button" onClick={onDownloadOriginalPdf}>
-        <span>PDF</span>
-        <small>Adobe PDF</small>
-      </button>
-
-      <button type="button" onClick={onDownloadEditedTxt}>
-        <span>TXT</span>
-        <small>Text TXT</small>
-      </button>
-
-      <button type="button" onClick={onDownloadEditedPdf}>
-        <span>PDF</span>
-        <small>Text PDF</small>
-      </button>
-
-      <button type="button" onClick={onDownloadEditedDocx}>
-        <span>DOCX</span>
-        <small>Word DOCX</small>
-      </button>
-    </div>
-  ) : null}
-</div>
-          </>
+            ) : null}
+          </div>
+               </>
         )}
       </div>
     </div>
