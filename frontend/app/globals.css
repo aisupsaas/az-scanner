@@ -2222,3 +2222,89 @@ body {
   -webkit-user-drag: none;
   transform-origin: center center;
 }
+
+/* Text mode: Word-style A4 pages */
+.az-text-top-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.55rem;
+}
+
+.az-text-page-strip {
+  margin-top: 0 !important;
+  margin-bottom: 0.45rem !important;
+  overflow: visible !important;
+  flex-wrap: wrap !important;
+}
+
+.az-text-a4-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  padding: 0.55rem 0.25rem 0.85rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.az-text-a4-page {
+  position: relative;
+  width: min(100%, 520px);
+  aspect-ratio: 8.5 / 11;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(83, 113, 172, 0.18);
+  box-shadow:
+    0 14px 34px rgba(42, 91, 150, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.72);
+  padding: 0.65in 0.45in;
+}
+
+.az-text-a4-editor {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: #171717;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  font-weight: 300;
+  overflow: hidden;
+}
+
+.az-text-page-delete {
+  position: absolute;
+  top: 0.42rem;
+  right: 0.42rem;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(83, 113, 172, 0.12);
+  background: rgba(255, 255, 255, 0.58);
+  backdrop-filter: blur(10px);
+  color: rgba(85, 96, 112, 0.88);
+  font-size: 1.15rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 18px rgba(42, 91, 150, 0.1);
+}
+
+.az-text-page-delete:active {
+  transform: scale(0.92);
+}
+
+.az-app-pro .az-text-a4-page {
+  border-color: rgba(43, 134, 115, 0.2);
+  box-shadow:
+    0 14px 34px rgba(20, 82, 68, 0.13),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+
+.az-app-pro .az-text-page-delete {
+  color: rgba(36, 96, 83, 0.88);
+}

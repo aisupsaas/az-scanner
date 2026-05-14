@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import type {
   CompareView,
@@ -52,6 +52,28 @@ type ResultScreenProps = {
   onCompareViewChange: (view: CompareView) => void;
 };
 
+function splitA4TextPages(text: string) {
+  const clean = String(text || "");
+
+  if (!clean.trim()) return [""];
+
+  const maxChars = 1350;
+  const pages: string[] = [];
+  let remaining = clean;
+
+  while (remaining.length > maxChars) {
+    let cut = remaining.lastIndexOf("\n", maxChars);
+    if (cut < maxChars * 0.55) cut = remaining.lastIndexOf(" ", maxChars);
+    if (cut < maxChars * 0.55) cut = maxChars;
+
+    pages.push(remaining.slice(0, cut).trim());
+    remaining = remaining.slice(cut).trim();
+  }
+
+  pages.push(remaining);
+  return pages;
+}
+
 export default function ResultScreen({
   result,
   loading,
@@ -93,6 +115,20 @@ export default function ResultScreen({
       ? cleanedImageHref
       : originalImageHref || sourcePreview;
 
+  const textPages = useMemo(() => splitA4TextPages(editedText), [editedText]);
+  const activeTextPageIndex = Math.min(activePageIndex, textPages.length - 1);
+
+  function updateTextPage(pageIndex: number, nextText: string) {
+    const nextPages = [...textPages];
+    nextPages[pageIndex] = nextText;
+    onSetEditedText(nextPages.join("\n\n"));
+  }
+
+  function deleteTextPage(pageIndex: number) {
+    const nextPages = textPages.filter((_, index) => index !== pageIndex);
+    onSetEditedText(nextPages.length ? nextPages.join("\n\n") : "");
+    onSelectPage(Math.max(0, Math.min(pageIndex, nextPages.length - 1)));
+  }
   const containerRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const [dragging, setDragging] = useState<Corner | null>(null);
@@ -225,54 +261,92 @@ export default function ResultScreen({
       <div className="az-panel-card az-panel-card-fill">
         {resultTab === "text" ? (
           <>
-            <div className="az-panel-header az-panel-header-wrap">
-              <div>
-                <div className="az-section-label">EDITABLE TEXT</div>
-                <div className="az-section-copy">
-                  Edit detected lines, remove bad OCR guesses, then export TXT or Text PDF.
-                </div>
-              </div>
-            </div>
+            
+  <div className="az-text-top-row">
+    <div className="az-result-toggle">
+      <button
+        type="button"
+        onClick={() => onResultTabChange("compare")}
+      >
+        Scan
+      </button>
 
-            {result?.warning ? (
-              <div className="az-inline-error">
-                <div className="az-inline-error-title">OCR warning</div>
-                <div className="az-inline-error-copy">{result.warning}</div>
-              </div>
-            ) : null}
-                <div className="az-page-strip">
-                  {Array.from({ length: pageCount }).map((_, index) => (
-                    <button
-                      key={index}
-                      type="button"
-                      onClick={() => onSelectPage(index)}
-                      className={[
-                        "az-page-pill",
-                        activePageIndex === index ? "az-page-pill-active" : "",
-                      ].join(" ")}
-                    >
-                      Page {index + 1}
-                    </button>
-                  ))}
-                </div>
+      <button
+        type="button"
+        onClick={() => onResultTabChange("text")}
+        className="az-result-toggle-active"
+      >
+        Text
+      </button>
+    </div>
 
-                <div className="az-scroll-panel">
-                  <textarea
-                    value={loading ? "Processing document..." : editedText || ""}
-                    disabled={loading}
-                    onChange={(e) => onSetEditedText(e.target.value)}
-                    className="az-text-editor"
-                    spellCheck={false}
-                    placeholder={`Page ${activePageIndex + 1} text will appear here.`}
-                  />
-                </div>
+    <button
+      type="button"
+      onClick={applyScanEdit}
+      className={[
+        "az-scan-apply",
+        imageEdit.applied ? "az-scan-apply-saved" : "",
+        !imageEdit.applied ? "az-scan-apply-pulse" : "",
+      ].join(" ")}
+    >
+      {imageEdit.applied ? "Saved" : "Apply"}
+    </button>
+  </div>
 
-            <div className="az-text-actions">
-              <button type="button" onClick={onCopyText} className="az-secondary-button">
-                Copy text
-              </button>
-            </div>
-          </>
+  {result?.warning ? (
+    <div className="az-inline-error">
+      <div className="az-inline-error-title">OCR warning</div>
+      <div className="az-inline-error-copy">{result.warning}</div>
+    </div>
+  ) : null}
+
+  <div className="az-page-strip az-text-page-strip">
+    {textPages.map((_, index) => (
+      <button
+        key={index}
+        type="button"
+        onClick={() => onSelectPage(index)}
+        className={[
+          "az-page-pill",
+          activeTextPageIndex === index ? "az-page-pill-active" : "",
+        ].join(" ")}
+      >
+        Page {index + 1}
+      </button>
+    ))}
+  </div>
+
+  <div className="az-text-a4-scroll">
+    {textPages.map((pageText, index) => (
+      <div className="az-text-a4-page" key={index}>
+        <button
+          type="button"
+          className="az-text-page-delete"
+          onClick={() => deleteTextPage(index)}
+          aria-label={`Delete text page ${index + 1}`}
+        >
+          ×
+        </button>
+
+        <textarea
+          value={pageText}
+          disabled={loading}
+          onChange={(e) => updateTextPage(index, e.target.value)}
+          className="az-text-a4-editor"
+          spellCheck={false}
+          placeholder={`Page ${index + 1} text will appear here.`}
+        />
+      </div>
+    ))}
+  </div>
+
+  <div className="az-text-actions">
+    <button type="button" onClick={onCopyText} className="az-secondary-button">
+      Copy text
+    </button>
+  </div>
+</>
+
         ) : (
           <>
           <div className="az-scan-settings-head">
