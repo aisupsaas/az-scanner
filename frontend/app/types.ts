@@ -19,6 +19,7 @@ export type ImageEditSettings = {
   pdfSource: "original" | "cleaned";
   rotate: 0 | 90 | 180 | 270;
   brightness: number;
+  zoom: number;
   crop: {
     top: number;
     right: number;

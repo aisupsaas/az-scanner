@@ -2112,63 +2112,6 @@ body {
   border-color: rgba(43, 134, 115, 0.58);
 }
 
-/* Result screen: tighter chrome, larger document workspace */
-.az-scan-settings-head {
-  row-gap: 0.28rem !important;
-  margin-bottom: 0 !important;
-}
-
-.az-page-strip {
-  margin-top: 0.05rem !important;
-  margin-bottom: 0.08rem !important;
-  padding-top: 0.1rem !important;
-  padding-bottom: 0.28rem !important;
-}
-
-.az-compare-label {
-  margin-bottom: 0.05rem !important;
-}
-
-.az-scan-toolbar {
-  margin-top: 0.05rem !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-}
-
-.az-scan-button-row {
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-  gap: 2.45rem !important;
-}
-
-.az-bottom-export-row {
-  margin-top: 0.18rem !important;
-  padding-bottom: 0.05rem !important;
-}
-
-.az-a4-page-guide {
-  height: 100% !important;
-  max-height: 100% !important;
-  margin: 0 auto !important;
-}
-
-.az-a4-preview-image {
-  object-fit: contain !important;
-  background: #ffffff !important;
-}
-
-@media (max-width: 640px) {
-  .az-crop-container,
-  .az-compare-frame {
-    height: clamp(380px, 49dvh, 540px) !important;
-    min-height: 380px !important;
-  }
-
-  .az-scan-button-row {
-    gap: 2.1rem !important;
-  }
-}
-
 /* FINAL Start screen override: force icons visible */
 .az-screen-center .az-hero-card {
   flex: 1 !important;
@@ -2238,57 +2181,6 @@ body {
   transform: scale(0.94) !important;
 }
 
-/* FINAL icon vertical position */
-.az-start-icon-actions {
-  margin-top: 2.8rem !important;
-}
-
-.az-start-camera-icon-button {
-  top: 34px !important;
-}
-
-.az-start-file-icon-button {
-  top: 52px !important;
-}
-
-/* Separate Apply / All and underline them */
-.az-scan-settings-head .az-scan-apply {
-  margin-left: 0.9rem !important;
-  margin-right: 1.25rem !important;
-  text-decoration: underline;
-  text-underline-offset: 0.22rem;
-}
-
-.az-scan-settings-head .az-scan-apply-all {
-  text-decoration: underline;
-  text-underline-offset: 0.22rem;
-}
-
-/* Result page: prevent page tabs scrolling */
-.az-page-strip {
-  overflow: visible !important;
-  flex-wrap: wrap !important;
-  gap: 1.25rem !important;
-  padding-bottom: 0.15rem !important;
-}
-
-/* Result page: move editor/preview boxes up and leave room for slider */
-.az-compare-stage {
-  margin-top: 0 !important;
-  gap: 0.22rem !important;
-}
-
-.az-compare-label {
-  margin-bottom: 0 !important;
-}
-
-.az-crop-container,
-.az-compare-frame {
-  height: clamp(340px, 43dvh, 500px) !important;
-  min-height: 340px !important;
-  max-height: 500px !important;
-}
-
 /* Result page: keep brightness/export row clear under boxes */
 .az-bottom-export-row {
   margin-top: 0.75rem !important;
@@ -2305,42 +2197,6 @@ body {
 .az-scan-apply,
 .az-scan-apply-all {
   text-decoration: none !important;
-}
-
-/* More space between Preview/Edit and Scan/Text toggles */
-.az-scan-settings-head {
-  column-gap: 1.25rem !important;
-}
-
-.az-scan-mode-toggle {
-  margin-left: 0.65rem !important;
-}
-
-/* A4 page: outer paper edge with inner 8x10 print-safe area */
-.az-a4-page-guide {
-  padding: 4.545% 2.941% !important;
-}
-
-.az-a4-preview-image {
-  inset: 4.545% 2.941% !important;
-  width: auto !important;
-  height: auto !important;
-}
-
-.az-a4-print-guide-top {
-  top: 4.545% !important;
-}
-
-.az-a4-print-guide-bottom {
-  bottom: 4.545% !important;
-}
-
-.az-a4-print-guide-left {
-  left: 2.941% !important;
-}
-
-.az-a4-print-guide-right {
-  right: 2.941% !important;
 }
 
 /* Top tools row */
@@ -2424,4 +2280,61 @@ body {
 
 .az-app-pro .az-zoom-button {
   color: rgba(36, 96, 83, 0.92);
+}
+
+/* Final result toolbar spacing + A4 print guide fix */
+.az-scan-settings-head {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 1.15rem !important;
+  flex-wrap: wrap !important;
+}
+
+.az-scan-settings-head .az-result-toggle + .az-result-toggle {
+  margin-left: 0.75rem !important;
+}
+
+.az-edit-mode-row {
+  gap: 0.55rem !important;
+}
+
+.az-edit-mode-button + .az-edit-mode-button::before {
+  content: "|";
+  margin-right: 0.55rem;
+  color: rgba(83, 113, 172, 0.55);
+}
+
+.az-top-tool-button + .az-top-tool-button::before {
+  content: "|";
+  margin-right: 0.55rem;
+  color: rgba(83, 113, 172, 0.55);
+}
+
+/* A4 outer solid border, 8x10 inner dashed print-safe area */
+.az-a4-page-guide {
+  border: 1px solid rgba(83, 113, 172, 0.42) !important;
+  padding: 4.545% 2.941% !important;
+}
+
+.az-a4-print-guide-top {
+  top: 4.545% !important;
+}
+
+.az-a4-print-guide-bottom {
+  bottom: 4.545% !important;
+}
+
+.az-a4-print-guide-left {
+  left: 2.941% !important;
+}
+
+.az-a4-print-guide-right {
+  right: 2.941% !important;
+}
+
+.az-a4-preview-image {
+  inset: 4.545% 2.941% !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
 }

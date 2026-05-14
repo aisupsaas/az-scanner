@@ -35,6 +35,7 @@ const DEFAULT_IMAGE_EDIT: ImageEditSettings = {
   pdfSource: "original",
   rotate: 0,
   brightness: 1,
+  zoom: 1,
   crop: {
     top: 0,
     right: 0,
@@ -618,6 +619,7 @@ function cancelExportName() {
           imageUrl,
           rotate: edit.rotate,
           brightness: edit.brightness,
+          zoom: edit.zoom,
           crop: edit.crop,
         };
       });
@@ -667,6 +669,7 @@ function cancelExportName() {
         imageUrl,
         rotate: edit.rotate,
         brightness: edit.brightness,
+        zoom: edit.zoom,
         crop: edit.crop,
       };
     });

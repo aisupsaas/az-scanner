@@ -182,7 +182,7 @@ export default function ResultScreen({
   };
 
   const editedPreviewStyle = {
-    transform: `rotate(${imageEdit.rotate}deg)`,
+    transform: `rotate(${imageEdit.rotate}deg) scale(${imageEdit.zoom ?? 1})`,
     filter: `brightness(${imageEdit.brightness})`,
     clipPath: `inset(${imageEdit.crop.top}% ${imageEdit.crop.right}% ${imageEdit.crop.bottom}% ${imageEdit.crop.left}%)`,
   };
@@ -519,7 +519,7 @@ export default function ResultScreen({
                                     onClick={() =>
                                       onImageEditChange({
                                         ...imageEdit,
-                                        brightness: Math.max(0.75, imageEdit.brightness - 0.05),
+                                        zoom: Math.max(0.7, (imageEdit.zoom ?? 1) - 0.1),
                                         applied: false,
                                       })
                                     }
@@ -533,7 +533,7 @@ export default function ResultScreen({
                                     onClick={() =>
                                       onImageEditChange({
                                         ...imageEdit,
-                                        brightness: Math.min(1.35, imageEdit.brightness + 0.05),
+                                        zoom: Math.min(2, (imageEdit.zoom ?? 1) + 0.1),
                                         applied: false,
                                       })
                                     }
