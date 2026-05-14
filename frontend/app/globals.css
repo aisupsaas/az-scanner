@@ -1596,19 +1596,6 @@ body {
   }
 }
 
-.az-result-masthead {
-  display: grid;
-  grid-template-columns: auto auto;
-  justify-content: start;
-  align-items: center;
-  gap: 1rem;
-  padding-right: 4.8rem;
-}
-
-.az-result-toggle {
-  justify-self: start;
-}
-
 .az-bottom-actions {
   display: block !important;
 }
@@ -2181,14 +2168,6 @@ body {
   transform: scale(0.94) !important;
 }
 
-/* Result page: keep brightness/export row clear under boxes */
-.az-bottom-export-row {
-  margin-top: 0.75rem !important;
-  padding-top: 0.35rem !important;
-  padding-bottom: 0.25rem !important;
-  align-items: center !important;
-}
-
 .az-scan-brightness-bottom {
   align-self: center !important;
 }
@@ -2197,14 +2176,6 @@ body {
 .az-scan-apply,
 .az-scan-apply-all {
   text-decoration: none !important;
-}
-
-/* Top tools row */
-.az-settings-top-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
 }
 
 .az-top-tools-row {
@@ -2224,14 +2195,6 @@ body {
 
 .az-app-pro .az-top-tool-button {
   color: rgba(36, 96, 83, 0.92);
-}
-
-/* Crop / Zoom switch */
-.az-edit-mode-row {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  margin-bottom: 0.4rem;
 }
 
 .az-edit-mode-button {
@@ -2280,34 +2243,6 @@ body {
 
 .az-app-pro .az-zoom-button {
   color: rgba(36, 96, 83, 0.92);
-}
-
-/* Final result toolbar spacing + A4 print guide fix */
-.az-scan-settings-head {
-  display: flex !important;
-  align-items: flex-start !important;
-  gap: 1.15rem !important;
-  flex-wrap: wrap !important;
-}
-
-.az-scan-settings-head .az-result-toggle + .az-result-toggle {
-  margin-left: 0.75rem !important;
-}
-
-.az-edit-mode-row {
-  gap: 0.55rem !important;
-}
-
-.az-edit-mode-button + .az-edit-mode-button::before {
-  content: "|";
-  margin-right: 0.55rem;
-  color: rgba(83, 113, 172, 0.55);
-}
-
-.az-top-tool-button + .az-top-tool-button::before {
-  content: "|";
-  margin-right: 0.55rem;
-  color: rgba(83, 113, 172, 0.55);
 }
 
 /* A4 outer solid border, 8x10 inner dashed print-safe area */
