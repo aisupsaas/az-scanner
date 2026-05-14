@@ -2210,3 +2210,15 @@ body {
 .az-crop-container {
   user-select: none;
 }
+
+.az-crop-image-wrap {
+  overflow: hidden !important;
+  touch-action: none;
+}
+
+.az-crop-image {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  transform-origin: center center;
+}

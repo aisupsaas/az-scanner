@@ -177,8 +177,23 @@ export default function ResultScreen({
     });
   }
 
-  function handleDragEnd() {
-    setDragging(null);
+    function handleDragEnd() {
+      setDragging(null);
+    }
+
+    function handlePanMove(e: React.PointerEvent) {
+    if (editMode !== "zoom" || !panning) return;
+
+    onImageEditChange({
+      ...imageEdit,
+      panX: panStart.panX + (e.clientX - panStart.x),
+      panY: panStart.panY + (e.clientY - panStart.y),
+      applied: false,
+    });
+  }
+
+  function handlePanEnd() {
+    setPanning(false);
   }
 
   const cropBoxStyle = {
@@ -529,13 +544,25 @@ export default function ResultScreen({
 
                     </div>
                   <div
-                    ref={containerRef}
-                    className="az-crop-container"
-                    onPointerMove={handleDragMove}
-                    onPointerUp={handleDragEnd}
-                    onPointerCancel={handleDragEnd}
-                    onPointerLeave={handleDragEnd}
-                  >
+                      ref={containerRef}
+                      className="az-crop-container"
+                      onPointerMove={(e) => {
+                        handleDragMove(e);
+                        handlePanMove(e);
+                      }}
+                      onPointerUp={() => {
+                        handleDragEnd();
+                        handlePanEnd();
+                      }}
+                      onPointerCancel={() => {
+                        handleDragEnd();
+                        handlePanEnd();
+                      }}
+                      onPointerLeave={() => {
+                        handleDragEnd();
+                        handlePanEnd();
+                      }}
+                    >
                     {previewImage ? (
                       <div className="az-crop-image-wrap">
                         <img
@@ -544,12 +571,12 @@ export default function ResultScreen({
                           alt="Original document preview"
                           className="az-crop-image"
                           style={{
-                            transform:
-                              editMode === "zoom"
-                                ? `translate(${imageEdit.panX ?? 0}px, ${imageEdit.panY ?? 0}px) scale(${imageEdit.zoom ?? 1})`
-                                : "none",
+                            transform: `translate(${imageEdit.panX ?? 0}px, ${imageEdit.panY ?? 0}px) scale(${imageEdit.zoom ?? 1})`,
                             filter: `brightness(${imageEdit.brightness})`,
-                            cursor: editMode === "zoom" ? (panning ? "grabbing" : "grab") : "default",
+                            cursor:
+                              editMode === "zoom"
+                                ? (panning ? "grabbing" : "grab")
+                                : "crosshair",
                           }}
                           onPointerDown={(e) => {
                             if (editMode !== "zoom") return;
@@ -563,18 +590,6 @@ export default function ResultScreen({
                               panY: imageEdit.panY ?? 0,
                             });
                           }}
-                          onPointerMove={(e) => {
-                            if (editMode !== "zoom" || !panning) return;
-
-                            onImageEditChange({
-                              ...imageEdit,
-                              panX: panStart.panX + (e.clientX - panStart.x),
-                              panY: panStart.panY + (e.clientY - panStart.y),
-                              applied: false,
-                            });
-                          }}
-                          onPointerUp={() => setPanning(false)}
-                          onPointerCancel={() => setPanning(false)}
                             />
 
                         {editMode === "crop" ? (
