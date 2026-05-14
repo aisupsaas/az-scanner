@@ -2197,3 +2197,91 @@ body {
   border: 2px solid rgba(83, 113, 172, 0.65) !important;
   box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.18) !important;
 }
+
+/* A4 / Letter print guide in preview */
+.az-a4-page-guide {
+  position: relative;
+  height: 100%;
+  aspect-ratio: 8.5 / 11;
+  max-width: 100%;
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(50, 92, 140, 0.08),
+    0 14px 34px rgba(42, 91, 150, 0.1);
+}
+
+.az-a4-preview-image {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.az-a4-size-label {
+  position: absolute;
+  z-index: 4;
+  color: rgba(83, 113, 172, 0.78);
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+.az-a4-width-label {
+  top: 0.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.az-a4-height-label {
+  top: 50%;
+  right: 0.25rem;
+  transform: translateY(-50%) rotate(90deg);
+  transform-origin: center;
+}
+
+.az-a4-print-guide {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  border-color: rgba(83, 113, 172, 0.55);
+}
+
+.az-a4-print-guide-top {
+  left: 0;
+  right: 0;
+  top: 4.545%;
+  border-top: 1px dashed rgba(83, 113, 172, 0.55);
+}
+
+.az-a4-print-guide-bottom {
+  left: 0;
+  right: 0;
+  bottom: 4.545%;
+  border-bottom: 1px dashed rgba(83, 113, 172, 0.55);
+}
+
+.az-a4-print-guide-left {
+  top: 0;
+  bottom: 0;
+  left: 2.941%;
+  border-left: 1px dashed rgba(83, 113, 172, 0.55);
+}
+
+.az-a4-print-guide-right {
+  top: 0;
+  bottom: 0;
+  right: 2.941%;
+  border-right: 1px dashed rgba(83, 113, 172, 0.55);
+}
+
+.az-app-pro .az-a4-size-label {
+  color: rgba(36, 96, 83, 0.78);
+}
+
+.az-app-pro .az-a4-print-guide-top,
+.az-app-pro .az-a4-print-guide-right,
+.az-app-pro .az-a4-print-guide-bottom,
+.az-app-pro .az-a4-print-guide-left {
+  border-color: rgba(43, 134, 115, 0.58);
+}

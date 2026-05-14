@@ -487,18 +487,28 @@ export default function ResultScreen({
                 <div className="az-compare-panel">
                   <div className="az-compare-label">Preview</div>
 
-                  <div className="az-compare-frame">
-                    {previewImage ? (
-                      <img
-                        src={previewImage}
-                        alt="Edited scan preview"
-                        className="az-main-preview"
-                        style={editedPreviewStyle}
-                      />
-                    ) : (
-                      <div className="az-empty-note">Preview is not available.</div>
-                    )}
-                  </div>
+                  <div className="az-compare-frame az-a4-preview-frame">
+                      {previewImage ? (
+                        <div className="az-a4-page-guide">
+                          <div className="az-a4-size-label az-a4-width-label">8.5 in</div>
+                          <div className="az-a4-size-label az-a4-height-label">11 in</div>
+
+                          <div className="az-a4-print-guide az-a4-print-guide-top" />
+                          <div className="az-a4-print-guide az-a4-print-guide-right" />
+                          <div className="az-a4-print-guide az-a4-print-guide-bottom" />
+                          <div className="az-a4-print-guide az-a4-print-guide-left" />
+
+                          <img
+                            src={previewImage}
+                            alt="Edited scan preview"
+                            className="az-main-preview az-a4-preview-image"
+                            style={editedPreviewStyle}
+                          />
+                        </div>
+                      ) : (
+                        <div className="az-empty-note">Preview is not available.</div>
+                      )}
+                    </div>
                 </div>
               )}
             </div>
