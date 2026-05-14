@@ -115,39 +115,26 @@ export default function StartScreen(props: {
 
           <label className="az-start-file-icon-button" aria-label="Choose files">
             <svg
-              width="40"
-              height="40"
-              viewBox="0 0 64 64"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-            >
-              <path
-                d="M18 8H38L50 20V56H18V8Z"
-                stroke="currentColor"
-                strokeWidth="3.2"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M38 8V20H50"
-                stroke="currentColor"
-                strokeWidth="3.2"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M25 37H39"
-                stroke="currentColor"
-                strokeWidth="3.2"
-                strokeLinecap="round"
-              />
-              <path
-                d="M32 30V44"
-                stroke="currentColor"
-                strokeWidth="3.2"
-                strokeLinecap="round"
-              />
-            </svg>
-
+                width="36"
+                height="36"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 5V19"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M5 12H19"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                />
+              </svg>
             <input
               type="file"
               multiple
