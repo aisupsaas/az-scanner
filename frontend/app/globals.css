@@ -2285,6 +2285,8 @@ body {
   border-color: rgba(43, 134, 115, 0.58);
 }
 
+
+
 /* Start screen: balanced plan cards and visible icons */
 .az-start-intro {
   margin-bottom: 0.75rem;
@@ -2535,4 +2537,73 @@ body {
 .az-app-pro .az-start-camera-icon-button,
 .az-app-pro .az-start-file-icon-button {
   color: rgba(36, 96, 83, 0.92);
+}
+
+/* FINAL Start screen override: force icons visible */
+.az-screen-center .az-hero-card {
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.az-home-plan-card-standard,
+.az-home-plan-card-pro {
+  min-height: 185px !important;
+  height: 185px !important;
+}
+
+.az-home-plan-picker {
+  margin-bottom: 0 !important;
+}
+
+.az-start-icon-actions {
+  position: relative !important;
+  flex: 0 0 92px !important;
+  height: 92px !important;
+  min-height: 92px !important;
+  margin-top: 0.65rem !important;
+  width: 100% !important;
+  display: block !important;
+}
+
+.az-start-camera-icon-button {
+  position: absolute !important;
+  left: 50% !important;
+  top: 6px !important;
+  width: 72px !important;
+  height: 72px !important;
+  transform: translateX(-50%) !important;
+  z-index: 5 !important;
+}
+
+.az-start-file-icon-button {
+  position: absolute !important;
+  left: calc(50% + 72px) !important;
+  top: 22px !important;
+  width: 42px !important;
+  height: 42px !important;
+  margin: 0 !important;
+  z-index: 5 !important;
+}
+
+.az-start-camera-icon-button,
+.az-start-file-icon-button {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  color: rgba(83, 113, 172, 0.92) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.az-start-camera-icon-button:active {
+  transform: translateX(-50%) scale(0.94) !important;
+}
+
+.az-start-file-icon-button:active {
+  transform: scale(0.94) !important;
 }
