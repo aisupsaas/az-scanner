@@ -720,10 +720,6 @@ textarea {
   .az-line-editor-row {
     grid-template-columns: auto 1fr;
   }
-
-  .az-crop-container {
-    min-height: 320px;
-  }
 }
 
 .az-panel-card,
@@ -1093,12 +1089,6 @@ textarea {
   background: rgba(255, 255, 255, 0.88) !important;
 }
 
-.az-scroll-panel {
-  min-height: 520px !important;
-  padding: 1.1rem !important;
-  border-radius: 14px !important;
-}
-
 .az-line-editor-input {
   width: 100% !important;
   min-height: 92px !important;
@@ -1110,10 +1100,6 @@ textarea {
 @media (max-width: 640px) {
   .az-text-tool-row {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-
-  .az-scroll-panel {
-    min-height: 540px !important;
   }
 }
 
@@ -1410,12 +1396,6 @@ body {
   overflow: hidden;
 }
 
-.az-screen,
-.az-panel-card-fill {
-  min-height: 0;
-  overflow: hidden;
-}
-
 .az-panel-card {
   padding: 0.75rem;
 }
@@ -1430,15 +1410,9 @@ body {
 }
 
 .az-preview-stage,
-.az-compare-stage,
-.az-scroll-panel {
+.az-compare-stage {
   flex: 1 1 auto;
   min-height: 0 !important;
-}
-
-.az-scroll-panel {
-  overflow: auto;
-  padding: 0.75rem !important;
 }
 
 .az-text-actions,
@@ -1506,16 +1480,6 @@ body {
     gap: 0.15rem;
     font-size: 0.76rem;
   }
-}
-
-/* Result scan: keep controls visible, allow preview area inside card to scroll */
-.az-panel-card-fill {
-  overflow: auto !important;
-  -webkit-overflow-scrolling: touch;
-}
-
-.az-app .az-panel-card-fill {
-  max-height: 100%;
 }
 
 .az-bottom-area {
@@ -1586,15 +1550,6 @@ body {
   padding-top: 0.58rem !important;
 }
 
-.az-compare-stage {
-  margin-top: 0.32rem !important;
-  min-height: 240px !important;
-}
-
-.az-crop-container {
-  min-height: 240px !important;
-}
-
 .az-crop-image-wrap,
 .az-crop-image-wrap .az-crop-image {
   max-height: 42dvh !important;
@@ -1629,10 +1584,6 @@ body {
   .az-result-toggle button {
     min-width: 48px;
     padding: 0 0.5rem;
-  }
-
-  .az-compare-stage {
-    min-height: 260px !important;
   }
 
   .az-crop-container {
@@ -1916,98 +1867,6 @@ body {
   }
 }
 
-/* Result screen spacing polish */
-.az-scan-settings-head {
-  column-gap: 1.25rem !important;
-  row-gap: 0.65rem !important;
-}
-
-.az-scan-mode-toggle {
-  margin-right: 0.45rem !important;
-}
-
-.az-scan-button-row {
-  gap: 2rem !important;
-  margin-top: 0.1rem !important;
-  margin-bottom: 0.15rem !important;
-}
-
-.az-scan-icon-button,
-.az-scan-compact-button,
-.az-scan-apply,
-.az-scan-apply-all {
-  font-size: 1.08rem !important;
-}
-
-.az-compare-stage {
-  min-height: 255px !important;
-}
-
-.az-crop-container {
-  min-height: 255px !important;
-}
-
-.az-crop-image-wrap,
-.az-crop-image-wrap .az-crop-image {
-  max-height: 45dvh !important;
-}
-
-.az-page-pill-dragging {
-  opacity: 0.55;
-  transform: scale(0.94);
-}
-
-.az-page-pill-drop-target {
-  color: rgba(57, 104, 199, 1) !important;
-}
-
-.az-page-pill-drop-target::after {
-  background: rgba(57, 104, 199, 1) !important;
-}
-
-/* Bigger editor/preview area */
-.az-result-masthead {
-  margin-bottom: 0.2rem !important;
-}
-
-.az-panel-card {
-  padding-top: 0.45rem !important;
-}
-
-.az-scan-settings-head {
-  margin-bottom: 0.18rem !important;
-}
-
-.az-page-strip {
-  margin-top: 0.2rem !important;
-  margin-bottom: 0.2rem !important;
-}
-
-.az-scan-toolbar {
-  margin-top: 0.2rem !important;
-  padding-top: 0.25rem !important;
-  padding-bottom: 0.1rem !important;
-}
-
-.az-compare-stage,
-.az-scroll-panel,
-.az-preview-stage {
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-}
-
-.az-crop-container {
-  min-height: 320px !important;
-}
-
-.az-compare-stage {
-  min-height: 320px !important;
-}
-
-.az-scroll-panel {
-  min-height: 320px !important;
-}
-
 /* Pro mode: unify remaining blue controls into jade */
 .az-app-pro .az-result-title,
 .az-app-pro .az-result-subtitle,
@@ -2080,38 +1939,6 @@ body {
 .az-line-action-button-processing:disabled::before,
 .az-line-action-button-processing:disabled::after {
   background: rgba(214, 69, 69, 0.92) !important;
-}
-
-/* Result editor/preview: even, full image, not cut */
-.az-compare-stage-split {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
-  gap: 0.75rem !important;
-  align-items: stretch !important;
-}
-
-.az-compare-panel {
-  min-height: 0 !important;
-}
-
-.az-crop-container,
-.az-compare-frame {
-  height: clamp(390px, 50dvh, 560px) !important;
-  min-height: 390px !important;
-  max-height: 560px !important;
-}
-
-.az-crop-image-wrap {
-  width: 100% !important;
-  height: 100% !important;
-  max-height: none !important;
-}
-
-.az-crop-image-wrap .az-crop-image,
-.az-main-preview {
-  width: 100% !important;
-  height: 100% !important;
-  max-height: none !important;
-  object-fit: contain !important;
 }
 
 /* Give export row enough room; prevent drawer overlap/cutting */
@@ -2285,72 +2112,6 @@ body {
   border-color: rgba(43, 134, 115, 0.58);
 }
 
-
-
-/* Start screen: balanced plan cards and visible icons */
-.az-start-intro {
-  margin-bottom: 0.75rem;
-}
-
-.az-home-plan-card-standard {
-  min-height: 65px !important;
-}
-
-.az-home-plan-card-pro {
-  min-height: 65px !important;
-}
-
-.az-start-icon-actions {
-  position: relative;
-  width: 100%;
-  height: 86px;
-  margin-top: 1rem;
-}
-
-.az-start-camera-icon-button,
-.az-start-file-icon-button {
-  border: none !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  color: rgba(83, 113, 172, 0.92);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.az-start-camera-icon-button {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  width: 72px;
-  height: 72px;
-  transform: translateX(-50%);
-}
-
-.az-start-file-icon-button {
-  position: absolute;
-  left: calc(50% + 76px);
-  top: 18px;
-  width: 42px;
-  height: 42px;
-  cursor: pointer;
-}
-
-.az-start-camera-icon-button:active {
-  transform: translateX(-50%) scale(0.94);
-}
-
-.az-start-file-icon-button:active {
-  transform: scale(0.94);
-}
-
-.az-app-pro .az-start-camera-icon-button,
-.az-app-pro .az-start-file-icon-button {
-  color: rgba(36, 96, 83, 0.92);
-}
-
 /* Result screen: tighter chrome, larger document workspace */
 .az-scan-settings-head {
   row-gap: 0.28rem !important;
@@ -2362,11 +2123,6 @@ body {
   margin-bottom: 0.08rem !important;
   padding-top: 0.1rem !important;
   padding-bottom: 0.28rem !important;
-}
-
-.az-compare-stage {
-  margin-top: 0.12rem !important;
-  gap: 0.45rem !important;
 }
 
 .az-compare-label {
@@ -2411,132 +2167,6 @@ body {
   .az-scan-button-row {
     gap: 2.1rem !important;
   }
-}
-
-/* Start screen plan-card and icon polish */
-.az-home-plan-card-standard {
-  min-height: 210px !important;
-}
-
-.az-home-plan-card-pro {
-  min-height: 246px !important;
-}
-
-.az-home-plan-card .az-plan-features {
-  list-style: disc !important;
-  padding-left: 1.15rem !important;
-}
-
-.az-home-plan-card .az-plan-features li {
-  line-height: 1.35 !important;
-}
-
-.az-start-icon-actions {
-  margin-top: auto !important;
-  min-height: 260px !important;
-  display: grid !important;
-  grid-template-columns: 1fr auto auto 1fr !important;
-  align-items: end !important;
-  justify-items: center !important;
-  column-gap: 2rem !important;
-  padding-bottom: 3.4rem !important;
-}
-
-.az-start-camera-icon-button,
-.az-start-file-icon-button {
-  border: none !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  color: rgba(83, 113, 172, 0.92);
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.az-start-camera-icon-button {
-  grid-column: 2;
-  width: 86px;
-  height: 86px;
-}
-
-.az-start-file-icon-button {
-  grid-column: 3;
-  width: 58px;
-  height: 58px;
-  cursor: pointer;
-  margin-bottom: 0.8rem;
-}
-
-.az-start-camera-icon-button:active,
-.az-start-file-icon-button:active {
-  transform: scale(0.94);
-}
-
-.az-app-pro .az-start-camera-icon-button,
-.az-app-pro .az-start-file-icon-button {
-  color: rgba(36, 96, 83, 0.92);
-}
-
-/* Start screen: plan cards and bottom icons */
-.az-home-plan-card-standard {
-  min-height: 320px !important;
-}
-
-.az-home-plan-card-pro {
-  min-height: 390px !important;
-}
-
-.az-start-icon-actions {
-  position: relative;
-  width: 100%;
-  min-height: 140px;
-  margin-top: auto;
-}
-
-.az-start-camera-icon-button,
-.az-start-file-icon-button {
-  border: none !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  color: rgba(83, 113, 172, 0.92);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.az-start-camera-icon-button {
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  width: 86px;
-  height: 86px;
-  transform: translateX(-50%);
-}
-
-.az-start-file-icon-button {
-  position: absolute;
-  right: 22%;
-  bottom: 12px;
-  width: 58px;
-  height: 58px;
-  cursor: pointer;
-}
-
-.az-start-camera-icon-button:active {
-  transform: translateX(-50%) scale(0.94);
-}
-
-.az-start-file-icon-button:active {
-  transform: scale(0.94);
-}
-
-.az-app-pro .az-start-camera-icon-button,
-.az-app-pro .az-start-file-icon-button {
-  color: rgba(36, 96, 83, 0.92);
 }
 
 /* FINAL Start screen override: force icons visible */
@@ -2606,4 +2236,30 @@ body {
 
 .az-start-file-icon-button:active {
   transform: scale(0.94) !important;
+}
+
+/* FINAL icon vertical position */
+.az-start-icon-actions {
+  margin-top: 2.8rem !important;
+}
+
+.az-start-camera-icon-button {
+  top: 34px !important;
+}
+
+.az-start-file-icon-button {
+  top: 52px !important;
+}
+
+/* Separate Apply / All and underline them */
+.az-scan-settings-head .az-scan-apply {
+  margin-left: 0.9rem !important;
+  margin-right: 1.25rem !important;
+  text-decoration: underline;
+  text-underline-offset: 0.22rem;
+}
+
+.az-scan-settings-head .az-scan-apply-all {
+  text-decoration: underline;
+  text-underline-offset: 0.22rem;
 }
