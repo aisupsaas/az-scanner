@@ -98,6 +98,13 @@ export default function ResultScreen({
   const [dragging, setDragging] = useState<Corner | null>(null);
   const [downloadOpen, setDownloadOpen] = useState(false);
   const [editMode, setEditMode] = useState<"crop" | "zoom">("crop");
+  const [panning, setPanning] = useState(false);
+  const [panStart, setPanStart] = useState({
+    x: 0,
+    y: 0,
+    panX: 0,
+    panY: 0,
+  });
 
   const [pageDragFromIndex, setPageDragFromIndex] = useState<number | null>(null);
   const [pageDragOverIndex, setPageDragOverIndex] = useState<number | null>(null);
@@ -182,7 +189,7 @@ export default function ResultScreen({
   };
 
   const editedPreviewStyle = {
-    transform: `rotate(${imageEdit.rotate}deg) scale(${imageEdit.zoom ?? 1})`,
+    transform: `translate(${imageEdit.panX ?? 0}px, ${imageEdit.panY ?? 0}px) rotate(${imageEdit.rotate}deg) scale(${imageEdit.zoom ?? 1})`,
     filter: `brightness(${imageEdit.brightness})`,
     clipPath: `inset(${imageEdit.crop.top}% ${imageEdit.crop.right}% ${imageEdit.crop.bottom}% ${imageEdit.crop.left}%)`,
   };
@@ -537,9 +544,37 @@ export default function ResultScreen({
                           alt="Original document preview"
                           className="az-crop-image"
                           style={{
-                            transform: "none",
+                            transform:
+                              editMode === "zoom"
+                                ? `translate(${imageEdit.panX ?? 0}px, ${imageEdit.panY ?? 0}px) scale(${imageEdit.zoom ?? 1})`
+                                : "none",
                             filter: `brightness(${imageEdit.brightness})`,
+                            cursor: editMode === "zoom" ? (panning ? "grabbing" : "grab") : "default",
                           }}
+                          onPointerDown={(e) => {
+                            if (editMode !== "zoom") return;
+
+                            e.currentTarget.setPointerCapture(e.pointerId);
+                            setPanning(true);
+                            setPanStart({
+                              x: e.clientX,
+                              y: e.clientY,
+                              panX: imageEdit.panX ?? 0,
+                              panY: imageEdit.panY ?? 0,
+                            });
+                          }}
+                          onPointerMove={(e) => {
+                            if (editMode !== "zoom" || !panning) return;
+
+                            onImageEditChange({
+                              ...imageEdit,
+                              panX: panStart.panX + (e.clientX - panStart.x),
+                              panY: panStart.panY + (e.clientY - panStart.y),
+                              applied: false,
+                            });
+                          }}
+                          onPointerUp={() => setPanning(false)}
+                          onPointerCancel={() => setPanning(false)}
                             />
 
                         {editMode === "crop" ? (
@@ -559,6 +594,8 @@ export default function ResultScreen({
                                       onImageEditChange({
                                         ...imageEdit,
                                         zoom: Math.max(0.7, (imageEdit.zoom ?? 1) - 0.1),
+                                        panX: imageEdit.panX ?? 0,
+                                        panY: imageEdit.panY ?? 0,
                                         applied: false,
                                       })
                                     }
@@ -573,6 +610,8 @@ export default function ResultScreen({
                                       onImageEditChange({
                                         ...imageEdit,
                                         zoom: Math.min(2, (imageEdit.zoom ?? 1) + 0.1),
+                                        panX: imageEdit.panX ?? 0,
+                                        panY: imageEdit.panY ?? 0,
                                         applied: false,
                                       })
                                     }

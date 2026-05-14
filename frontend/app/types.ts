@@ -20,6 +20,8 @@ export type ImageEditSettings = {
   rotate: 0 | 90 | 180 | 270;
   brightness: number;
   zoom: number;
+  panX: number;
+  panY: number;
   crop: {
     top: number;
     right: number;

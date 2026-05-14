@@ -36,6 +36,8 @@ const DEFAULT_IMAGE_EDIT: ImageEditSettings = {
   rotate: 0,
   brightness: 1,
   zoom: 1,
+  panX: 0,
+  panY: 0,
   crop: {
     top: 0,
     right: 0,
@@ -620,6 +622,8 @@ function cancelExportName() {
           rotate: edit.rotate,
           brightness: edit.brightness,
           zoom: edit.zoom,
+          panX: edit.panX,
+          panY: edit.panY,
           crop: edit.crop,
         };
       });
@@ -670,6 +674,8 @@ function cancelExportName() {
         rotate: edit.rotate,
         brightness: edit.brightness,
         zoom: edit.zoom,
+        panX: edit.panX,
+        panY: edit.panY,
         crop: edit.crop,
       };
     });

@@ -256,29 +256,6 @@ textarea {
   color: #5b5b5b;
 }
 
-.az-result-tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-}
-
-.az-tab-button {
-  min-height: 40px;
-  border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.075);
-  background: rgba(255, 255, 255, 0.74);
-  color: #4f4f4f;
-  font-size: 0.92rem;
-  font-weight: 400;
-}
-
-.az-tab-button-active {
-  background: #111111;
-  border-color: #111111;
-  color: #ffffff;
-}
-
 .az-scroll-panel {
   flex: 1;
   min-height: 0;
@@ -299,32 +276,6 @@ textarea {
   line-height: 1.62;
   font-weight: 300;
   color: #171717;
-}
-
-.az-compare-toggle {
-  display: inline-grid;
-  grid-auto-flow: column;
-  gap: 0.35rem;
-  padding: 0.25rem;
-  border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.07);
-  background: rgba(255, 255, 255, 0.82);
-}
-
-.az-segment-button {
-  min-height: 34px;
-  padding: 0 0.85rem;
-  border-radius: 999px;
-  border: none;
-  background: transparent;
-  color: #595959;
-  font-size: 0.88rem;
-  font-weight: 400;
-}
-
-.az-segment-button-active {
-  background: #111111;
-  color: #ffffff;
 }
 
 .az-compare-stage {
@@ -937,41 +888,6 @@ textarea {
   min-width: min(100%, 360px);
 }
 
-.az-plan-toggle {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.35rem;
-  padding: 0.28rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(50, 92, 140, 0.08);
-}
-
-.az-plan-button {
-  min-height: 34px;
-  border: none;
-  border-radius: 999px;
-  background: transparent;
-  color: #64748b;
-  font-size: 0.84rem;
-  font-weight: 400;
-}
-
-.az-plan-button-active {
-  background: #111111;
-  color: #ffffff;
-}
-
-.az-plan-button-locked {
-  color: #2563eb;
-}
-
-.az-plan-button-locked span {
-  margin-left: 0.28rem;
-  color: #7c8da5;
-  font-size: 0.68rem;
-}
-
 .az-pro-badge {
   border-radius: 999px;
   padding: 0.42rem 0.72rem;
@@ -1160,22 +1076,13 @@ textarea {
 }
 
 .az-app-pro .az-secondary-button,
-.az-app-pro .az-text-tool-button,
-.az-app-pro .az-plan-button,
-.az-app-pro .az-segment-button {
+.az-app-pro .az-text-tool-button {
   background: rgba(255, 255, 255, 0.72);
   border-color: rgba(255, 255, 255, 0.34);
   color: #40534e;
   box-shadow:
     0 8px 18px rgba(20, 82, 68, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.58);
-}
-
-.az-app-pro .az-plan-button-active,
-.az-app-pro .az-segment-button-active,
-.az-app-pro .az-nav-item-active {
-  background: rgba(17, 75, 63, 0.92);
-  color: #ffffff;
 }
 
 /* Subtle motion when switching plan */
@@ -1550,11 +1457,6 @@ body {
   padding-top: 0.58rem !important;
 }
 
-.az-crop-image-wrap,
-.az-crop-image-wrap .az-crop-image {
-  max-height: 42dvh !important;
-}
-
 /* Easier crop handles */
 .az-handle {
   width: 38px !important;
@@ -1574,26 +1476,6 @@ body {
 
 .az-app-pro .az-result-toggle .az-result-toggle-active {
   background: rgba(35, 92, 81, 0.94);
-}
-
-@media (max-width: 640px) {
-  .az-result-masthead {
-    margin-bottom: 0.35rem;
-  }
-
-  .az-result-toggle button {
-    min-width: 48px;
-    padding: 0 0.5rem;
-  }
-
-  .az-crop-container {
-    min-height: 260px !important;
-  }
-
-  .az-crop-image-wrap,
-  .az-crop-image-wrap .az-crop-image {
-    max-height: 46dvh !important;
-  }
 }
 
 .az-bottom-actions {
@@ -2178,12 +2060,6 @@ body {
   text-decoration: none !important;
 }
 
-.az-top-tools-row {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-}
-
 .az-top-tool-button {
   border: none;
   background: transparent;
@@ -2195,18 +2071,6 @@ body {
 
 .az-app-pro .az-top-tool-button {
   color: rgba(36, 96, 83, 0.92);
-}
-
-.az-edit-mode-button {
-  border: none;
-  background: transparent;
-  color: rgba(74, 97, 145, 0.72);
-  font-size: 0.92rem;
-  cursor: pointer;
-}
-
-.az-edit-mode-button-active {
-  color: rgba(74, 97, 145, 0.98);
 }
 
 .az-app-pro .az-edit-mode-button {
@@ -2337,4 +2201,12 @@ body {
 .az-compare-frame {
   height: 100%;
   min-height: 540px;
+}
+
+.az-crop-image {
+  will-change: transform;
+}
+
+.az-crop-container {
+  user-select: none;
 }
