@@ -2263,3 +2263,40 @@ body {
   text-decoration: underline;
   text-underline-offset: 0.22rem;
 }
+
+/* Result page: prevent page tabs scrolling */
+.az-page-strip {
+  overflow: visible !important;
+  flex-wrap: wrap !important;
+  gap: 1.25rem !important;
+  padding-bottom: 0.15rem !important;
+}
+
+/* Result page: move editor/preview boxes up and leave room for slider */
+.az-compare-stage {
+  margin-top: 0 !important;
+  gap: 0.22rem !important;
+}
+
+.az-compare-label {
+  margin-bottom: 0 !important;
+}
+
+.az-crop-container,
+.az-compare-frame {
+  height: clamp(340px, 43dvh, 500px) !important;
+  min-height: 340px !important;
+  max-height: 500px !important;
+}
+
+/* Result page: keep brightness/export row clear under boxes */
+.az-bottom-export-row {
+  margin-top: 0.75rem !important;
+  padding-top: 0.35rem !important;
+  padding-bottom: 0.25rem !important;
+  align-items: center !important;
+}
+
+.az-scan-brightness-bottom {
+  align-self: center !important;
+}
