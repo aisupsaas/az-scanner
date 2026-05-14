@@ -2300,3 +2300,128 @@ body {
 .az-scan-brightness-bottom {
   align-self: center !important;
 }
+
+/* Remove underlines from result text buttons */
+.az-scan-apply,
+.az-scan-apply-all {
+  text-decoration: none !important;
+}
+
+/* More space between Preview/Edit and Scan/Text toggles */
+.az-scan-settings-head {
+  column-gap: 1.25rem !important;
+}
+
+.az-scan-mode-toggle {
+  margin-left: 0.65rem !important;
+}
+
+/* A4 page: outer paper edge with inner 8x10 print-safe area */
+.az-a4-page-guide {
+  padding: 4.545% 2.941% !important;
+}
+
+.az-a4-preview-image {
+  inset: 4.545% 2.941% !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+.az-a4-print-guide-top {
+  top: 4.545% !important;
+}
+
+.az-a4-print-guide-bottom {
+  bottom: 4.545% !important;
+}
+
+.az-a4-print-guide-left {
+  left: 2.941% !important;
+}
+
+.az-a4-print-guide-right {
+  right: 2.941% !important;
+}
+
+/* Top tools row */
+.az-settings-top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.az-top-tools-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.az-top-tool-button {
+  border: none;
+  background: transparent;
+  color: rgba(74, 97, 145, 0.92);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.az-app-pro .az-top-tool-button {
+  color: rgba(36, 96, 83, 0.92);
+}
+
+/* Crop / Zoom switch */
+.az-edit-mode-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.4rem;
+}
+
+.az-edit-mode-button {
+  border: none;
+  background: transparent;
+  color: rgba(74, 97, 145, 0.72);
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+
+.az-edit-mode-button-active {
+  color: rgba(74, 97, 145, 0.98);
+}
+
+.az-app-pro .az-edit-mode-button {
+  color: rgba(36, 96, 83, 0.72);
+}
+
+.az-app-pro .az-edit-mode-button-active {
+  color: rgba(36, 96, 83, 0.98);
+}
+
+/* Zoom overlay */
+.az-zoom-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  z-index: 5;
+}
+
+.az-zoom-button {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255,255,255,0.92);
+  color: rgba(74, 97, 145, 0.92);
+  font-size: 1.35rem;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+}
+
+.az-app-pro .az-zoom-button {
+  color: rgba(36, 96, 83, 0.92);
+}

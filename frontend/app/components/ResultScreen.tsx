@@ -97,6 +97,7 @@ export default function ResultScreen({
   const imageRef = useRef<HTMLImageElement | null>(null);
   const [dragging, setDragging] = useState<Corner | null>(null);
   const [downloadOpen, setDownloadOpen] = useState(false);
+  const [editMode, setEditMode] = useState<"crop" | "zoom">("crop");
 
   const [pageDragFromIndex, setPageDragFromIndex] = useState<number | null>(null);
   const [pageDragOverIndex, setPageDragOverIndex] = useState<number | null>(null);
@@ -290,9 +291,34 @@ export default function ResultScreen({
           <>
             <div className="az-scan-settings-head">
               <div>
-                <div className="az-section-label">ORIGINAL PDF SETTINGS</div>
-                <div className="az-section-copy">
-                  Page {activePageIndex + 1} of {pageCount} • {imageEdit.applied ? "Saved" : "Unsaved changes"}
+                <div className="az-settings-top-row">
+                  <div>
+                    <div className="az-section-label">ORIGINAL PDF SETTINGS</div>
+
+                    <div className="az-section-copy">
+                      Page {activePageIndex + 1} of {pageCount} • {imageEdit.applied ? "Saved" : "Unsaved changes"}
+                    </div>
+                  </div>
+
+                  <div className="az-top-tools-row">
+                    <button
+                      type="button"
+                      onClick={cycleRotate}
+                      className="az-top-tool-button"
+                      aria-label="Rotate"
+                    >
+                      ↻
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={resetCrop}
+                      className="az-top-tool-button"
+                      aria-label="Reset"
+                    >
+                      Reset
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -433,8 +459,29 @@ export default function ResultScreen({
             >
               {(compareView === "split" || compareView === "original") && (
                 <div className="az-compare-panel">
-                  <div className="az-compare-label">Edit crop</div>
+                  <div className="az-edit-mode-row">
+                      <button
+                        type="button"
+                        onClick={() => setEditMode("crop")}
+                        className={[
+                          "az-edit-mode-button",
+                          editMode === "crop" ? "az-edit-mode-button-active" : "",
+                        ].join(" ")}
+                      >
+                        Crop
+                      </button>
 
+                      <button
+                        type="button"
+                        onClick={() => setEditMode("zoom")}
+                        className={[
+                          "az-edit-mode-button",
+                          editMode === "zoom" ? "az-edit-mode-button-active" : "",
+                        ].join(" ")}
+                      >
+                        Zoom
+                      </button>
+                    </div>
                   <div
                     ref={containerRef}
                     className="az-crop-container"
@@ -456,14 +503,45 @@ export default function ResultScreen({
                           }}
                             />
 
-                        <div className="az-crop-box" style={cropBoxStyle}>
+                        {editMode === "crop" ? (
+                          <div className="az-crop-box" style={cropBoxStyle}>
                           <div className="az-grid" />
-
                           <div className="az-handle tl" onPointerDown={(e) => handleDragStart("tl", e)} />
                           <div className="az-handle tr" onPointerDown={(e) => handleDragStart("tr", e)} />
                           <div className="az-handle bl" onPointerDown={(e) => handleDragStart("bl", e)} />
                           <div className="az-handle br" onPointerDown={(e) => handleDragStart("br", e)} />
-                        </div>
+                              </div>
+                              ) : (
+                                <div className="az-zoom-overlay">
+                                  <button
+                                    type="button"
+                                    className="az-zoom-button"
+                                    onClick={() =>
+                                      onImageEditChange({
+                                        ...imageEdit,
+                                        brightness: Math.max(0.75, imageEdit.brightness - 0.05),
+                                        applied: false,
+                                      })
+                                    }
+                                  >
+                                    −
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    className="az-zoom-button"
+                                    onClick={() =>
+                                      onImageEditChange({
+                                        ...imageEdit,
+                                        brightness: Math.min(1.35, imageEdit.brightness + 0.05),
+                                        applied: false,
+                                      })
+                                    }
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                              )}
                       </div>
                     ) : (
                       <div className="az-empty-note">Original preview is not available.</div>
