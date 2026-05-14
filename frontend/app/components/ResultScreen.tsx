@@ -289,94 +289,125 @@ export default function ResultScreen({
           </>
         ) : (
           <>
-            <div className="az-scan-settings-head">
-              <div>
-                <div className="az-settings-top-row">
-                  <div>
-                    <div className="az-section-label">ORIGINAL PDF SETTINGS</div>
+          <div className="az-scan-settings-head">
 
-                    <div className="az-section-copy">
-                      Page {activePageIndex + 1} of {pageCount} • {imageEdit.applied ? "Saved" : "Unsaved changes"}
-                    </div>
-                  </div>
+            <div className="az-settings-main-row">
 
-                  <div className="az-top-tools-row">
-                    <button
-                      type="button"
-                      onClick={cycleRotate}
-                      className="az-top-tool-button"
-                      aria-label="Rotate"
-                    >
-                      ↻
-                    </button>
+              <div className="az-settings-left">
+                <div className="az-section-label">
+                  ORIGINAL PDF SETTINGS
+                </div>
 
-                    <button
-                      type="button"
-                      onClick={resetCrop}
-                      className="az-top-tool-button"
-                      aria-label="Reset"
-                    >
-                      Reset
-                    </button>
-                  </div>
+                <div className="az-section-copy">
+                  Page {activePageIndex + 1} of {pageCount} •{" "}
+                  {imageEdit.applied ? "Saved" : "Unsaved changes"}
                 </div>
               </div>
 
-              <div className="az-result-toggle az-scan-mode-toggle">
-                <button
-                  type="button"
-                  onClick={() => onCompareViewChange("split")}
-                  className={compareView === "split" ? "az-result-toggle-active" : ""}
-                >
-                  Preview
-                </button>
+              <div className="az-settings-right">
 
-                <button
-                  type="button"
-                  onClick={() => onCompareViewChange("original")}
-                  className={compareView === "original" ? "az-result-toggle-active" : ""}
-                >
-                  Edit
-                </button>
+                <div className="az-top-tools-row">
+                  <button
+                    type="button"
+                    onClick={cycleRotate}
+                    className="az-top-tool-button"
+                  >
+                    ↻
+                  </button>
+
+                  <span className="az-divider">|</span>
+
+                  <button
+                    type="button"
+                    onClick={resetCrop}
+                    className="az-top-tool-button"
+                  >
+                    Reset
+                  </button>
+                </div>
+
+                <div className="az-result-controls-row">
+
+                  <div className="az-result-toggle az-scan-mode-toggle">
+                    <button
+                      type="button"
+                      onClick={() => onCompareViewChange("split")}
+                      className={
+                        compareView === "split"
+                          ? "az-result-toggle-active"
+                          : ""
+                      }
+                    >
+                      Preview
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => onCompareViewChange("original")}
+                      className={
+                        compareView === "original"
+                          ? "az-result-toggle-active"
+                          : ""
+                      }
+                    >
+                      Edit
+                    </button>
+                  </div>
+
+                  <div className="az-result-toggle">
+                    <button
+                      type="button"
+                      onClick={() => onResultTabChange("compare")}
+                      className={
+                        resultTab === "compare"
+                          ? "az-result-toggle-active"
+                          : ""
+                      }
+                    >
+                      Scan
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => onResultTabChange("text")}
+                    >
+                      Text
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={applyScanEdit}
+                    className={[
+                      "az-scan-apply",
+                      imageEdit.applied
+                        ? "az-scan-apply-saved"
+                        : "",
+                      !imageEdit.applied
+                        ? "az-scan-apply-pulse"
+                        : "",
+                    ].join(" ")}
+                  >
+                    {imageEdit.applied ? "Saved" : "Apply"}
+                  </button>
+
+                  <span className="az-divider">|</span>
+
+                  <button
+                    type="button"
+                    onClick={onApplyEditToAllPages}
+                    className="az-scan-apply-all"
+                  >
+                    All
+                  </button>
+
+                </div>
+
               </div>
-            
-              <div className="az-result-toggle">
-                <button
-                  type="button"
-                  onClick={() => onResultTabChange("compare")}
-                  className={resultTab === "compare" ? "az-result-toggle-active" : ""}
-                >
-                  Scan
-                </button>
 
-                <button
-                  type="button"
-                  onClick={() => onResultTabChange("text")}
-                  className=""
-                >
-                  Text
-                </button>
-              </div>
-            <button
-                type="button"
-                onClick={applyScanEdit}
-                className={[
-                  "az-scan-apply",
-                  imageEdit.applied ? "az-scan-apply-saved" : "",
-                  !imageEdit.applied ? "az-scan-apply-pulse" : "",
-                ].join(" ")}
-              >
-                {imageEdit.applied ? "Saved" : "Apply"}
-              </button>
-
-              <button
-                type="button"
-                onClick={onApplyEditToAllPages}
-                className="az-scan-apply-all"
-              >
-                All
-              </button>
             </div>
+
+          </div>
 
               <div className="az-page-strip">
                 {Array.from({ length: pageCount }).map((_, index) => (
@@ -459,28 +490,36 @@ export default function ResultScreen({
             >
               {(compareView === "split" || compareView === "original") && (
                 <div className="az-compare-panel">
-                  <div className="az-edit-mode-row">
+
+                 <div className="az-edit-mode-inline">
                       <button
                         type="button"
                         onClick={() => setEditMode("crop")}
                         className={[
                           "az-edit-mode-button",
-                          editMode === "crop" ? "az-edit-mode-button-active" : "",
+                          editMode === "crop"
+                            ? "az-edit-mode-button-active"
+                            : "",
                         ].join(" ")}
                       >
                         Crop
                       </button>
+
+                      <span className="az-divider">|</span>
 
                       <button
                         type="button"
                         onClick={() => setEditMode("zoom")}
                         className={[
                           "az-edit-mode-button",
-                          editMode === "zoom" ? "az-edit-mode-button-active" : "",
+                          editMode === "zoom"
+                            ? "az-edit-mode-button-active"
+                            : "",
                         ].join(" ")}
                       >
                         Zoom
                       </button>
+
                     </div>
                   <div
                     ref={containerRef}

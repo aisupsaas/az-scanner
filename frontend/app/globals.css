@@ -2338,3 +2338,68 @@ body {
   height: auto !important;
   object-fit: contain !important;
 }
+
+.az-settings-main-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.az-settings-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.7rem;
+}
+
+.az-result-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.az-top-tools-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.az-divider {
+  color: #8da0be;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.az-edit-mode-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.4rem;
+}
+
+.az-edit-mode-button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: #64748b;
+  font-size: 0.92rem;
+}
+
+.az-edit-mode-button-active {
+  color: #35507a;
+}
+
+.az-compare-stage-split {
+  align-items: stretch;
+}
+
+.az-compare-panel {
+  min-width: 0;
+}
+
+.az-crop-container,
+.az-compare-frame {
+  height: 100%;
+  min-height: 540px;
+}
