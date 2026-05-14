@@ -119,6 +119,7 @@ export default function ResultScreen({
   const imageRef = useRef<HTMLImageElement | null>(null);
   const [dragging, setDragging] = useState<Corner | null>(null);
   const [downloadOpen, setDownloadOpen] = useState(false);
+  const [textFontSize, setTextFontSize] = useState(16);
   const [editMode, setEditMode] = useState<"crop" | "zoom">("crop");
   const [panning, setPanning] = useState(false);
   const [panStart, setPanStart] = useState({
@@ -302,31 +303,64 @@ export default function ResultScreen({
     ))}
   </div>
 
-  <div className="az-text-a4-scroll">
-    {textPages.map((pageText, index) => (
-      <div className="az-text-a4-page" key={index}>
-        <button
-          type="button"
-          className="az-text-page-delete"
-          onClick={() => deleteTextPage(index)}
-          aria-label={`Delete text page ${index + 1}`}
-        >
-          ×
-        </button>
+ <div className="az-text-a4-scroll">
+  <div className="az-text-a4-page">
 
-        <textarea
-          value={pageText}
-          disabled={loading}
-          onChange={(e) => updateTextPage(index, e.target.value)}
-          className="az-text-a4-editor"
-          spellCheck={false}
-          placeholder={`Page ${index + 1} text will appear here.`}
-        />
-      </div>
-    ))}
+    <button
+      type="button"
+      className="az-text-page-delete"
+      onClick={() => deleteTextPage(activePageIndex)}
+      aria-label={`Delete text page ${activePageIndex + 1}`}
+    >
+      ×
+    </button>
+
+    <textarea
+      value={textPages[activePageIndex] || ""}
+      disabled={loading}
+      onChange={(e) =>
+        updateTextPage(activePageIndex, e.target.value)
+      }
+      className="az-text-a4-editor"
+      spellCheck={false}
+      placeholder={`Page ${activePageIndex + 1} text will appear here.`}
+      style={{
+        fontSize: `${textFontSize}px`,
+      }}
+    />
   </div>
+</div>
 
   <div className="az-text-actions">
+
+          <div className="az-text-font-controls">
+
+      <button
+        type="button"
+        className="az-font-size-button"
+        onClick={() =>
+          setTextFontSize((current) => Math.max(12, current - 1))
+        }
+      >
+        A−
+      </button>
+
+      <div className="az-font-size-label">
+        {textFontSize}px
+      </div>
+
+      <button
+        type="button"
+        className="az-font-size-button"
+        onClick={() =>
+          setTextFontSize((current) => Math.min(28, current + 1))
+        }
+      >
+        A+
+      </button>
+
+    </div>
+
     <button type="button" onClick={onCopyText} className="az-secondary-button">
       Copy text
     </button>
