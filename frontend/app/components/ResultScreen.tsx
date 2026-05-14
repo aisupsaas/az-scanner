@@ -232,32 +232,6 @@ export default function ResultScreen({
                   Edit detected lines, remove bad OCR guesses, then export TXT or Text PDF.
                 </div>
               </div>
-
-              <div className="az-text-tool-row">
-                <button type="button" onClick={() => onApplyTextTool("clean")} className="az-text-tool-button">
-                  Smart clean
-                </button>
-
-                <button type="button" onClick={() => onApplyTextTool("spacing")} className="az-text-tool-button">
-                  Spacing
-                </button>
-
-                <button type="button" onClick={() => onApplyTextTool("blankLines")} className="az-text-tool-button">
-                  Lines
-                </button>
-
-                <button type="button" onClick={() => onApplyTextTool("mergeLines")} className="az-text-tool-button">
-                  Merge
-                </button>
-
-                <button type="button" onClick={onUndoText} disabled={!canUndoText} className="az-text-tool-button az-text-tool-button-soft">
-                  Undo
-                </button>
-
-                <button type="button" onClick={onResetOcrText} className="az-text-tool-button az-text-tool-button-soft">
-                  Reset OCR
-                </button>
-              </div>
             </div>
 
             {result?.warning ? (
@@ -266,42 +240,32 @@ export default function ResultScreen({
                 <div className="az-inline-error-copy">{result.warning}</div>
               </div>
             ) : null}
-
-            <div className="az-scroll-panel">
-              {editedLines.length ? (
-                <div className="az-line-editor-list">
-                  {editedLines.map((line, index) => (
-                    <div className="az-line-editor-row" key={line.id}>
-                      <div className="az-line-editor-index">{index + 1}</div>
-
-                      <textarea
-                        value={line.text}
-                        onChange={(e) => onUpdateEditedLine(line.id, e.target.value)}
-                        className="az-line-editor-input"
-                        spellCheck={false}
-                        rows={3}
-                      />
-
-                      <button
-                        type="button"
-                        onClick={() => onRemoveEditedLine(line.id)}
-                        className="az-line-remove-button"
-                      >
-                        Remove
-                      </button>
-                    </div>
+                <div className="az-page-strip">
+                  {Array.from({ length: pageCount }).map((_, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => onSelectPage(index)}
+                      className={[
+                        "az-page-pill",
+                        activePageIndex === index ? "az-page-pill-active" : "",
+                      ].join(" ")}
+                    >
+                      Page {index + 1}
+                    </button>
                   ))}
                 </div>
-              ) : (
-                <textarea
-                  value={loading ? "Processing document..." : editedText || "Your extracted text will appear here."}
-                  disabled={loading}
-                  onChange={(e) => onSetEditedText(e.target.value)}
-                  className="az-text-editor"
-                  spellCheck={false}
-                />
-              )}
-            </div>
+
+                <div className="az-scroll-panel">
+                  <textarea
+                    value={loading ? "Processing document..." : editedText || ""}
+                    disabled={loading}
+                    onChange={(e) => onSetEditedText(e.target.value)}
+                    className="az-text-editor"
+                    spellCheck={false}
+                    placeholder={`Page ${activePageIndex + 1} text will appear here.`}
+                  />
+                </div>
 
             <div className="az-text-actions">
               <button type="button" onClick={onCopyText} className="az-secondary-button">

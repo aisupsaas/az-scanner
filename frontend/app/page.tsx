@@ -82,6 +82,7 @@ export default function HomePage() {
   const [result, setResult] = useState<ProcessResponse | null>(null);
   const [editedText, setEditedText] = useState("");
   const [editedLines, setEditedLines] = useState<OcrLine[]>([]);
+  const [pageTexts, setPageTexts] = useState<string[]>([]);
   const [originalOcrText, setOriginalOcrText] = useState("");
   const [originalOcrLines, setOriginalOcrLines] = useState<OcrLine[]>([]);
   const [textHistory, setTextHistory] = useState<string[]>([]);
@@ -146,6 +147,7 @@ export default function HomePage() {
     setResult(null);
     setEditedText("");
     setEditedLines([]);
+    setPageTexts([]);
     setImageEdits([]);
     setOriginalOcrText("");
     setOriginalOcrLines([]);
@@ -426,8 +428,11 @@ function compressImageForOcr(file: File): Promise<File> {
     const nextText = nextLines.length ? linesToText(nextLines) : finalData?.text || "";
 
     setResult(finalData);
-    setEditedLines(nextLines);
-    setEditedText(nextText);
+
+    const nextPageTexts = splitTextIntoPages(nextText, pageCount);
+    setEditedLines([]);
+    setEditedText(nextPageTexts[0] || nextText);
+    setPageTexts(nextPageTexts);
     setOriginalOcrLines(nextLines);
     setOriginalOcrText(nextText);
     setTextHistory([]);
@@ -540,6 +545,19 @@ function compressImageForOcr(file: File): Promise<File> {
     addFiles(capturedFile);
   }
   
+  function updateActivePageText(text: string) {
+  setPageTexts((current) => {
+    const total = Math.max(originalImageUrls.length, sourcePreviews.length, files.length, 1);
+    const next = current.length
+      ? [...current]
+      : Array.from({ length: total }, () => "");
+
+    next[activePageIndex] = text;
+    setEditedText(next.join("\n\n"));
+    return next;
+  });
+}
+
   async function copyEditedText() {
     try {
       await navigator.clipboard.writeText(editedText || "");
@@ -857,6 +875,26 @@ async function shareEditedDocx(filenameBase = "az-scanner-edited-text") {
     });
   }
 
+  function splitTextIntoPages(text: string, pageCount: number) {
+  const clean = String(text || "").trim();
+
+  if (!pageCount) return [];
+  if (!clean) return Array.from({ length: pageCount }, () => "");
+
+  const pageChunks = clean
+    .split(/(?=Page\s+\d+)/gi)
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (pageChunks.length >= pageCount) {
+    return Array.from({ length: pageCount }, (_, index) => pageChunks[index] || "");
+  }
+
+  return Array.from({ length: pageCount }, (_, index) =>
+    index === 0 ? clean : ""
+  );
+}
+
   function requestApplyEditToAllPages() {
   setApplyAllModalOpen(true);
   }
@@ -995,12 +1033,12 @@ function resetOcrText() {
               sourcePreview={sourcePreviews[activePageIndex] || ""}
               originalImageHref={originalImageHref}
               cleanedImageHref={cleanedImageHref}
-              editedText={editedText}
-              editedLines={editedLines}
+              editedText={pageTexts[activePageIndex] || ""}
+              editedLines={[]}
               imageEdit={activeImageEdit}
               activePageIndex={activePageIndex}
               pageCount={Math.max(originalImageUrls.length, sourcePreviews.length, 1)}
-              onSetEditedText={setEditedText}
+              onSetEditedText={updateActivePageText}
               onUpdateEditedLine={updateEditedLine}
               onRemoveEditedLine={removeEditedLine}
               onCopyText={copyEditedText}
