@@ -2285,3 +2285,57 @@ body {
 .az-app-pro .az-a4-print-guide-left {
   border-color: rgba(43, 134, 115, 0.58);
 }
+
+/* Start screen icon actions */
+.az-start-intro {
+  margin-bottom: 1rem;
+}
+
+.az-start-icon-actions {
+  margin-top: auto;
+  min-height: 140px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  justify-items: center;
+  column-gap: 1.35rem;
+  padding-bottom: 1.6rem;
+}
+
+.az-start-camera-icon-button,
+.az-start-file-icon-button {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  color: rgba(83, 113, 172, 0.92);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.az-start-camera-icon-button {
+  grid-column: 2;
+  width: 76px;
+  height: 76px;
+}
+
+.az-start-file-icon-button {
+  grid-column: 3;
+  justify-self: start;
+  width: 54px;
+  height: 54px;
+  cursor: pointer;
+  margin-bottom: 0.55rem;
+}
+
+.az-start-camera-icon-button:active,
+.az-start-file-icon-button:active {
+  transform: scale(0.94);
+}
+
+.az-app-pro .az-start-camera-icon-button,
+.az-app-pro .az-start-file-icon-button {
+  color: rgba(36, 96, 83, 0.92);
+}
