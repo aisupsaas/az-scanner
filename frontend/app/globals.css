@@ -2291,11 +2291,11 @@ body {
 }
 
 .az-home-plan-card-standard {
-  min-height: 180px !important;
+  min-height: 130px !important;
 }
 
 .az-home-plan-card-pro {
-  min-height: 200px !important;
+  min-height: 1300px !important;
 }
 
 .az-start-icon-actions {
