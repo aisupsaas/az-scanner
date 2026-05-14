@@ -2285,24 +2285,24 @@ body {
   border-color: rgba(43, 134, 115, 0.58);
 }
 
-/* Start screen: balanced plan cards and bottom icons */
+/* Start screen: balanced plan cards and visible icons */
 .az-start-intro {
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.75rem;
 }
 
 .az-home-plan-card-standard {
-  min-height: 185px !important;
+  min-height: 180px !important;
 }
 
 .az-home-plan-card-pro {
-  min-height: 220px !important;
+  min-height: 200px !important;
 }
 
 .az-start-icon-actions {
   position: relative;
   width: 100%;
-  min-height: 96px;
-  margin-top: 0.85rem;
+  height: 86px;
+  margin-top: 1rem;
 }
 
 .az-start-camera-icon-button,
@@ -2321,18 +2321,18 @@ body {
 .az-start-camera-icon-button {
   position: absolute;
   left: 50%;
-  top: 8px;
-  width: 74px;
-  height: 74px;
+  top: 0;
+  width: 72px;
+  height: 72px;
   transform: translateX(-50%);
 }
 
 .az-start-file-icon-button {
   position: absolute;
-  left: calc(50% + 74px);
-  top: 22px;
-  width: 48px;
-  height: 48px;
+  left: calc(50% + 76px);
+  top: 18px;
+  width: 42px;
+  height: 42px;
   cursor: pointer;
 }
 
