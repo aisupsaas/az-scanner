@@ -564,20 +564,8 @@ export default function ResultScreen({
                       }}
                     >
                     {previewImage ? (
-                      <div className="az-crop-image-wrap">
-                        <img
-                          ref={imageRef}
-                          src={previewImage}
-                          alt="Original document preview"
-                          className="az-crop-image"
-                          style={{
-                            transform: `translate(${imageEdit.panX ?? 0}px, ${imageEdit.panY ?? 0}px) scale(${imageEdit.zoom ?? 1})`,
-                            filter: `brightness(${imageEdit.brightness})`,
-                            cursor:
-                              editMode === "zoom"
-                                ? (panning ? "grabbing" : "grab")
-                                : "crosshair",
-                          }}
+                      <div
+                          className="az-crop-image-wrap"
                           onPointerDown={(e) => {
                             if (editMode !== "zoom") return;
 
@@ -590,8 +578,22 @@ export default function ResultScreen({
                               panY: imageEdit.panY ?? 0,
                             });
                           }}
-                            />
+                        >
 
+                          <img
+                            ref={imageRef}
+                            src={previewImage}
+                            alt="Original document preview"
+                            className="az-crop-image"
+                            style={{
+                              transform: `translate(${imageEdit.panX ?? 0}px, ${imageEdit.panY ?? 0}px) scale(${imageEdit.zoom ?? 1})`,
+                              filter: `brightness(${imageEdit.brightness})`,
+                              cursor:
+                                editMode === "zoom"
+                                  ? (panning ? "grabbing" : "grab")
+                                  : "crosshair",
+                            }}
+                          />
                         {editMode === "crop" ? (
                           <div className="az-crop-box" style={cropBoxStyle}>
                           <div className="az-grid" />
