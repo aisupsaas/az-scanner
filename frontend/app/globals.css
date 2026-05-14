@@ -2096,9 +2096,9 @@ body {
 
 .az-crop-container,
 .az-compare-frame {
-  height: clamp(330px, 43dvh, 500px) !important;
-  min-height: 330px !important;
-  max-height: 500px !important;
+  height: clamp(390px, 50dvh, 560px) !important;
+  min-height: 390px !important;
+  max-height: 560px !important;
 }
 
 .az-crop-image-wrap {
@@ -2169,7 +2169,7 @@ body {
 .az-crop-container,
 .az-compare-frame {
   background: rgba(248, 251, 255, 0.96) !important;
-  padding: 0.75rem !important;
+  padding: 0.35rem !important;
 }
 
 .az-crop-image-wrap {
@@ -2180,8 +2180,8 @@ body {
   max-height: 100% !important;
   background: #ffffff !important;
   box-shadow:
-    0 0 0 1px rgba(50, 92, 140, 0.08),
-    0 14px 34px rgba(42, 91, 150, 0.12) !important;
+    0 0 0 1px rgba(50, 92, 140, 0.1),
+    0 12px 28px rgba(42, 91, 150, 0.1) !important;
   overflow: hidden !important;
 }
 
@@ -2338,4 +2338,66 @@ body {
 .az-app-pro .az-start-camera-icon-button,
 .az-app-pro .az-start-file-icon-button {
   color: rgba(36, 96, 83, 0.92);
+}
+
+/* Result screen: tighter chrome, larger document workspace */
+.az-scan-settings-head {
+  row-gap: 0.28rem !important;
+  margin-bottom: 0 !important;
+}
+
+.az-page-strip {
+  margin-top: 0.05rem !important;
+  margin-bottom: 0.08rem !important;
+  padding-top: 0.1rem !important;
+  padding-bottom: 0.28rem !important;
+}
+
+.az-compare-stage {
+  margin-top: 0.12rem !important;
+  gap: 0.45rem !important;
+}
+
+.az-compare-label {
+  margin-bottom: 0.05rem !important;
+}
+
+.az-scan-toolbar {
+  margin-top: 0.05rem !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.az-scan-button-row {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  gap: 2.45rem !important;
+}
+
+.az-bottom-export-row {
+  margin-top: 0.18rem !important;
+  padding-bottom: 0.05rem !important;
+}
+
+.az-a4-page-guide {
+  height: 100% !important;
+  max-height: 100% !important;
+  margin: 0 auto !important;
+}
+
+.az-a4-preview-image {
+  object-fit: contain !important;
+  background: #ffffff !important;
+}
+
+@media (max-width: 640px) {
+  .az-crop-container,
+  .az-compare-frame {
+    height: clamp(380px, 49dvh, 540px) !important;
+    min-height: 380px !important;
+  }
+
+  .az-scan-button-row {
+    gap: 2.1rem !important;
+  }
 }
