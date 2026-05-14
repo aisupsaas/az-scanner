@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 import type {
   CompareView,
@@ -24,6 +24,7 @@ type ResultScreenProps = {
   originalImageHref: string;
   cleanedImageHref: string;
   editedText: string;
+  pageTexts: string[];
   editedLines: OcrLine[];
   imageEdit: ImageEditSettings;
   activePageIndex: number;
@@ -52,28 +53,6 @@ type ResultScreenProps = {
   onCompareViewChange: (view: CompareView) => void;
 };
 
-function splitA4TextPages(text: string) {
-  const clean = String(text || "");
-
-  if (!clean.trim()) return [""];
-
-  const maxChars = 1350;
-  const pages: string[] = [];
-  let remaining = clean;
-
-  while (remaining.length > maxChars) {
-    let cut = remaining.lastIndexOf("\n", maxChars);
-    if (cut < maxChars * 0.55) cut = remaining.lastIndexOf(" ", maxChars);
-    if (cut < maxChars * 0.55) cut = maxChars;
-
-    pages.push(remaining.slice(0, cut).trim());
-    remaining = remaining.slice(cut).trim();
-  }
-
-  pages.push(remaining);
-  return pages;
-}
-
 export default function ResultScreen({
   result,
   loading,
@@ -83,6 +62,7 @@ export default function ResultScreen({
   originalImageHref,
   cleanedImageHref,
   editedText,
+  pageTexts,
   editedLines,
   imageEdit,
   activePageIndex,
@@ -109,14 +89,16 @@ export default function ResultScreen({
   onMovePage,
   onResultTabChange,
   onCompareViewChange,
-}: ResultScreenProps) {
-  const previewImage =
-    imageEdit.pdfSource === "cleaned" && cleanedImageHref
-      ? cleanedImageHref
-      : originalImageHref || sourcePreview;
+  }: 
 
-  const textPages = useMemo(() => splitA4TextPages(editedText), [editedText]);
-  const activeTextPageIndex = Math.min(activePageIndex, textPages.length - 1);
+  ResultScreenProps) {
+    const previewImage =
+      imageEdit.pdfSource === "cleaned" && cleanedImageHref
+        ? cleanedImageHref
+        : originalImageHref || sourcePreview;
+
+    
+  const textPages = pageTexts?.length ? pageTexts : [editedText || ""];
 
   function updateTextPage(pageIndex: number, nextText: string) {
     const nextPages = [...textPages];
@@ -126,8 +108,12 @@ export default function ResultScreen({
 
   function deleteTextPage(pageIndex: number) {
     const nextPages = textPages.filter((_, index) => index !== pageIndex);
-    onSetEditedText(nextPages.length ? nextPages.join("\n\n") : "");
-    onSelectPage(Math.max(0, Math.min(pageIndex, nextPages.length - 1)));
+
+    onSetEditedText(nextPages.join("\n\n"));
+
+    onSelectPage(
+      Math.max(0, Math.min(pageIndex, nextPages.length - 1))
+    );
   }
   const containerRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
@@ -308,7 +294,7 @@ export default function ResultScreen({
         onClick={() => onSelectPage(index)}
         className={[
           "az-page-pill",
-          activeTextPageIndex === index ? "az-page-pill-active" : "",
+          activePageIndex === index ? "az-page-pill-active" : "",
         ].join(" ")}
       >
         Page {index + 1}

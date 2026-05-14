@@ -2242,6 +2242,7 @@ body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   display: grid;
   justify-items: center;
   gap: 1rem;
@@ -2251,15 +2252,17 @@ body {
 
 .az-text-a4-page {
   position: relative;
-  width: min(100%, 520px);
+  width: min(100%, 440px);
   aspect-ratio: 8.5 / 11;
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(83, 113, 172, 0.18);
   box-shadow:
     0 14px 34px rgba(42, 91, 150, 0.12),
     inset 0 0 0 1px rgba(255, 255, 255, 0.72);
-  padding: 0.65in 0.45in;
+  padding: 0.42in 0.32in;
 }
+
+
 
 .az-text-a4-editor {
   width: 100%;

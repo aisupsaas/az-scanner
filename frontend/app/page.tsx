@@ -1034,6 +1034,7 @@ function resetOcrText() {
               originalImageHref={originalImageHref}
               cleanedImageHref={cleanedImageHref}
               editedText={pageTexts[activePageIndex] || ""}
+              pageTexts={pageTexts}
               editedLines={[]}
               imageEdit={activeImageEdit}
               activePageIndex={activePageIndex}
