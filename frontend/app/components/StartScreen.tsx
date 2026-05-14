@@ -35,16 +35,17 @@ export default function StartScreen(props: {
             onClick={() => props.onSelectPlan("standard")}
             className={[
               "az-home-plan-card",
+              "az-home-plan-card-standard",
               props.selectedPlan === "standard" ? "az-home-plan-card-active" : "",
             ].join(" ")}
           >
             <span>Standard</span>
             <strong>Free</strong>
             <ul className="az-plan-features">
-              <li>Free basic OCR</li>
+              <li>Basic OCR extraction</li>
               <li>Up to 10 images per scan</li>
-              <li>Editable text</li>
-              <li>TXT and PDF export</li>
+              <li>Edit extracted text</li>
+              <li>Export TXT and PDF</li>
             </ul>
           </button>
 
@@ -53,17 +54,19 @@ export default function StartScreen(props: {
             onClick={() => props.onSelectPlan("pro")}
             className={[
               "az-home-plan-card",
+              "az-home-plan-card-pro",
               props.selectedPlan === "pro" ? "az-home-plan-card-active" : "",
             ].join(" ")}
           >
             <span>Pro</span>
             <strong>3-day trial</strong>
             <ul className="az-plan-features">
-              <li>Document AI OCR (Optical Character Recognition)</li>
+              <li>Document AI OCR</li>
               <li>Unlimited total images</li>
               <li>Add up to 20 files per upload</li>
-              <li>Better text accuracy</li>
-              <li>Better document-ready extraction</li>
+              <li>Higher text accuracy</li>
+              <li>Cleaner document-ready extraction</li>
+              <li>Better layout handling</li>
             </ul>
           </button>
         </div>
@@ -76,61 +79,71 @@ export default function StartScreen(props: {
             aria-label="Open camera"
           >
             <svg
-              width="44"
-              height="44"
-              viewBox="0 0 24 24"
+              width="58"
+              height="58"
+              viewBox="0 0 64 64"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
               aria-hidden="true"
             >
-              <path
-                d="M8.5 7L9.8 5.3C10.1 4.9 10.6 4.7 11.1 4.7H12.9C13.4 4.7 13.9 4.9 14.2 5.3L15.5 7H18C19.1 7 20 7.9 20 9V17C20 18.1 19.1 19 18 19H6C4.9 19 4 18.1 4 17V9C4 7.9 4.9 7 6 7H8.5Z"
+              <rect
+                x="10"
+                y="20"
+                width="44"
+                height="32"
+                rx="9"
                 stroke="currentColor"
-                strokeWidth="1.7"
+                strokeWidth="3.4"
+              />
+              <path
+                d="M24 20L27.5 14.8C28.25 13.65 29.55 13 30.9 13H34.1C35.45 13 36.75 13.65 37.5 14.8L41 20"
+                stroke="currentColor"
+                strokeWidth="3.4"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
               <circle
-                cx="12"
-                cy="13"
-                r="3.2"
+                cx="32"
+                cy="36"
+                r="9"
                 stroke="currentColor"
-                strokeWidth="1.7"
+                strokeWidth="3.4"
               />
+              <circle cx="47" cy="27" r="2.2" fill="currentColor" />
             </svg>
           </button>
 
           <label className="az-start-file-icon-button" aria-label="Choose files">
             <svg
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
+              width="40"
+              height="40"
+              viewBox="0 0 64 64"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
               aria-hidden="true"
             >
               <path
-                d="M6 3.8H13.5L18 8.3V20.2H6V3.8Z"
+                d="M18 8H38L50 20V56H18V8Z"
                 stroke="currentColor"
-                strokeWidth="1.7"
+                strokeWidth="3.2"
                 strokeLinejoin="round"
               />
               <path
-                d="M13.5 3.8V8.3H18"
+                d="M38 8V20H50"
                 stroke="currentColor"
-                strokeWidth="1.7"
+                strokeWidth="3.2"
                 strokeLinejoin="round"
               />
               <path
-                d="M9 14H15"
+                d="M25 37H39"
                 stroke="currentColor"
-                strokeWidth="1.7"
+                strokeWidth="3.2"
                 strokeLinecap="round"
               />
               <path
-                d="M12 11V17"
+                d="M32 30V44"
                 stroke="currentColor"
-                strokeWidth="1.7"
+                strokeWidth="3.2"
                 strokeLinecap="round"
               />
             </svg>

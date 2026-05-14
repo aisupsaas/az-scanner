@@ -2401,3 +2401,69 @@ body {
     gap: 2.1rem !important;
   }
 }
+
+/* Start screen plan-card and icon polish */
+.az-home-plan-card-standard {
+  min-height: 210px !important;
+}
+
+.az-home-plan-card-pro {
+  min-height: 246px !important;
+}
+
+.az-home-plan-card .az-plan-features {
+  list-style: disc !important;
+  padding-left: 1.15rem !important;
+}
+
+.az-home-plan-card .az-plan-features li {
+  line-height: 1.35 !important;
+}
+
+.az-start-icon-actions {
+  margin-top: auto !important;
+  min-height: 260px !important;
+  display: grid !important;
+  grid-template-columns: 1fr auto auto 1fr !important;
+  align-items: end !important;
+  justify-items: center !important;
+  column-gap: 2rem !important;
+  padding-bottom: 3.4rem !important;
+}
+
+.az-start-camera-icon-button,
+.az-start-file-icon-button {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  color: rgba(83, 113, 172, 0.92);
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.az-start-camera-icon-button {
+  grid-column: 2;
+  width: 86px;
+  height: 86px;
+}
+
+.az-start-file-icon-button {
+  grid-column: 3;
+  width: 58px;
+  height: 58px;
+  cursor: pointer;
+  margin-bottom: 0.8rem;
+}
+
+.az-start-camera-icon-button:active,
+.az-start-file-icon-button:active {
+  transform: scale(0.94);
+}
+
+.az-app-pro .az-start-camera-icon-button,
+.az-app-pro .az-start-file-icon-button {
+  color: rgba(36, 96, 83, 0.92);
+}
