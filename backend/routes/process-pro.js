@@ -2,7 +2,13 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
-const cv = require("@techstark/opencv-js");
+let cv = null;
+
+try {
+  cv = require("@techstark/opencv-js");
+} catch (error) {
+  console.warn("OpenCV unavailable, Smart Clean will use Sharp only:", error?.message || error);
+}
 const router = express.Router();
 const { DocumentProcessorServiceClient } = require("@google-cloud/documentai").v1;
 
@@ -46,6 +52,7 @@ async function createOriginalImage(imageBuffer, outputPath) {
 }
 
 async function tryPerspectiveCorrection(imageBuffer) {
+  if (!cv) return imageBuffer;
   let src = null;
   let gray = null;
   let blurred = null;
