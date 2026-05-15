@@ -398,29 +398,28 @@ export default function ResultScreen({
               </svg>
             </button>
           </div>
+            {downloadOpen ? (
+              <div className="az-export-drawer">
+                <button type="button" onClick={onDownloadEditedTxt}>
+                  <span>TXT</span>
+                  <small>Text TXT</small>
+                </button>
+
+                <button type="button" onClick={onDownloadEditedPdf}>
+                  <span>PDF</span>
+                  <small>Text PDF</small>
+                </button>
+
+                <button type="button" onClick={onDownloadEditedDocx}>
+                  <span>DOCX</span>
+                  <small>Word DOCX</small>
+                </button>
+              </div>
+            ) : null}
           </>
 
         ) : (
           <>
-
-          {downloadOpen ? (
-          <div className="az-export-drawer">
-            <button type="button" onClick={onDownloadEditedTxt}>
-              <span>TXT</span>
-              <small>Text TXT</small>
-            </button>
-
-            <button type="button" onClick={onDownloadEditedPdf}>
-              <span>PDF</span>
-              <small>Text PDF</small>
-            </button>
-
-            <button type="button" onClick={onDownloadEditedDocx}>
-              <span>DOCX</span>
-              <small>Word DOCX</small>
-            </button>
-          </div>
-        ) : null}
           <div className="az-scan-settings-head">
 
             <div className="az-settings-main-row">

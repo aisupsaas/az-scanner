@@ -1640,13 +1640,19 @@ body {
 
 @keyframes azDrawerDown {
   from {
-    transform: translateY(-14px);
-    opacity: 0;
+    transform: translateY(100%);
+    opacity: 0.75;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+.az-export-drawer {
+  animation: azDrawerDown 0.28s cubic-bezier(0.22, 1, 0.36, 1) both !important;
+  will-change: transform, opacity;
 }
 
 /* Pro mode: unify remaining blue controls into jade */
@@ -2284,4 +2290,8 @@ body {
 .az-text-page-strip > * {
   flex: 0 0 auto;
   scroll-snap-align: start;
+}
+
+.az-text-export-row + .az-export-drawer {
+  z-index: 99 !important;
 }

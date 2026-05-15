@@ -1,7 +1,7 @@
 export type PlanType = "standard" | "pro";
 export type ScreenMode = "start" | "review" | "result";
 export type ResultTab = "text" | "compare";
-export type CompareView = "split" | "original" | "cleaned";
+export type CompareView = "split" | "original" | "cleaned" | "smartClean";
 
 export type OcrLine = {
   id: string;
@@ -16,7 +16,7 @@ export type OcrLine = {
 };
 
 export type ImageEditSettings = {
-  pdfSource: "original" | "cleaned";
+  pdfSource: "original" | "cleaned" | "smartClean";
   rotate: 0 | 90 | 180 | 270;
   brightness: number;
   zoom: number;
@@ -45,6 +45,8 @@ export type ProcessResponse = {
     cleanedImageUrl?: string;
     originalPdfImageUrls?: string[];
     cleanedImageUrls?: string[];
+    smartCleanImageUrl?: string;
+    smartCleanImageUrls?: string[];
     pdfUrl?: string;
     txtUrl?: string;
   };
