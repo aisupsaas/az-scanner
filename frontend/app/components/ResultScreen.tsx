@@ -106,6 +106,7 @@ export default function ResultScreen({
     
   const textPages = pageTexts?.length ? pageTexts : [editedText || ""];
 
+  const textPageRefs = useRef<Array<HTMLDivElement | null>>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const [dragging, setDragging] = useState<Corner | null>(null);
@@ -290,7 +291,13 @@ export default function ResultScreen({
       <button
         key={index}
         type="button"
-        onClick={() => onSelectPage(index)}
+        onClick={() => {
+            onSelectPage(index);
+            textPageRefs.current[index]?.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }}
         className={[
           "az-page-pill",
           activePageIndex === index ? "az-page-pill-active" : "",
@@ -303,7 +310,13 @@ export default function ResultScreen({
 
  <div className="az-text-a4-scroll">
   {textPages.map((pageText, index) => (
-    <div className="az-text-a4-page" key={index}>
+    <div
+      key={index}
+      ref={(node) => {
+        textPageRefs.current[index] = node;
+      }}
+      className="az-text-a4-page"
+    >
       <button
         type="button"
         className="az-text-page-delete"
@@ -316,6 +329,7 @@ export default function ResultScreen({
       <textarea
         value={pageText}
         disabled={loading}
+        onFocus={() => onSelectPage(index)}
         onChange={(e) => onUpdateTextPage(index, e.target.value)}
         className="az-text-a4-editor"
         spellCheck={false}
@@ -326,7 +340,7 @@ export default function ResultScreen({
       />
     </div>
   ))}
-</div>
+  </div>
 
   <div className="az-text-actions">
 
