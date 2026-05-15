@@ -2255,3 +2255,33 @@ body {
 .az-app-pro .az-font-size-button {
   color: rgba(36, 96, 83, 0.92);
 }
+
+/* Text mode bottom export/font row */
+.az-text-export-row {
+  display: grid !important;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 0.6rem;
+}
+
+.az-text-export-row .az-text-font-controls {
+  margin: 0 !important;
+  justify-self: center;
+}
+
+/* Text mode page tabs: allow horizontal slide when many pages */
+.az-text-page-strip {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  flex-wrap: nowrap !important;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+}
+
+.az-text-page-strip > * {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
