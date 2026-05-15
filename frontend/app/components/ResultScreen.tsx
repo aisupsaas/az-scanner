@@ -302,31 +302,30 @@ export default function ResultScreen({
   </div>
 
  <div className="az-text-a4-scroll">
-  <div className="az-text-a4-page">
+  {textPages.map((pageText, index) => (
+    <div className="az-text-a4-page" key={index}>
+      <button
+        type="button"
+        className="az-text-page-delete"
+        onClick={() => onDeleteTextPage(index)}
+        aria-label={`Delete text page ${index + 1}`}
+      >
+        ×
+      </button>
 
-    <button
-      type="button"
-      className="az-text-page-delete"
-      onClick={() => onDeleteTextPage(activePageIndex)}
-      aria-label={`Delete text page ${activePageIndex + 1}`}
-    >
-      ×
-    </button>
-
-    <textarea
-      value={textPages[activePageIndex] || ""}
-      disabled={loading}
-      onChange={(e) =>
-        onUpdateTextPage(activePageIndex, e.target.value)
-      }
-      className="az-text-a4-editor"
-      spellCheck={false}
-      placeholder={`Page ${activePageIndex + 1} text will appear here.`}
-      style={{
-        fontSize: `${textFontSize}px`,
-      }}
-    />
-  </div>
+      <textarea
+        value={pageText}
+        disabled={loading}
+        onChange={(e) => onUpdateTextPage(index, e.target.value)}
+        className="az-text-a4-editor"
+        spellCheck={false}
+        placeholder={`Page ${index + 1} text will appear here.`}
+        style={{
+          fontSize: `${textFontSize}px`,
+        }}
+      />
+    </div>
+  ))}
 </div>
 
   <div className="az-text-actions">
