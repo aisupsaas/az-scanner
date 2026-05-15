@@ -2,6 +2,7 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
+const cv = require("@techstark/opencv-js");
 const router = express.Router();
 const { DocumentProcessorServiceClient } = require("@google-cloud/documentai").v1;
 
@@ -44,8 +45,187 @@ async function createOriginalImage(imageBuffer, outputPath) {
     .toFile(outputPath);
 }
 
+async function tryPerspectiveCorrection(imageBuffer) {
+  let src = null;
+  let gray = null;
+  let blurred = null;
+  let edges = null;
+  let dilated = null;
+  let contours = null;
+  let hierarchy = null;
+  let approx = null;
+  let srcTri = null;
+  let dstTri = null;
+  let matrix = null;
+  let corrected = null;
+
+  try {
+    const { data, info } = await sharp(imageBuffer, {
+      failOn: "none",
+      limitInputPixels: 60_000_000,
+    })
+      .rotate()
+      .resize({
+        width: 1600,
+        withoutEnlargement: true,
+      })
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+
+    src = cv.matFromImageData({
+      data: new Uint8ClampedArray(data),
+      width: info.width,
+      height: info.height,
+    });
+
+    gray = new cv.Mat();
+    blurred = new cv.Mat();
+    edges = new cv.Mat();
+    dilated = new cv.Mat();
+    contours = new cv.MatVector();
+    hierarchy = new cv.Mat();
+
+    cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+    cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0);
+    cv.Canny(blurred, edges, 60, 180);
+
+    const kernel = cv.Mat.ones(3, 3, cv.CV_8U);
+    cv.dilate(edges, dilated, kernel);
+    kernel.delete();
+
+    cv.findContours(
+      dilated,
+      contours,
+      hierarchy,
+      cv.RETR_EXTERNAL,
+      cv.CHAIN_APPROX_SIMPLE
+    );
+
+    let best = null;
+    let bestArea = 0;
+
+    for (let i = 0; i < contours.size(); i += 1) {
+      const contour = contours.get(i);
+      const perimeter = cv.arcLength(contour, true);
+
+      approx = new cv.Mat();
+      cv.approxPolyDP(contour, approx, 0.02 * perimeter, true);
+
+      const area = cv.contourArea(contour);
+
+      if (approx.rows === 4 && area > bestArea) {
+        bestArea = area;
+        best = approx.clone();
+      }
+
+      approx.delete();
+      contour.delete();
+    }
+
+    const imageArea = info.width * info.height;
+
+    if (!best || bestArea < imageArea * 0.18) {
+      best?.delete();
+      return imageBuffer;
+    }
+
+    const points = [];
+
+    for (let i = 0; i < 4; i += 1) {
+      points.push({
+        x: best.intPtr(i, 0)[0],
+        y: best.intPtr(i, 0)[1],
+      });
+    }
+
+    best.delete();
+
+    const sorted = points
+      .map((point) => ({
+        ...point,
+        sum: point.x + point.y,
+        diff: point.x - point.y,
+      }));
+
+    const tl = sorted.reduce((a, b) => (a.sum < b.sum ? a : b));
+    const br = sorted.reduce((a, b) => (a.sum > b.sum ? a : b));
+    const tr = sorted.reduce((a, b) => (a.diff > b.diff ? a : b));
+    const bl = sorted.reduce((a, b) => (a.diff < b.diff ? a : b));
+
+    const widthTop = Math.hypot(tr.x - tl.x, tr.y - tl.y);
+    const widthBottom = Math.hypot(br.x - bl.x, br.y - bl.y);
+    const heightLeft = Math.hypot(bl.x - tl.x, bl.y - tl.y);
+    const heightRight = Math.hypot(br.x - tr.x, br.y - tr.y);
+
+    const targetWidth = Math.max(600, Math.round(Math.max(widthTop, widthBottom)));
+    const targetHeight = Math.max(800, Math.round(Math.max(heightLeft, heightRight)));
+
+    srcTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
+      tl.x, tl.y,
+      tr.x, tr.y,
+      br.x, br.y,
+      bl.x, bl.y,
+    ]);
+
+    dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
+      0, 0,
+      targetWidth - 1, 0,
+      targetWidth - 1, targetHeight - 1,
+      0, targetHeight - 1,
+    ]);
+
+    matrix = cv.getPerspectiveTransform(srcTri, dstTri);
+    corrected = new cv.Mat();
+
+    cv.warpPerspective(
+      src,
+      corrected,
+      matrix,
+      new cv.Size(targetWidth, targetHeight),
+      cv.INTER_LINEAR,
+      cv.BORDER_CONSTANT,
+      new cv.Scalar(255, 255, 255, 255)
+    );
+
+    return await sharp(Buffer.from(corrected.data), {
+      raw: {
+        width: corrected.cols,
+        height: corrected.rows,
+        channels: 4,
+      },
+    })
+      .png()
+      .toBuffer();
+  } catch (error) {
+    console.warn("OpenCV perspective correction skipped:", error?.message || error);
+    return imageBuffer;
+  } finally {
+    for (const item of [
+      src,
+      gray,
+      blurred,
+      edges,
+      dilated,
+      contours,
+      hierarchy,
+      approx,
+      srcTri,
+      dstTri,
+      matrix,
+      corrected,
+    ]) {
+      try {
+        item?.delete?.();
+      } catch {}
+    }
+  }
+}
+
 async function createSmartCleanImage(imageBuffer, outputPath) {
-  const base = sharp(imageBuffer, {
+  const flattenedBuffer = await tryPerspectiveCorrection(imageBuffer);
+
+  const base = sharp(flattenedBuffer, {
     failOn: "none",
     limitInputPixels: 60_000_000,
   }).rotate();
@@ -53,7 +233,7 @@ async function createSmartCleanImage(imageBuffer, outputPath) {
   const metadata = await base.metadata();
   const width = metadata.width || 2400;
 
-  await sharp(imageBuffer, {
+  await sharp(flattenedBuffer, {
     failOn: "none",
     limitInputPixels: 60_000_000,
   })
