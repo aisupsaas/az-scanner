@@ -107,6 +107,7 @@ export default function ResultScreen({
   const textPages = pageTexts?.length ? pageTexts : [editedText || ""];
 
   const textPageRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const textScrollRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const [dragging, setDragging] = useState<Corner | null>(null);
@@ -292,12 +293,18 @@ export default function ResultScreen({
         key={index}
         type="button"
         onClick={() => {
-            onSelectPage(index);
-            textPageRefs.current[index]?.scrollIntoView({
-              behavior: "smooth",
-              block: "start",
-            });
-          }}
+          onSelectPage(index);
+
+          const scroller = textScrollRef.current;
+          const target = textPageRefs.current[index];
+
+          if (!scroller || !target) return;
+
+          scroller.scrollTo({
+            top: target.offsetTop - scroller.offsetTop,
+            behavior: "smooth",
+          });
+        }}
         className={[
           "az-page-pill",
           activePageIndex === index ? "az-page-pill-active" : "",
@@ -308,7 +315,7 @@ export default function ResultScreen({
     ))}
   </div>
 
- <div className="az-text-a4-scroll">
+ <div ref={textScrollRef} className="az-text-a4-scroll">
   {textPages.map((pageText, index) => (
     <div
       key={index}
