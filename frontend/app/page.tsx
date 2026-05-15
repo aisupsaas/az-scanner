@@ -558,6 +558,38 @@ function compressImageForOcr(file: File): Promise<File> {
   });
 }
 
+function updateTextPageAt(pageIndex: number, text: string) {
+  setPageTexts((current) => {
+    const total = Math.max(originalImageUrls.length, sourcePreviews.length, files.length, current.length, 1);
+    const next = current.length
+      ? [...current]
+      : Array.from({ length: total }, () => "");
+
+    next[pageIndex] = text;
+    setEditedText(next.join("\n\n"));
+    return next;
+  });
+}
+
+function deleteTextPageAt(pageIndex: number) {
+  setPageTexts((current) => {
+    const next = current.filter((_, index) => index !== pageIndex);
+    setEditedText(next.join("\n\n"));
+    setActivePageIndex(Math.max(0, Math.min(pageIndex, next.length - 1)));
+    return next;
+  });
+}
+
+function resetTextPages() {
+  const total = Math.max(originalImageUrls.length, sourcePreviews.length, files.length, 1);
+  const next = splitTextIntoPages(originalOcrText, total);
+
+  setPageTexts(next);
+  setEditedText(next.join("\n\n"));
+  setEditedLines(originalOcrLines);
+  setTextHistory([]);
+}
+
   async function copyEditedText() {
     try {
       await navigator.clipboard.writeText(editedText || "");
@@ -1040,6 +1072,9 @@ function resetOcrText() {
               activePageIndex={activePageIndex}
               pageCount={Math.max(originalImageUrls.length, sourcePreviews.length, 1)}
               onSetEditedText={updateActivePageText}
+              onUpdateTextPage={updateTextPageAt}
+              onDeleteTextPage={deleteTextPageAt}
+              onResetTextPages={resetTextPages}
               onUpdateEditedLine={updateEditedLine}
               onRemoveEditedLine={removeEditedLine}
               onCopyText={copyEditedText}

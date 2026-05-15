@@ -30,6 +30,9 @@ type ResultScreenProps = {
   activePageIndex: number;
   pageCount: number;
   canUndoText: boolean;
+  onUpdateTextPage: (pageIndex: number, text: string) => void;
+  onDeleteTextPage: (pageIndex: number) => void;
+  onResetTextPages: () => void;
   onUndoText: () => void;
   onResetOcrText: () => void;
   onSetEditedText: (text: string) => void;
@@ -71,6 +74,9 @@ export default function ResultScreen({
   onUndoText,
   onResetOcrText,
   onSetEditedText,
+  onUpdateTextPage,
+  onDeleteTextPage,
+  onResetTextPages,
   onUpdateEditedLine,
   onRemoveEditedLine,
   onCopyText,
@@ -100,21 +106,6 @@ export default function ResultScreen({
     
   const textPages = pageTexts?.length ? pageTexts : [editedText || ""];
 
-  function updateTextPage(pageIndex: number, nextText: string) {
-    const nextPages = [...textPages];
-    nextPages[pageIndex] = nextText;
-    onSetEditedText(nextPages.join("\n\n"));
-  }
-
-  function deleteTextPage(pageIndex: number) {
-    const nextPages = textPages.filter((_, index) => index !== pageIndex);
-
-    onSetEditedText(nextPages.join("\n\n"));
-
-    onSelectPage(
-      Math.max(0, Math.min(pageIndex, nextPages.length - 1))
-    );
-  }
   const containerRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const [dragging, setDragging] = useState<Corner | null>(null);
@@ -267,17 +258,24 @@ export default function ResultScreen({
       </button>
     </div>
 
-    <button
-      type="button"
-      onClick={applyScanEdit}
-      className={[
-        "az-scan-apply",
-        imageEdit.applied ? "az-scan-apply-saved" : "",
-        !imageEdit.applied ? "az-scan-apply-pulse" : "",
-      ].join(" ")}
-    >
-      {imageEdit.applied ? "Saved" : "Apply"}
-    </button>
+            <button
+          type="button"
+          onClick={applyScanEdit}
+          className="az-scan-apply"
+        >
+          Apply
+        </button>
+
+        <span className="az-divider">|</span>
+
+        <button
+          type="button"
+          onClick={onResetTextPages}
+          className="az-scan-apply"
+        >
+          Reset
+        </button>
+
   </div>
 
   {result?.warning ? (
@@ -309,7 +307,7 @@ export default function ResultScreen({
     <button
       type="button"
       className="az-text-page-delete"
-      onClick={() => deleteTextPage(activePageIndex)}
+      onClick={() => onDeleteTextPage(activePageIndex)}
       aria-label={`Delete text page ${activePageIndex + 1}`}
     >
       ×
@@ -319,7 +317,7 @@ export default function ResultScreen({
       value={textPages[activePageIndex] || ""}
       disabled={loading}
       onChange={(e) =>
-        updateTextPage(activePageIndex, e.target.value)
+        onUpdateTextPage(activePageIndex, e.target.value)
       }
       className="az-text-a4-editor"
       spellCheck={false}
