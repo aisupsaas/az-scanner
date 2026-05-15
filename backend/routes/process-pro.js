@@ -27,9 +27,79 @@ function getIncomingFiles(req) {
       : [];
 }
 
+async function createOriginalImage(imageBuffer, outputPath) {
+  await sharp(imageBuffer, {
+    failOn: "none",
+    limitInputPixels: 60_000_000,
+  })
+    .rotate()
+    .resize({
+      width: 2400,
+      withoutEnlargement: true,
+    })
+    .png({
+      compressionLevel: 8,
+      adaptiveFiltering: true,
+    })
+    .toFile(outputPath);
+}
+
+async function createSmartCleanImage(imageBuffer, outputPath) {
+  const base = sharp(imageBuffer, {
+    failOn: "none",
+    limitInputPixels: 60_000_000,
+  }).rotate();
+
+  const metadata = await base.metadata();
+  const width = metadata.width || 2400;
+
+  await sharp(imageBuffer, {
+    failOn: "none",
+    limitInputPixels: 60_000_000,
+  })
+    .rotate()
+
+    // DPI / resolution normalization
+    .resize({
+      width: Math.min(2400, width),
+      withoutEnlargement: true,
+    })
+
+    // Auto white balance / exposure cleanup
+    .normalize()
+
+    // Background/shadow cleanup + stronger paper white
+    .modulate({
+      brightness: 1.08,
+      saturation: 0.82,
+    })
+
+    // Adaptive black/white document feel
+    .grayscale()
+    .linear(1.22, -18)
+
+    // Text sharpening
+    .sharpen({
+      sigma: 1.15,
+      m1: 1.2,
+      m2: 2.4,
+      x1: 2,
+      y2: 12,
+      y3: 18,
+    })
+
+    // Clean output
+    .png({
+      compressionLevel: 8,
+      adaptiveFiltering: true,
+    })
+    .toFile(outputPath);
+}
+
 async function processProFiles(incomingFiles, onProgress) {
   const name = `projects/${PROJECT_ID}/locations/${LOCATION}/processors/${PROCESSOR_ID}`;
   const originalPdfImageUrls = [];
+  const smartCleanImageUrls = [];
   const allText = [];
 
   for (let index = 0; index < incomingFiles.length; index += 1) {
@@ -47,25 +117,27 @@ async function processProFiles(incomingFiles, onProgress) {
     const file = incomingFiles[index];
     const imageBuffer = Buffer.from(file, "base64");
     const baseId = `pro-${Date.now()}-${pageNumber}-${Math.random().toString(36).slice(2, 8)}`;
-    const originalImagePath = path.join(OUTPUT_DIR, `${baseId}-original.png`);
 
-    await sharp(imageBuffer, {
-      failOn: "none",
-      limitInputPixels: 60_000_000,
-    })
-      .rotate()
-      .resize({
-        width: 2400,
-        withoutEnlargement: true,
-      })
-      .png({
-        compressionLevel: 8,
-        adaptiveFiltering: true,
-      })
-      .toFile(originalImagePath);
+    const originalImagePath = path.join(OUTPUT_DIR, `${baseId}-original.png`);
+    const smartCleanImagePath = path.join(OUTPUT_DIR, `${baseId}-smart-clean.png`);
+
+    await createOriginalImage(imageBuffer, originalImagePath);
+
+    onProgress?.({
+      type: "progress",
+      stage: "smart-clean",
+      page: pageNumber,
+      total: totalPages,
+      message: `Smart Clean page ${pageNumber} of ${totalPages}...`,
+    });
+
+    await createSmartCleanImage(imageBuffer, smartCleanImagePath);
 
     const originalPdfImageUrl = `/output/${path.basename(originalImagePath)}`;
+    const smartCleanImageUrl = `/output/${path.basename(smartCleanImagePath)}`;
+
     originalPdfImageUrls.push(originalPdfImageUrl);
+    smartCleanImageUrls.push(smartCleanImageUrl);
 
     const request = {
       name,
@@ -101,6 +173,7 @@ async function processProFiles(incomingFiles, onProgress) {
 
   const text = allText.join("\n\n");
   const firstOriginalUrl = originalPdfImageUrls[0] || "";
+  const firstSmartCleanUrl = smartCleanImageUrls[0] || "";
 
   return {
     success: true,
@@ -116,6 +189,8 @@ async function processProFiles(incomingFiles, onProgress) {
       originalPdfImageUrls,
       cleanedImageUrl: "",
       cleanedImageUrls: [],
+      smartCleanImageUrl: firstSmartCleanUrl,
+      smartCleanImageUrls,
       pdfUrl: "",
       txtUrl: "",
     },
