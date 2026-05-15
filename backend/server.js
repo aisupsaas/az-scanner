@@ -35,7 +35,7 @@ app.use(cors({
   },
 }));
 
-app.use(express.json({ limit: "20mb" }));
+app.use(express.json({ limit: "80mb" }));
 app.use("/process-pro", processProRoute);
 
 app.use("/output", express.static(OUTPUT_DIR));
