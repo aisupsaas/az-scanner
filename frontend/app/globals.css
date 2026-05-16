@@ -2856,3 +2856,104 @@ body {
     font-size: 0.64rem !important;
   }
 }
+
+/* FINAL Result grid reorganize + Smart Clean Color/BW visible */
+.az-scan-settings-title-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: start !important;
+  gap: 0.75rem !important;
+  width: 100% !important;
+}
+
+.az-scan-settings-title-row .az-section-copy {
+  white-space: nowrap !important;
+  margin-top: 0 !important;
+  line-height: 1.1 !important;
+}
+
+.az-result-controls-row-centered {
+  margin-top: 0 !important;
+  justify-content: flex-end !important;
+  flex-wrap: nowrap !important;
+  gap: 0.72rem !important;
+}
+
+.az-page-strip {
+  margin-top: 0.34rem !important;
+}
+
+.az-edit-mode-inline {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.55rem !important;
+  min-height: 24px !important;
+  margin-bottom: 0.18rem !important;
+}
+
+.az-edit-mode-inline .az-divider {
+  margin: 0 0.12rem !important;
+}
+
+.az-preview-head-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  grid-template-areas:
+    "label source"
+    "label mode" !important;
+  align-items: center !important;
+  column-gap: 0.45rem !important;
+  row-gap: 0.16rem !important;
+  width: 100% !important;
+  min-height: 52px !important;
+  margin-bottom: 0.18rem !important;
+  overflow: visible !important;
+}
+
+.az-preview-head-row .az-compare-label {
+  grid-area: label !important;
+  align-self: start !important;
+  padding-top: 0.28rem !important;
+}
+
+.az-smart-clean-toggle-preview {
+  grid-area: source !important;
+  justify-self: end !important;
+}
+
+.az-smart-clean-subtoggle {
+  grid-area: mode !important;
+  justify-self: end !important;
+  display: inline-grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 0.12rem !important;
+  padding: 0.12rem !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.72) !important;
+  border: 1px solid rgba(0, 0, 0, 0.07) !important;
+  white-space: nowrap !important;
+}
+
+.az-smart-clean-subtoggle button {
+  min-height: 22px !important;
+  min-width: 42px !important;
+  border: none !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  color: #5f6670 !important;
+  padding: 0 0.4rem !important;
+  font-size: 0.66rem !important;
+}
+
+.az-smart-clean-subtoggle .az-smart-clean-subtoggle-active {
+  background: #111111 !important;
+  color: #ffffff !important;
+}
+
+.az-compare-stage.az-compare-stage-split {
+  margin-top: 0.08rem !important;
+}
+
+.az-app-pro .az-smart-clean-subtoggle .az-smart-clean-subtoggle-active {
+  background: rgba(35, 92, 81, 0.94) !important;
+}
