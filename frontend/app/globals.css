@@ -2231,3 +2231,94 @@ body {
   background: #111111 !important;
   color: #ffffff !important;
 }
+
+/* FINAL Result scan layout fix */
+.az-compare-stage.az-compare-stage-split {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 0.9rem !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  min-height: 0 !important;
+  margin-top: 0.45rem !important;
+}
+
+.az-compare-stage-split .az-compare-panel {
+  min-width: 0 !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+.az-compare-stage-split .az-crop-container,
+.az-compare-stage-split .az-compare-frame {
+  width: 100% !important;
+  height: clamp(390px, 48dvh, 540px) !important;
+  min-height: 390px !important;
+  max-height: 540px !important;
+  flex: 0 0 auto !important;
+  position: relative !important;
+}
+
+.az-preview-head-row {
+  min-height: 34px !important;
+  display: grid !important;
+  grid-template-columns: 1fr auto !important;
+  align-items: center !important;
+  gap: 0.6rem !important;
+  margin-bottom: 0.35rem !important;
+}
+
+.az-smart-clean-toggle-preview {
+  transform: none !important;
+  transform-origin: right center !important;
+}
+
+.az-smart-clean-toggle-preview button {
+  min-width: 76px !important;
+  font-size: 0.72rem !important;
+  white-space: nowrap !important;
+}
+
+.az-edit-mode-inline {
+  min-height: 34px !important;
+  margin-bottom: 0.35rem !important;
+}
+
+.az-export-zone {
+  flex: 0 0 auto !important;
+  margin-top: 0.35rem !important;
+}
+
+.az-bottom-export-row {
+  display: grid !important;
+  grid-template-columns: auto 1fr auto !important;
+  align-items: center !important;
+  gap: 0.85rem !important;
+  width: 100% !important;
+}
+
+.az-scan-brightness-bottom {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+@media (max-width: 640px) {
+  .az-compare-stage.az-compare-stage-split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    gap: 0.55rem !important;
+  }
+
+  .az-compare-stage-split .az-crop-container,
+  .az-compare-stage-split .az-compare-frame {
+    height: clamp(330px, 42dvh, 460px) !important;
+    min-height: 330px !important;
+  }
+
+  .az-smart-clean-toggle-preview button {
+    min-width: 64px !important;
+    padding-inline: 0.45rem !important;
+    font-size: 0.68rem !important;
+  }
+}
