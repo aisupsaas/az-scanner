@@ -425,7 +425,46 @@ const previewImage =
                   {imageEdit.applied ? "Saved" : "Unsaved changes"}
                 </div>
 
-                <div className="az-top-tools-row">
+                <div className="az-result-controls-row az-result-controls-row-centered">
+                  <div className="az-result-toggle">
+                    <button
+                      type="button"
+                      onClick={() => onResultTabChange("compare")}
+                      className={resultTab === "compare" ? "az-result-toggle-active" : ""}
+                    >
+                      Scan
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => onResultTabChange("text")}
+                    >
+                      Text
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={applyScanEdit}
+                    className={[
+                      "az-scan-apply",
+                      imageEdit.applied ? "az-scan-apply-saved" : "",
+                      !imageEdit.applied ? "az-scan-apply-pulse" : "",
+                    ].join(" ")}
+                  >
+                    {imageEdit.applied ? "Saved" : "Apply"}
+                  </button>
+
+                  <span className="az-divider">|</span>
+
+                  <button
+                    type="button"
+                    onClick={onApplyEditToAllPages}
+                    className="az-scan-apply-all"
+                  >
+                    All
+                  </button>
+
                   <button
                     type="button"
                     onClick={cycleRotate}
@@ -444,65 +483,6 @@ const previewImage =
                     Reset
                   </button>
                 </div>
-              </div>
-
-              <div className="az-result-controls-row az-result-controls-row-centered">
-                <div className="az-result-toggle az-scan-mode-toggle">
-                  <button
-                    type="button"
-                    onClick={() => onCompareViewChange("split")}
-                    className={compareView === "split" ? "az-result-toggle-active" : ""}
-                  >
-                    Preview
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => onCompareViewChange("original")}
-                    className={compareView === "original" ? "az-result-toggle-active" : ""}
-                  >
-                    Edit
-                  </button>
-                </div>
-
-                <div className="az-result-toggle">
-                  <button
-                    type="button"
-                    onClick={() => onResultTabChange("compare")}
-                    className={resultTab === "compare" ? "az-result-toggle-active" : ""}
-                  >
-                    Scan
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => onResultTabChange("text")}
-                  >
-                    Text
-                  </button>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={applyScanEdit}
-                  className={[
-                    "az-scan-apply",
-                    imageEdit.applied ? "az-scan-apply-saved" : "",
-                    !imageEdit.applied ? "az-scan-apply-pulse" : "",
-                  ].join(" ")}
-                >
-                  {imageEdit.applied ? "Saved" : "Apply"}
-                </button>
-
-                <span className="az-divider">|</span>
-
-                <button
-                  type="button"
-                  onClick={onApplyEditToAllPages}
-                  className="az-scan-apply-all"
-                >
-                  All
-                </button>
               </div>
             </div>
 
@@ -580,13 +560,8 @@ const previewImage =
               </div>
 
             <div className="az-result-scan-workspace">
-              <div
-                className={[
-                  "az-compare-stage",
-                  compareView === "split" ? "az-compare-stage-split" : "",
-                ].join(" ")}
-              >
-              {(compareView === "split" || compareView === "original") && (
+              <div className="az-compare-stage az-compare-stage-split">
+              {true && (
                 <div className="az-compare-panel">
 
                  <div className="az-edit-mode-inline">
@@ -721,7 +696,7 @@ const previewImage =
                 </div>
               )}
 
-              {compareView === "split" && (
+              {true && (
                 <div className="az-compare-panel">
                   <div className="az-preview-head-row">
 

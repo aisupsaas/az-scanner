@@ -1645,28 +1645,6 @@ body {
   padding-bottom: 0.2rem !important;
 }
 
-/* Drawer: move format icons upward so labels do not collide with slider */
-.az-export-drawer {
-  height: 150px !important;
-  padding-top: 0.55rem !important;
-  padding-bottom: max(1.15rem, env(safe-area-inset-bottom)) !important;
-  align-items: start !important;
-}
-
-.az-export-drawer button {
-  align-self: start !important;
-  transform: translateY(-0.2rem);
-}
-
-.az-export-drawer button span {
-  width: 52px !important;
-  height: 52px !important;
-}
-
-.az-export-drawer button small {
-  margin-top: 0.05rem !important;
-}
-
 /* Mobile: keep split boxes even */
 @media (max-width: 640px) {
   .az-compare-stage-split {
@@ -2363,38 +2341,9 @@ body {
   padding: 0.62rem 0.78rem 0.52rem !important;
 }
 
-.az-scan-settings-title-row {
-  margin-bottom: 0.35rem !important;
-}
-
-.az-result-controls-row-centered {
-  margin-top: 0.35rem !important;
-}
-
 .az-page-strip {
   margin-top: 0.26rem !important;
   margin-bottom: 0.16rem !important;
-}
-
-.az-edit-mode-inline {
-  min-height: 24px !important;
-  gap: 0.45rem !important;
-  margin-bottom: 0.22rem !important;
-}
-
-.az-edit-mode-button {
-  font-size: 0.88rem !important;
-  letter-spacing: -0.01em !important;
-}
-
-.az-edit-mode-inline .az-divider {
-  font-size: 0.88rem !important;
-  opacity: 0.75 !important;
-}
-
-.az-compare-stage.az-compare-stage-split {
-  gap: 0.72rem !important;
-  align-items: start !important;
 }
 
 .az-compare-stage-split .az-crop-container,
@@ -2402,11 +2351,6 @@ body {
   height: clamp(365px, 44dvh, 500px) !important;
   min-height: 365px !important;
   max-height: 500px !important;
-}
-
-.az-preview-head-row,
-.az-edit-mode-inline {
-  height: 30px !important;
 }
 
 .az-export-zone {
@@ -2753,3 +2697,35 @@ body {
   align-self: center !important;
 }
 
+/* FINAL scan controls cleanup */
+.az-scan-settings-title-row {
+  align-items: center !important;
+}
+
+.az-result-controls-row-centered {
+  margin-top: 0 !important;
+  justify-content: flex-end !important;
+  flex-wrap: nowrap !important;
+  gap: 0.85rem !important;
+}
+
+.az-scan-mode-toggle {
+  display: none !important;
+}
+
+.az-edit-mode-inline {
+  gap: 0.62rem !important;
+}
+
+.az-edit-mode-inline .az-divider {
+  margin-inline: 0.24rem !important;
+}
+
+.az-edit-mode-button {
+  padding: 0 0.08rem !important;
+}
+
+.az-compare-stage.az-compare-stage-split {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+}
