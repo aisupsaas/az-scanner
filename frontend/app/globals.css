@@ -2957,3 +2957,54 @@ body {
 .az-app-pro .az-smart-clean-subtoggle .az-smart-clean-subtoggle-active {
   background: rgba(35, 92, 81, 0.94) !important;
 }
+
+/* FINAL: Result top controls + 3-way Smart Clean toggle */
+.az-scan-settings-title-row {
+  display: block !important;
+}
+
+.az-scan-settings-title-row .az-section-copy {
+  display: none !important;
+}
+
+.az-result-controls-row-centered {
+  width: 100% !important;
+  justify-content: center !important;
+  margin-top: 0 !important;
+  gap: 0.85rem !important;
+}
+
+.az-page-strip {
+  margin-top: 0.48rem !important;
+}
+
+.az-preview-head-row {
+  display: grid !important;
+  grid-template-columns: auto 1fr !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+  min-height: 30px !important;
+  margin-bottom: 0.15rem !important;
+}
+
+.az-preview-head-row .az-compare-label {
+  justify-self: start !important;
+  padding-top: 0 !important;
+}
+
+.az-smart-clean-toggle-preview {
+  justify-self: end !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  transform: none !important;
+}
+
+.az-smart-clean-toggle-preview button {
+  min-width: 64px !important;
+  font-size: 0.66rem !important;
+  padding-inline: 0.42rem !important;
+  white-space: nowrap !important;
+}
+
+.az-smart-clean-subtoggle {
+  display: none !important;
+}

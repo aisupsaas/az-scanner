@@ -1052,17 +1052,19 @@ function resetOcrText() {
           <div>
             <div className="az-topbar-title">{topTitle}</div>
 
-            {mode !== "result" ? (
-              <div
-                className={
-                  loading
-                    ? "az-topbar-subtitle az-topbar-subtitle-processing"
-                    : "az-topbar-subtitle"
-                }
-              >
-                {statusText}
-              </div>
-            ) : null}
+            <div
+              className={
+                loading
+                  ? "az-topbar-subtitle az-topbar-subtitle-processing"
+                  : "az-topbar-subtitle"
+              }
+            >
+              {mode === "result"
+                ? `Page ${activePageIndex + 1} of ${Math.max(originalImageUrls.length, sourcePreviews.length, 1)} • ${
+                    activeImageEdit.applied ? "Saved" : "Unsaved changes"
+                  }`
+                : statusText}
+            </div>
           </div>
 
           <img

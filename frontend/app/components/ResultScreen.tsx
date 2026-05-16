@@ -712,49 +712,65 @@ const previewImage =
                   <div className="az-compare-label">
                     Preview
                   </div>
+                    {smartCleanPreviewHref ? (
+                      <div className="az-result-toggle az-smart-clean-toggle az-smart-clean-toggle-preview">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            onImageEditChange({
+                              ...imageEdit,
+                              pdfSource: "original",
+                              applied: false,
+                            })
+                          }
+                          className={
+                            imageEdit.pdfSource !== "smartClean"
+                              ? "az-result-toggle-active"
+                              : ""
+                          }
+                        >
+                          Original
+                        </button>
 
-                  {smartCleanPreviewHref ? (
-                    <div className="az-result-toggle az-smart-clean-toggle az-smart-clean-toggle-preview">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            onImageEditChange({
+                              ...imageEdit,
+                              pdfSource: "smartClean",
+                              smartCleanMode: "bw",
+                              applied: false,
+                            })
+                          }
+                          className={
+                            imageEdit.pdfSource === "smartClean" && activeSmartCleanMode === "bw"
+                              ? "az-result-toggle-active"
+                              : ""
+                          }
+                        >
+                          Smart Clean
+                        </button>
 
-                      <button
-                        type="button"
-                        onClick={() =>
-                          onImageEditChange({
-                            ...imageEdit,
-                            pdfSource: "original",
-                            applied: false,
-                          })
-                        }
-                        className={
-                          imageEdit.pdfSource !== "smartClean"
-                            ? "az-result-toggle-active"
-                            : ""
-                        }
-                      >
-                        Original
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          onImageEditChange({
-                            ...imageEdit,
-                            pdfSource: "smartClean",
-                            smartCleanMode: imageEdit.smartCleanMode || "color",
-                            applied: false,
-                          })
-                        }
-                        className={
-                          imageEdit.pdfSource === "smartClean"
-                            ? "az-result-toggle-active"
-                            : ""
-                        }
-                      >
-                        Smart Clean
-                      </button>
-
-                    </div>
-                  ) : null}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            onImageEditChange({
+                              ...imageEdit,
+                              pdfSource: "smartClean",
+                              smartCleanMode: "color",
+                              applied: false,
+                            })
+                          }
+                          className={
+                            imageEdit.pdfSource === "smartClean" && activeSmartCleanMode === "color"
+                              ? "az-result-toggle-active"
+                              : ""
+                          }
+                        >
+                          Color
+                        </button>
+                      </div>
+                    ) : null}
 
                   {imageEdit.pdfSource === "smartClean" && smartCleanPreviewHref ? (
                     <div className="az-smart-clean-subtoggle" aria-label="Smart Clean mode">
