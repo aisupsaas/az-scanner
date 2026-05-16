@@ -1472,18 +1472,22 @@ body {
 }
 
 .az-export-icon-minimal {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   border: none !important;
   background: transparent !important;
   box-shadow: none !important;
   padding: 0 !important;
-  min-width: 34px;
-  min-height: 34px;
+
   color: rgba(118, 128, 145, 0.92);
-  font-size: 2rem;
+  font-size: 1.9rem;
   line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .az-export-icon-minimal:active {
@@ -1491,9 +1495,9 @@ body {
 }
 
 .az-scan-brightness-bottom {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
+  flex: 1;
+  min-width: 0;
+  margin: 0;
 }
 
 .az-export-drawer button {
@@ -2252,23 +2256,31 @@ body {
 }
 
 .az-export-zone {
+  position: relative !important;
+  z-index: 90 !important;
+  width: 100% !important;
+  display: block !important;
   flex: 0 0 auto !important;
-  margin-top: 0.35rem !important;
+  margin-top: 10px !important;
+  padding: 0 10px 4px !important;
 }
 
 .az-bottom-export-row {
   position: relative !important;
   z-index: 91 !important;
-  display: grid !important;
-  grid-template-columns: auto 1fr auto !important;
+  display: flex !important;
   align-items: center !important;
-  gap: 0.85rem !important;
+  gap: 14px !important;
   width: 100% !important;
+  min-height: 42px !important;
+  margin-top: 2px !important;
 }
 
 .az-scan-brightness-bottom {
-  width: 100% !important;
+  flex: 1 1 auto !important;
+  width: auto !important;
   min-width: 0 !important;
+  margin: 0 !important;
 }
 
 @media (max-width: 640px) {
@@ -2402,14 +2414,16 @@ body {
 }
 
 .az-export-zone {
-  margin-top: 0.16rem !important;
-  gap: 0.25rem !important;
+  margin-top: 10px;
+  padding: 0 18px 6px;
+  flex-shrink: 0;
 }
 
 .az-bottom-export-row {
-  gap: 0.55rem !important;
-  margin-top: 0.1rem !important;
-  padding-bottom: 0 !important;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 42px;
 }
 
 .az-export-icon-minimal {
