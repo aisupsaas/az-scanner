@@ -2523,3 +2523,42 @@ body {
     margin-top: 0.45rem !important;
   }
 }
+
+/* tighten compare layout height */
+.az-compare-stage {
+  gap: 14px !important;
+  align-items: flex-start !important;
+}
+
+.az-compare-stage-split {
+  min-height: unset !important;
+  height: auto !important;
+  padding-bottom: 0 !important;
+}
+
+.az-compare-stage-split .az-crop-container,
+.az-compare-stage-split .az-compare-frame {
+  height: 31dvh !important;
+  min-height: 240px !important;
+  max-height: 340px !important;
+}
+
+.az-crop-shell,
+.az-compare-preview-shell {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.az-export-zone {
+  margin-top: -6px !important;
+  padding-bottom: 0 !important;
+}
+
+.az-bottom-export-row {
+  min-height: 24px !important;
+  margin-top: -10px !important;
+}
+
+.az-panel-card-fill {
+  padding-bottom: 10px !important;
+}
