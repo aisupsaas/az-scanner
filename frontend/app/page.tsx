@@ -114,18 +114,25 @@ export default function HomePage() {
     result?.files?.cleanedImageUrls?.map((url) => `${apiBase}${url}`) ||
     (result?.files?.cleanedImageUrl ? [`${apiBase}${result.files.cleanedImageUrl}`] : []);
 
-  const smartCleanImageUrls =
-    result?.files?.smartCleanImageUrls?.map((url) => `${apiBase}${url}`) ||
-    (result?.files?.smartCleanImageUrl ? [`${apiBase}${result.files.smartCleanImageUrl}`] : []);
+const rawSmartCleanImageUrls = result?.files?.smartCleanImageUrls || [];
 
-  const smartCleanColorImageUrls =
-    result?.files?.smartCleanColorImageUrls?.map((url) => `${apiBase}${url}`) ||
-    (result?.files?.smartCleanColorImageUrl ? [`${apiBase}${result.files.smartCleanColorImageUrl}`] : smartCleanImageUrls);
+const smartCleanColorImageUrls = rawSmartCleanImageUrls.map((item: any) => {
+  if (typeof item === "string") return `${apiBase}${item}`;
+  return item?.color ? `${apiBase}${item.color}` : "";
+});
 
-  const smartCleanBwImageUrls =
-    result?.files?.smartCleanBwImageUrls?.map((url) => `${apiBase}${url}`) ||
-    (result?.files?.smartCleanBwImageUrl ? [`${apiBase}${result.files.smartCleanBwImageUrl}`] : smartCleanImageUrls);
+const smartCleanBwImageUrls = rawSmartCleanImageUrls.map((item: any) => {
+  if (typeof item === "string") return `${apiBase}${item}`;
+  return item?.bw ? `${apiBase}${item.bw}` : "";
+});
 
+const smartCleanImageUrls =
+  smartCleanColorImageUrls.length
+    ? smartCleanColorImageUrls
+    : result?.files?.smartCleanImageUrl
+      ? [`${apiBase}${result.files.smartCleanImageUrl}`]
+      : [];
+      
   const originalImageHref =
     originalImageUrls[activePageIndex] || sourcePreviews[activePageIndex] || "";
 
