@@ -344,73 +344,76 @@ const previewImage =
   ))}
   </div>
 
-          <div className="az-text-actions az-text-export-row">
-            <button
-              type="button"
-              onClick={() => {
-                setDownloadOpen((current) => !current);
-              }}
-              className="az-export-icon-minimal"
-              aria-label="Download text"
-            >
-              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 4V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                <path d="M7 10L12 15L17 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M5 20H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            </button>
+          <div className="az-text-export-zone">
+  <div className="az-text-actions az-text-export-row">
+    <button
+      type="button"
+      onClick={() => {
+        setDownloadOpen((current) => !current);
+      }}
+      className="az-export-icon-minimal"
+      aria-label="Download text"
+    >
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 4V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <path d="M7 10L12 15L17 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M5 20H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    </button>
 
-            <div className="az-text-font-controls">
-              <button
-                type="button"
-                className="az-font-size-button"
-                onClick={() => setTextFontSize((current) => Math.max(12, current - 1))}
-              >
-                A−
-              </button>
+    <div className="az-text-font-controls">
+      <button
+        type="button"
+        className="az-font-size-button"
+        onClick={() => setTextFontSize((current) => Math.max(12, current - 1))}
+      >
+        A−
+      </button>
 
-              <div className="az-font-size-label">{textFontSize}px</div>
+      <div className="az-font-size-label">{textFontSize}px</div>
 
-              <button
-                type="button"
-                className="az-font-size-button"
-                onClick={() => setTextFontSize((current) => Math.min(28, current + 1))}
-              >
-                A+
-              </button>
-            </div>
+      <button
+        type="button"
+        className="az-font-size-button"
+        onClick={() => setTextFontSize((current) => Math.min(28, current + 1))}
+      >
+        A+
+      </button>
+    </div>
 
-            <button
-              type="button"
-              className="az-export-icon-minimal"
-              aria-label="Share text"
-              onClick={onShareEditedPdf}
-            >
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 16V5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                <path d="M8 9L12 5L16 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M6 13V18C6 18.5523 6.44772 19 7 19H17C17.5523 19 18 18.5523 18 18V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            </button>
-          </div>
-            {downloadOpen ? (
-              <div className="az-export-drawer">
-                <button type="button" onClick={onDownloadEditedTxt}>
-                  <span>TXT</span>
-                  <small>Text TXT</small>
-                </button>
+    <button
+      type="button"
+      className="az-export-icon-minimal"
+      aria-label="Share text"
+      onClick={onShareEditedPdf}
+    >
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 16V5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <path d="M8 9L12 5L16 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M6 13V18C6 18.5523 6.44772 19 7 19H17C17.5523 19 18 18.5523 18 18V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    </button>
+  </div>
 
-                <button type="button" onClick={onDownloadEditedPdf}>
-                  <span>PDF</span>
-                  <small>Text PDF</small>
-                </button>
+  {downloadOpen ? (
+    <div className="az-export-drawer az-text-download-drawer">
+      <button type="button" onClick={onDownloadEditedTxt}>
+        <span>TXT</span>
+        <small>Text TXT</small>
+      </button>
 
-                <button type="button" onClick={onDownloadEditedDocx}>
-                  <span>DOCX</span>
-                  <small>Word DOCX</small>
-                </button>
-              </div>
-            ) : null}
+      <button type="button" onClick={onDownloadEditedPdf}>
+        <span>PDF</span>
+        <small>Text PDF</small>
+      </button>
+
+      <button type="button" onClick={onDownloadEditedDocx}>
+        <span>DOCX</span>
+        <small>Word DOCX</small>
+      </button>
+    </div>
+  ) : null}
+</div>
           </>
 
         ) : (

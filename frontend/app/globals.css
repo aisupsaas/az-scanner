@@ -2175,10 +2175,6 @@ body {
   scroll-snap-align: start;
 }
 
-.az-text-export-row + .az-export-drawer {
-  z-index: 99 !important;
-}
-
 .az-scan-settings-title-row {
   display: flex;
   align-items: center;
@@ -2722,3 +2718,38 @@ body {
     height: 27px !important;
   }
 }
+
+/* FINAL Text mode drawer structure fix */
+.az-text-export-zone {
+  position: relative !important;
+  z-index: 50 !important;
+  flex: 0 0 auto !important;
+}
+
+.az-text-download-drawer {
+  position: absolute !important;
+  left: 0.35rem !important;
+  right: 0.35rem !important;
+  bottom: 48px !important;
+  z-index: 150 !important;
+
+  height: 86px !important;
+  padding: 0.55rem 0.7rem !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0.55rem !important;
+  align-items: center !important;
+
+  border-radius: 18px !important;
+  background: rgba(244, 249, 255, 0.98) !important;
+  border: 1px solid rgba(83, 113, 172, 0.14) !important;
+  box-shadow: 0 18px 42px rgba(42, 91, 150, 0.18) !important;
+  backdrop-filter: blur(18px) !important;
+}
+
+.az-text-download-drawer button {
+  transform: none !important;
+  align-self: center !important;
+}
+
