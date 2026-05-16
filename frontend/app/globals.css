@@ -287,11 +287,6 @@ textarea {
   gap: 0.75rem;
 }
 
-.az-compare-stage-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-
 .az-compare-panel {
   min-height: 0;
   display: flex;
@@ -640,38 +635,6 @@ textarea {
 .az-handle.bl { bottom: -12px; left: -12px; }
 .az-handle.br { bottom: -12px; right: -12px; }
 
-@media (max-width: 640px) {
-  .az-topbar {
-    padding-inline: 0.9rem;
-  }
-
-  .az-content,
-  .az-bottom-area {
-    padding-inline: 0.9rem;
-  }
-
-  .az-bottom-actions {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .az-bottom-actions > *:last-child:nth-child(odd) {
-    grid-column: span 2;
-  }
-
-  .az-compare-stage-split {
-  grid-template-columns: 1fr 1fr;
-  gap: 0.55rem;
-  }
-
-  .az-compare-toggle {
-  width: 100%;
-  grid-template-columns: 1fr 1fr;
-}
-
-  .az-line-editor-row {
-    grid-template-columns: auto 1fr;
-  }
-}
 
 .az-panel-card,
 .az-panel-card-fill,
@@ -848,22 +811,6 @@ textarea {
     font-size: 0.82rem;
   }
 
-  .az-crop-image-wrap {
-    position: relative;
-    width: min(100%, 620px);
-    max-height: 62vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .az-crop-image-wrap .az-crop-image {
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    max-height: 62vh;
-  }
-
 .az-remove-page-button {
   min-height: 42px;
   border-radius: 999px;
@@ -951,14 +898,6 @@ textarea {
   box-shadow:
     0 12px 26px rgba(17, 75, 63, 0.16),
     inset 0 0 0 1px rgba(17, 75, 63, 0.1);
-}
-
-.az-line-editor-input {
-  width: 100% !important;
-  min-height: 92px !important;
-  resize: vertical !important;
-  white-space: pre-wrap !important;
-  overflow-wrap: anywhere !important;
 }
 
 .az-app-pro::before {
@@ -1327,14 +1266,6 @@ body {
   color: #111111;
 }
 
-.az-result-subtitle {
-  margin-top: 0.16rem;
-  font-size: 0.76rem;
-  line-height: 1.25;
-  font-weight: 300;
-  color: #6b7280;
-}
-
 .az-result-toggle {
   display: inline-grid;
   grid-template-columns: 1fr 1fr;
@@ -1540,15 +1471,6 @@ body {
   line-height: 1;
 }
 
-.az-bottom-export-row {
-  margin-top: 1rem;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 1rem;
-  width: 100%;
-}
-
 .az-export-icon-minimal {
   border: none !important;
   background: transparent !important;
@@ -1572,25 +1494,6 @@ body {
   width: 100% !important;
   max-width: none !important;
   margin: 0 !important;
-}
-
-.az-export-drawer {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 79;
-  height: 132px;
-  padding: 1rem 1rem max(0.9rem, env(safe-area-inset-bottom));
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.8rem;
-  align-items: center;
-  background: rgba(244, 249, 255, 0.97);
-  backdrop-filter: blur(18px);
-  border-top: 1px solid rgba(83, 113, 172, 0.16);
-  box-shadow: 0 -14px 34px rgba(42, 91, 150, 0.12);
-  animation: azDrawerDown 0.18s ease-out both;
 }
 
 .az-bottom-export-row {
@@ -1657,7 +1560,6 @@ body {
 
 /* Pro mode: unify remaining blue controls into jade */
 .az-app-pro .az-result-title,
-.az-app-pro .az-result-subtitle,
 .az-app-pro .az-section-copy,
 .az-app-pro .az-compare-label {
   color: #244d45;
@@ -2112,10 +2014,6 @@ body {
   align-items: stretch;
 }
 
-.az-compare-panel {
-  min-width: 0;
-}
-
 .az-crop-container,
 .az-compare-frame {
   height: 100%;
@@ -2148,13 +2046,6 @@ body {
   align-items: center;
   gap: 1rem;
   margin-bottom: 0.55rem;
-}
-
-.az-text-page-strip {
-  margin-top: 0 !important;
-  margin-bottom: 0.45rem !important;
-  overflow: visible !important;
-  flex-wrap: wrap !important;
 }
 
 .az-text-a4-scroll {
