@@ -2327,24 +2327,28 @@ body {
   padding-bottom: max(0.95rem, env(safe-area-inset-bottom)) !important;
 }
 
-/* FINAL Result layout alignment */
+/* FINAL Result topbar */
 .az-topbar {
-  display: grid !important;
-  grid-template-columns: 1fr auto !important;
-  align-items: start !important;
-  padding: 0.75rem 1rem 0.35rem !important;
+  position: relative !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  padding: 0.7rem 1rem 0.2rem !important;
 }
 
 .az-topbar-logo {
   position: static !important;
   width: 52px !important;
-  justify-self: end !important;
+  height: auto !important;
+  flex: 0 0 auto !important;
+  margin-top: -0.05rem !important;
 }
 
 .az-result-title {
   margin: 0 !important;
   font-size: 1.18rem !important;
-  line-height: 1 !important;
+  line-height: 1.05 !important;
+  flex: 1 1 auto !important;
 }
 
 .az-panel-card-fill {
