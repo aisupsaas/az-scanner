@@ -314,7 +314,7 @@ function compressImageForOcr(file: File): Promise<File> {
     image.onload = () => {
       URL.revokeObjectURL(url);
 
-      const maxSide = 1800;
+      const maxSide = 2400;
       const scale = Math.min(1, maxSide / Math.max(image.width, image.height));
       const width = Math.max(1, Math.round(image.width * scale));
       const height = Math.max(1, Math.round(image.height * scale));
@@ -347,7 +347,7 @@ function compressImageForOcr(file: File): Promise<File> {
           );
         },
         "image/jpeg",
-        0.82
+        0.94
       );
     };
 

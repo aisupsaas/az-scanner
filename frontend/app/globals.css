@@ -2857,108 +2857,7 @@ body {
   }
 }
 
-/* FINAL Result grid reorganize + Smart Clean Color/BW visible */
-.az-scan-settings-title-row {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) auto !important;
-  align-items: start !important;
-  gap: 0.75rem !important;
-  width: 100% !important;
-}
-
-.az-scan-settings-title-row .az-section-copy {
-  white-space: nowrap !important;
-  margin-top: 0 !important;
-  line-height: 1.1 !important;
-}
-
-.az-result-controls-row-centered {
-  margin-top: 0 !important;
-  justify-content: flex-end !important;
-  flex-wrap: nowrap !important;
-  gap: 0.72rem !important;
-}
-
-.az-page-strip {
-  margin-top: 0.34rem !important;
-}
-
-.az-edit-mode-inline {
-  display: flex !important;
-  align-items: center !important;
-  gap: 0.55rem !important;
-  min-height: 24px !important;
-  margin-bottom: 0.18rem !important;
-}
-
-.az-edit-mode-inline .az-divider {
-  margin: 0 0.12rem !important;
-}
-
-.az-preview-head-row {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) auto !important;
-  grid-template-areas:
-    "label source"
-    "label mode" !important;
-  align-items: center !important;
-  column-gap: 0.45rem !important;
-  row-gap: 0.16rem !important;
-  width: 100% !important;
-  min-height: 52px !important;
-  margin-bottom: 0.18rem !important;
-  overflow: visible !important;
-}
-
-.az-preview-head-row .az-compare-label {
-  grid-area: label !important;
-  align-self: start !important;
-  padding-top: 0.28rem !important;
-}
-
-.az-smart-clean-toggle-preview {
-  grid-area: source !important;
-  justify-self: end !important;
-}
-
-.az-smart-clean-subtoggle {
-  grid-area: mode !important;
-  justify-self: end !important;
-  display: inline-grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  gap: 0.12rem !important;
-  padding: 0.12rem !important;
-  border-radius: 999px !important;
-  background: rgba(255, 255, 255, 0.72) !important;
-  border: 1px solid rgba(0, 0, 0, 0.07) !important;
-  white-space: nowrap !important;
-}
-
-.az-smart-clean-subtoggle button {
-  min-height: 22px !important;
-  min-width: 42px !important;
-  border: none !important;
-  border-radius: 999px !important;
-  background: transparent !important;
-  color: #5f6670 !important;
-  padding: 0 0.4rem !important;
-  font-size: 0.66rem !important;
-}
-
-.az-smart-clean-subtoggle .az-smart-clean-subtoggle-active {
-  background: #111111 !important;
-  color: #ffffff !important;
-}
-
-.az-compare-stage.az-compare-stage-split {
-  margin-top: 0.08rem !important;
-}
-
-.az-app-pro .az-smart-clean-subtoggle .az-smart-clean-subtoggle-active {
-  background: rgba(35, 92, 81, 0.94) !important;
-}
-
-/* FINAL: Result top controls + 3-way Smart Clean toggle */
+/* FINAL: Result top controls + tight 3-way Smart Clean toggle */
 .az-scan-settings-title-row {
   display: block !important;
 }
@@ -2980,31 +2879,42 @@ body {
 
 .az-preview-head-row {
   display: grid !important;
-  grid-template-columns: auto 1fr !important;
+  grid-template-columns: auto minmax(0, 1fr) !important;
   align-items: center !important;
-  gap: 0.4rem !important;
-  min-height: 30px !important;
-  margin-bottom: 0.15rem !important;
+  gap: 0.18rem !important;
+  min-height: 26px !important;
+  margin-bottom: 0.05rem !important;
+  overflow: visible !important;
 }
 
 .az-preview-head-row .az-compare-label {
   justify-self: start !important;
   padding-top: 0 !important;
+  font-size: 0.68rem !important;
+  letter-spacing: 0.16em !important;
+  line-height: 1 !important;
+  transform: translateY(1px) !important;
 }
 
 .az-smart-clean-toggle-preview {
   justify-self: end !important;
   grid-template-columns: repeat(3, 1fr) !important;
-  transform: none !important;
+  transform: scale(0.82) !important;
+  transform-origin: right center !important;
 }
 
 .az-smart-clean-toggle-preview button {
-  min-width: 64px !important;
-  font-size: 0.66rem !important;
-  padding-inline: 0.42rem !important;
+  min-width: 54px !important;
+  min-height: 22px !important;
+  padding-inline: 0.34rem !important;
+  font-size: 0.62rem !important;
   white-space: nowrap !important;
 }
 
 .az-smart-clean-subtoggle {
   display: none !important;
+}
+
+.az-compare-stage.az-compare-stage-split {
+  margin-top: 0 !important;
 }

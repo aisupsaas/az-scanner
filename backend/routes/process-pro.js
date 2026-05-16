@@ -275,14 +275,33 @@ async function createSmartCleanImage(
       y3: 18,
     });
 
-  // COLOR VERSION
-  await normalizedPipeline
-    .clone()
-    .png({
-      compressionLevel: 8,
-      adaptiveFiltering: true,
-    })
-    .toFile(colorOutputPath);
+ // COLOR VERSION - preserve colors, avoid harsh black/white look
+await sharp(flattenedBuffer, {
+  failOn: "none",
+  limitInputPixels: 60_000_000,
+})
+  .rotate()
+  .resize({
+    width: Math.min(2400, width),
+    withoutEnlargement: true,
+  })
+  .modulate({
+    brightness: 1.04,
+    saturation: 1.12,
+  })
+  .sharpen({
+    sigma: 0.9,
+    m1: 0.8,
+    m2: 1.6,
+    x1: 2,
+    y2: 8,
+    y3: 12,
+  })
+  .png({
+    compressionLevel: 6,
+    adaptiveFiltering: true,
+  })
+  .toFile(colorOutputPath);
 
   // BLACK & WHITE VERSION
   await normalizedPipeline
