@@ -2295,3 +2295,21 @@ body {
 .az-text-export-row + .az-export-drawer {
   z-index: 99 !important;
 }
+
+.az-preview-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  margin-bottom: 0.35rem;
+}
+
+.az-smart-clean-toggle-preview {
+  transform: scale(0.82);
+  transform-origin: right center;
+}
+
+.az-smart-clean-toggle-preview button {
+  white-space: nowrap;
+}

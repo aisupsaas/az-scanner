@@ -488,38 +488,6 @@ export default function ResultScreen({
                     </button>
                   </div>
 
-                  {smartCleanImageHref ? (
-                      <div className="az-result-toggle az-smart-clean-toggle">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            onImageEditChange({
-                              ...imageEdit,
-                              pdfSource: "original",
-                              applied: false,
-                            })
-                          }
-                          className={imageEdit.pdfSource !== "smartClean" ? "az-result-toggle-active" : ""}
-                        >
-                          Original
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            onImageEditChange({
-                              ...imageEdit,
-                              pdfSource: "smartClean",
-                              applied: false,
-                            })
-                          }
-                          className={imageEdit.pdfSource === "smartClean" ? "az-result-toggle-active" : ""}
-                        >
-                          Smart Clean
-                        </button>
-                      </div>
-                    ) : null}
-
                   <div className="az-result-toggle">
                     <button
                       type="button"
@@ -791,7 +759,55 @@ export default function ResultScreen({
 
               {compareView === "split" && (
                 <div className="az-compare-panel">
-                  <div className="az-compare-label">Preview</div>
+                  <div className="az-preview-head-row">
+
+                  <div className="az-compare-label">
+                    Preview
+                  </div>
+
+                  {smartCleanImageHref ? (
+                    <div className="az-result-toggle az-smart-clean-toggle az-smart-clean-toggle-preview">
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          onImageEditChange({
+                            ...imageEdit,
+                            pdfSource: "original",
+                            applied: false,
+                          })
+                        }
+                        className={
+                          imageEdit.pdfSource !== "smartClean"
+                            ? "az-result-toggle-active"
+                            : ""
+                        }
+                      >
+                        Original
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          onImageEditChange({
+                            ...imageEdit,
+                            pdfSource: "smartClean",
+                            applied: false,
+                          })
+                        }
+                        className={
+                          imageEdit.pdfSource === "smartClean"
+                            ? "az-result-toggle-active"
+                            : ""
+                        }
+                      >
+                        Smart Clean
+                      </button>
+
+                    </div>
+                  ) : null}
+
+                </div>
 
                   <div className="az-compare-frame az-a4-preview-frame">
                       {previewImage ? (
