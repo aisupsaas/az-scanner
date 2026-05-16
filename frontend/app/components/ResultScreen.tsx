@@ -576,12 +576,13 @@ const previewImage =
                 ))}
               </div>
 
-            <div
-              className={[
-                "az-compare-stage",
-                compareView === "split" ? "az-compare-stage-split" : "",
-              ].join(" ")}
-            >
+            <div className="az-result-scan-workspace">
+              <div
+                className={[
+                  "az-compare-stage",
+                  compareView === "split" ? "az-compare-stage-split" : "",
+                ].join(" ")}
+              >
               {(compareView === "split" || compareView === "original") && (
                 <div className="az-compare-panel">
 
@@ -890,6 +891,7 @@ const previewImage =
               </div>
             ) : null}
           </div>
+        </div>
                </>
         )}
       </div>

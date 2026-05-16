@@ -2562,3 +2562,136 @@ body {
 .az-panel-card-fill {
   padding-bottom: 10px !important;
 }
+
+
+/* RESULT SCREEN GRID REBUILD: scan workspace owns panels + bottom tools */
+.az-result-scan-workspace {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) auto !important;
+  gap: 0.35rem !important;
+  width: 100% !important;
+  overflow: hidden !important;
+}
+
+.az-result-scan-workspace .az-compare-stage {
+  min-height: 0 !important;
+  height: 100% !important;
+  margin: 0 !important;
+  gap: 0.75rem !important;
+  overflow: hidden !important;
+}
+
+.az-result-scan-workspace .az-compare-stage-split {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  align-items: stretch !important;
+}
+
+.az-result-scan-workspace .az-compare-panel {
+  min-height: 0 !important;
+  height: 100% !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  gap: 0.35rem !important;
+  overflow: hidden !important;
+}
+
+.az-result-scan-workspace .az-edit-mode-inline,
+.az-result-scan-workspace .az-preview-head-row {
+  min-height: 26px !important;
+  height: 26px !important;
+  margin: 0 !important;
+}
+
+.az-result-scan-workspace .az-crop-container,
+.az-result-scan-workspace .az-compare-frame {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  width: 100% !important;
+  overflow: hidden !important;
+}
+
+.az-result-scan-workspace .az-export-zone {
+  position: relative !important;
+  z-index: 5 !important;
+  width: 100% !important;
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 0.35rem 0.1rem !important;
+  overflow: visible !important;
+}
+
+.az-result-scan-workspace .az-bottom-export-row {
+  position: relative !important;
+  z-index: 5 !important;
+  display: grid !important;
+  grid-template-columns: 36px minmax(0, 1fr) 36px !important;
+  align-items: center !important;
+  gap: 0.55rem !important;
+  width: 100% !important;
+  min-height: 34px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.az-result-scan-workspace .az-export-icon-minimal {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  flex: 0 0 36px !important;
+}
+
+.az-result-scan-workspace .az-export-icon-minimal svg {
+  width: 30px !important;
+  height: 30px !important;
+}
+
+.az-result-scan-workspace .az-scan-brightness-bottom {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) auto !important;
+  gap: 0.45rem !important;
+}
+
+.az-result-scan-workspace .az-scan-brightness input {
+  height: 18px !important;
+}
+
+.az-result-scan-workspace .az-export-drawer {
+  position: fixed !important;
+}
+
+@media (max-width: 640px) {
+  .az-result-scan-workspace {
+    gap: 0.25rem !important;
+  }
+
+  .az-result-scan-workspace .az-compare-stage {
+    gap: 0.5rem !important;
+  }
+
+  .az-result-scan-workspace .az-bottom-export-row {
+    grid-template-columns: 32px minmax(0, 1fr) 32px !important;
+    gap: 0.45rem !important;
+    min-height: 30px !important;
+  }
+
+  .az-result-scan-workspace .az-export-icon-minimal {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+  }
+
+  .az-result-scan-workspace .az-export-icon-minimal svg {
+    width: 27px !important;
+    height: 27px !important;
+  }
+}
