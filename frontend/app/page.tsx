@@ -113,10 +113,16 @@ export default function HomePage() {
     result?.files?.cleanedImageUrls?.map((url) => `${apiBase}${url}`) ||
     (result?.files?.cleanedImageUrl ? [`${apiBase}${result.files.cleanedImageUrl}`] : []);
 
+  const smartCleanImageUrls =
+    result?.files?.smartCleanImageUrls?.map((url) => `${apiBase}${url}`) ||
+    (result?.files?.smartCleanImageUrl ? [`${apiBase}${result.files.smartCleanImageUrl}`] : []);
+
   const originalImageHref =
     originalImageUrls[activePageIndex] || sourcePreviews[activePageIndex] || "";
 
   const cleanedImageHref = cleanedImageUrls[activePageIndex] || "";
+
+  const smartCleanImageHref = smartCleanImageUrls[activePageIndex] || "";
 
   const activeImageEdit = imageEdits[activePageIndex] || DEFAULT_IMAGE_EDIT;
 
@@ -1054,6 +1060,7 @@ function resetOcrText() {
 
           {mode === "result" ? (
             <ResultScreen
+              smartCleanImageHref={smartCleanImageHref}
               loading={loading}
               result={result}
               selectedPlan={selectedPlan}

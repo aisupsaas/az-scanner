@@ -15,6 +15,7 @@ type TextTool = "clean" | "spacing" | "blankLines" | "mergeLines";
 type Corner = "tl" | "tr" | "bl" | "br";
 
 type ResultScreenProps = {
+  smartCleanImageHref: string;
   result: ProcessResponse | null;
   loading: boolean;
   selectedPlan: PlanType;
@@ -71,6 +72,7 @@ export default function ResultScreen({
   activePageIndex,
   pageCount,
   canUndoText,
+  smartCleanImageHref,
   onUndoText,
   onResetOcrText,
   onSetEditedText,
@@ -99,10 +101,11 @@ export default function ResultScreen({
 
   ResultScreenProps) {
     const previewImage =
-      imageEdit.pdfSource === "cleaned" && cleanedImageHref
-        ? cleanedImageHref
-        : originalImageHref || sourcePreview;
-
+  imageEdit.pdfSource === "smartClean" && smartCleanImageHref
+    ? smartCleanImageHref
+    : imageEdit.pdfSource === "cleaned" && cleanedImageHref
+      ? cleanedImageHref
+      : originalImageHref || sourcePreview;
     
   const textPages = pageTexts?.length ? pageTexts : [editedText || ""];
 
@@ -484,6 +487,38 @@ export default function ResultScreen({
                       Edit
                     </button>
                   </div>
+
+                  {smartCleanImageHref ? (
+                      <div className="az-result-toggle az-smart-clean-toggle">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            onImageEditChange({
+                              ...imageEdit,
+                              pdfSource: "original",
+                              applied: false,
+                            })
+                          }
+                          className={imageEdit.pdfSource !== "smartClean" ? "az-result-toggle-active" : ""}
+                        >
+                          Original
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            onImageEditChange({
+                              ...imageEdit,
+                              pdfSource: "smartClean",
+                              applied: false,
+                            })
+                          }
+                          className={imageEdit.pdfSource === "smartClean" ? "az-result-toggle-active" : ""}
+                        >
+                          Smart Clean
+                        </button>
+                      </div>
+                    ) : null}
 
                   <div className="az-result-toggle">
                     <button
