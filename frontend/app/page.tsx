@@ -33,6 +33,7 @@ const PRO_BATCH_LIMIT = 20;
 
 const DEFAULT_IMAGE_EDIT: ImageEditSettings = {
   pdfSource: "original",
+  smartCleanMode: "color",
   rotate: 0,
   brightness: 1,
   zoom: 1,
@@ -117,12 +118,22 @@ export default function HomePage() {
     result?.files?.smartCleanImageUrls?.map((url) => `${apiBase}${url}`) ||
     (result?.files?.smartCleanImageUrl ? [`${apiBase}${result.files.smartCleanImageUrl}`] : []);
 
+  const smartCleanColorImageUrls =
+    result?.files?.smartCleanColorImageUrls?.map((url) => `${apiBase}${url}`) ||
+    (result?.files?.smartCleanColorImageUrl ? [`${apiBase}${result.files.smartCleanColorImageUrl}`] : smartCleanImageUrls);
+
+  const smartCleanBwImageUrls =
+    result?.files?.smartCleanBwImageUrls?.map((url) => `${apiBase}${url}`) ||
+    (result?.files?.smartCleanBwImageUrl ? [`${apiBase}${result.files.smartCleanBwImageUrl}`] : smartCleanImageUrls);
+
   const originalImageHref =
     originalImageUrls[activePageIndex] || sourcePreviews[activePageIndex] || "";
 
   const cleanedImageHref = cleanedImageUrls[activePageIndex] || "";
 
   const smartCleanImageHref = smartCleanImageUrls[activePageIndex] || "";
+  const smartCleanColorImageHref = smartCleanColorImageUrls[activePageIndex] || smartCleanImageHref;
+  const smartCleanBwImageHref = smartCleanBwImageUrls[activePageIndex] || smartCleanImageHref;
 
   const activeImageEdit = imageEdits[activePageIndex] || DEFAULT_IMAGE_EDIT;
 
@@ -661,6 +672,8 @@ function cancelExportName() {
     try {
       const originalUrls = result?.files?.originalPdfImageUrls || [];
       const cleanedUrls = result?.files?.cleanedImageUrls || [];
+      const smartCleanColorUrls = result?.files?.smartCleanColorImageUrls || result?.files?.smartCleanImageUrls || [];
+      const smartCleanBwUrls = result?.files?.smartCleanBwImageUrls || result?.files?.smartCleanImageUrls || [];
 
       if (!originalUrls.length) {
         throw new Error("Original PDF source is not ready.");
@@ -671,7 +684,14 @@ function cancelExportName() {
       const pages = originalUrls.map((originalUrl, index) => {
         const edit = imageEdits[index] || DEFAULT_IMAGE_EDIT;
         const cleanedUrl = cleanedUrls[index];
-        const imageUrl = edit.pdfSource === "cleaned" && cleanedUrl ? cleanedUrl : originalUrl;
+        const smartCleanUrl = edit.smartCleanMode === "bw"
+          ? smartCleanBwUrls[index]
+          : smartCleanColorUrls[index];
+        const imageUrl = edit.pdfSource === "smartClean" && smartCleanUrl
+          ? smartCleanUrl
+          : edit.pdfSource === "cleaned" && cleanedUrl
+            ? cleanedUrl
+            : originalUrl;
 
         return {
           imageUrl,
@@ -713,6 +733,8 @@ function cancelExportName() {
   try {
     const originalUrls = result?.files?.originalPdfImageUrls || [];
     const cleanedUrls = result?.files?.cleanedImageUrls || [];
+    const smartCleanColorUrls = result?.files?.smartCleanColorImageUrls || result?.files?.smartCleanImageUrls || [];
+    const smartCleanBwUrls = result?.files?.smartCleanBwImageUrls || result?.files?.smartCleanImageUrls || [];
 
     if (!originalUrls.length) {
       throw new Error("Original PDF source is not ready.");
@@ -723,7 +745,14 @@ function cancelExportName() {
     const pages = originalUrls.map((originalUrl, index) => {
       const edit = imageEdits[index] || DEFAULT_IMAGE_EDIT;
       const cleanedUrl = cleanedUrls[index];
-      const imageUrl = edit.pdfSource === "cleaned" && cleanedUrl ? cleanedUrl : originalUrl;
+      const smartCleanUrl = edit.smartCleanMode === "bw"
+        ? smartCleanBwUrls[index]
+        : smartCleanColorUrls[index];
+      const imageUrl = edit.pdfSource === "smartClean" && smartCleanUrl
+        ? smartCleanUrl
+        : edit.pdfSource === "cleaned" && cleanedUrl
+          ? cleanedUrl
+          : originalUrl;
 
       return {
         imageUrl,
@@ -1060,6 +1089,8 @@ function resetOcrText() {
           {mode === "result" ? (
             <ResultScreen
               smartCleanImageHref={smartCleanImageHref}
+              smartCleanColorImageHref={smartCleanColorImageHref}
+              smartCleanBwImageHref={smartCleanBwImageHref}
               loading={loading}
               result={result}
               selectedPlan={selectedPlan}

@@ -13,9 +13,12 @@ import type {
 
 type TextTool = "clean" | "spacing" | "blankLines" | "mergeLines";
 type Corner = "tl" | "tr" | "bl" | "br";
+type SmartCleanMode = "color" | "bw";
 
 type ResultScreenProps = {
   smartCleanImageHref: string;
+  smartCleanColorImageHref: string;
+  smartCleanBwImageHref: string;
   result: ProcessResponse | null;
   loading: boolean;
   selectedPlan: PlanType;
@@ -73,6 +76,8 @@ export default function ResultScreen({
   pageCount,
   canUndoText,
   smartCleanImageHref,
+  smartCleanColorImageHref,
+  smartCleanBwImageHref,
   onUndoText,
   onResetOcrText,
   onSetEditedText,
@@ -100,7 +105,11 @@ export default function ResultScreen({
   }: 
 
   ResultScreenProps) {
-    const smartCleanPreviewHref = smartCleanImageHref || cleanedImageHref || originalImageHref || sourcePreview;
+    const activeSmartCleanMode: SmartCleanMode = imageEdit.smartCleanMode || "color";
+    const smartCleanColorPreviewHref = smartCleanColorImageHref || smartCleanImageHref || cleanedImageHref || originalImageHref || sourcePreview;
+    const smartCleanBwPreviewHref = smartCleanBwImageHref || smartCleanImageHref || cleanedImageHref || originalImageHref || sourcePreview;
+    const smartCleanPreviewHref =
+      activeSmartCleanMode === "bw" ? smartCleanBwPreviewHref : smartCleanColorPreviewHref;
 
 const previewImage =
   imageEdit.pdfSource === "smartClean" && smartCleanPreviewHref
@@ -731,6 +740,7 @@ const previewImage =
                           onImageEditChange({
                             ...imageEdit,
                             pdfSource: "smartClean",
+                            smartCleanMode: imageEdit.smartCleanMode || "color",
                             applied: false,
                           })
                         }
@@ -743,6 +753,40 @@ const previewImage =
                         Smart Clean
                       </button>
 
+                    </div>
+                  ) : null}
+
+                  {imageEdit.pdfSource === "smartClean" && smartCleanPreviewHref ? (
+                    <div className="az-smart-clean-subtoggle" aria-label="Smart Clean mode">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          onImageEditChange({
+                            ...imageEdit,
+                            pdfSource: "smartClean",
+                            smartCleanMode: "color",
+                            applied: false,
+                          })
+                        }
+                        className={activeSmartCleanMode === "color" ? "az-smart-clean-subtoggle-active" : ""}
+                      >
+                        Color
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          onImageEditChange({
+                            ...imageEdit,
+                            pdfSource: "smartClean",
+                            smartCleanMode: "bw",
+                            applied: false,
+                          })
+                        }
+                        className={activeSmartCleanMode === "bw" ? "az-smart-clean-subtoggle-active" : ""}
+                      >
+                        B/W
+                      </button>
                     </div>
                   ) : null}
 

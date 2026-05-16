@@ -229,7 +229,11 @@ async function tryPerspectiveCorrection(imageBuffer) {
   }
 }
 
-async function createSmartCleanImage(imageBuffer, outputPath) {
+async function createSmartCleanImage(
+  imageBuffer,
+  colorOutputPath,
+  bwOutputPath
+) {
   const flattenedBuffer = await tryPerspectiveCorrection(imageBuffer);
 
   const base = sharp(flattenedBuffer, {
@@ -240,30 +244,26 @@ async function createSmartCleanImage(imageBuffer, outputPath) {
   const metadata = await base.metadata();
   const width = metadata.width || 2400;
 
-  await sharp(flattenedBuffer, {
+  const normalizedPipeline = sharp(flattenedBuffer, {
     failOn: "none",
     limitInputPixels: 60_000_000,
   })
     .rotate()
 
-    // DPI / resolution normalization
+    // DPI normalization
     .resize({
       width: Math.min(2400, width),
       withoutEnlargement: true,
     })
 
-    // Auto white balance / exposure cleanup
+    // Exposure / lighting cleanup
     .normalize()
 
-    // Background/shadow cleanup + stronger paper white
+    // Paper cleanup while preserving colors
     .modulate({
-      brightness: 1.08,
-      saturation: 0.82,
+      brightness: 1.06,
+      saturation: 1.02,
     })
-
-    // Adaptive black/white document feel
-    .grayscale()
-    .linear(1.22, -18)
 
     // Text sharpening
     .sharpen({
@@ -273,14 +273,27 @@ async function createSmartCleanImage(imageBuffer, outputPath) {
       x1: 2,
       y2: 12,
       y3: 18,
-    })
+    });
 
-    // Clean output
+  // COLOR VERSION
+  await normalizedPipeline
+    .clone()
     .png({
       compressionLevel: 8,
       adaptiveFiltering: true,
     })
-    .toFile(outputPath);
+    .toFile(colorOutputPath);
+
+  // BLACK & WHITE VERSION
+  await normalizedPipeline
+    .clone()
+    .grayscale()
+    .linear(1.22, -18)
+    .png({
+      compressionLevel: 8,
+      adaptiveFiltering: true,
+    })
+    .toFile(bwOutputPath);
 }
 
 async function processProFiles(incomingFiles, onProgress) {
@@ -306,8 +319,15 @@ async function processProFiles(incomingFiles, onProgress) {
     const baseId = `pro-${Date.now()}-${pageNumber}-${Math.random().toString(36).slice(2, 8)}`;
 
     const originalImagePath = path.join(OUTPUT_DIR, `${baseId}-original.png`);
-    const smartCleanImagePath = path.join(OUTPUT_DIR, `${baseId}-smart-clean.png`);
+    const smartCleanColorImagePath = path.join(
+  OUTPUT_DIR,
+  `${baseId}-smart-clean-color.png`
+);
 
+const smartCleanBwImagePath = path.join(
+  OUTPUT_DIR,
+  `${baseId}-smart-clean-bw.png`
+);
     await createOriginalImage(imageBuffer, originalImagePath);
 
     onProgress?.({
@@ -318,13 +338,24 @@ async function processProFiles(incomingFiles, onProgress) {
       message: `Smart Clean page ${pageNumber} of ${totalPages}...`,
     });
 
-    await createSmartCleanImage(imageBuffer, smartCleanImagePath);
-
+    await createSmartCleanImage(
+  imageBuffer,
+  smartCleanColorImagePath,
+  smartCleanBwImagePath
+);
     const originalPdfImageUrl = `/output/${path.basename(originalImagePath)}`;
-    const smartCleanImageUrl = `/output/${path.basename(smartCleanImagePath)}`;
+    const smartCleanColorImageUrl = `/output/${path.basename(
+  smartCleanColorImagePath
+)}`;
 
+const smartCleanBwImageUrl = `/output/${path.basename(
+  smartCleanBwImagePath
+)}`;
     originalPdfImageUrls.push(originalPdfImageUrl);
-    smartCleanImageUrls.push(smartCleanImageUrl);
+    smartCleanImageUrls.push({
+  color: smartCleanColorImageUrl,
+  bw: smartCleanBwImageUrl,
+});
 
     const request = {
       name,
@@ -360,8 +391,8 @@ async function processProFiles(incomingFiles, onProgress) {
 
   const text = allText.join("\n\n");
   const firstOriginalUrl = originalPdfImageUrls[0] || "";
-  const firstSmartCleanUrl = smartCleanImageUrls[0] || "";
-
+  const firstSmartCleanUrl =
+  smartCleanImageUrls[0]?.color || "";
   return {
     success: true,
     text,
