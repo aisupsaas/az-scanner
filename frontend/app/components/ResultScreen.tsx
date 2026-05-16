@@ -233,12 +233,6 @@ const previewImage =
 
   return (
     <div className="az-screen">
-      <div className="az-result-masthead">
-        <div>
-          <div className="az-result-title">Result</div>
-        </div>
-      </div>
-
       <div className="az-panel-card az-panel-card-fill">
         {resultTab === "text" ? (
           <>

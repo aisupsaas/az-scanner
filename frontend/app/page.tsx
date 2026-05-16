@@ -1014,27 +1014,26 @@ function resetOcrText() {
       <div className="az-shell">
        <header className="az-topbar">
           <div>
-            <img
-              src="/az-logo.png"
-              alt="AZ Scanner"
-              className="az-topbar-logo"
-            />
+            <div className="az-topbar-title">{topTitle}</div>
 
             {mode !== "result" ? (
-              <>
-                <div className="az-topbar-title">{topTitle}</div>
-                <div
-                  className={
-                    loading
-                      ? "az-topbar-subtitle az-topbar-subtitle-processing"
-                      : "az-topbar-subtitle"
-                  }
-                  >
-                  {statusText}
-                </div>
-              </>
+              <div
+                className={
+                  loading
+                    ? "az-topbar-subtitle az-topbar-subtitle-processing"
+                    : "az-topbar-subtitle"
+                }
+              >
+                {statusText}
+              </div>
             ) : null}
           </div>
+
+          <img
+            src="/az-logo.png"
+            alt="AZ Scanner"
+            className="az-topbar-logo"
+          />
         </header>
         <section className="az-content">
           {mode === "start" ? (
