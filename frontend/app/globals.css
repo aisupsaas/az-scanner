@@ -2322,3 +2322,54 @@ body {
     font-size: 0.68rem !important;
   }
 }
+
+/* FINAL polish: result header + tighter vertical spacing */
+.az-topbar {
+  padding-top: max(0.75rem, env(safe-area-inset-top)) !important;
+  padding-bottom: 0.55rem !important;
+}
+
+.az-topbar-logo {
+  top: max(0.75rem, env(safe-area-inset-top)) !important;
+}
+
+.az-result-title {
+  margin-top: 0.15rem !important;
+}
+
+.az-scan-settings-head {
+  margin-top: -0.15rem !important;
+}
+
+.az-result-controls-row-centered {
+  margin-top: 0.55rem !important;
+}
+
+.az-result-toggle {
+  padding: 0.12rem !important;
+}
+
+.az-result-toggle button {
+  min-height: 24px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.az-page-strip {
+  margin-top: 0.32rem !important;
+  margin-bottom: 0.28rem !important;
+  padding-bottom: 0.42rem !important;
+}
+
+.az-edit-mode-inline {
+  min-height: 28px !important;
+  margin-bottom: 0.18rem !important;
+}
+
+.az-compare-stage.az-compare-stage-split {
+  margin-top: 0.22rem !important;
+}
+
+.az-bottom-area {
+  padding-bottom: max(0.95rem, env(safe-area-inset-bottom)) !important;
+}
