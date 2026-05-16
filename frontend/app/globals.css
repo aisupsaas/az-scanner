@@ -2290,20 +2290,6 @@ body {
   }
 }
 
-/* FINAL polish: result header + tighter vertical spacing */
-.az-topbar {
-  padding-top: max(0.75rem, env(safe-area-inset-top)) !important;
-  padding-bottom: 0.55rem !important;
-}
-
-.az-topbar-logo {
-  top: max(0.75rem, env(safe-area-inset-top)) !important;
-}
-
-.az-result-title {
-  margin-top: 0.15rem !important;
-}
-
 .az-scan-settings-head {
   margin-top: -0.15rem !important;
 }
@@ -2339,4 +2325,111 @@ body {
 
 .az-bottom-area {
   padding-bottom: max(0.95rem, env(safe-area-inset-bottom)) !important;
+}
+
+/* FINAL Result layout alignment */
+.az-topbar {
+  display: grid !important;
+  grid-template-columns: 1fr auto !important;
+  align-items: start !important;
+  padding: 0.75rem 1rem 0.35rem !important;
+}
+
+.az-topbar-logo {
+  position: static !important;
+  width: 52px !important;
+  justify-self: end !important;
+}
+
+.az-result-title {
+  margin: 0 !important;
+  font-size: 1.18rem !important;
+  line-height: 1 !important;
+}
+
+.az-panel-card-fill {
+  padding: 0.62rem 0.78rem 0.52rem !important;
+}
+
+.az-scan-settings-title-row {
+  margin-bottom: 0.35rem !important;
+}
+
+.az-result-controls-row-centered {
+  margin-top: 0.35rem !important;
+}
+
+.az-page-strip {
+  margin-top: 0.26rem !important;
+  margin-bottom: 0.16rem !important;
+}
+
+.az-edit-mode-inline {
+  min-height: 24px !important;
+  gap: 0.45rem !important;
+  margin-bottom: 0.22rem !important;
+}
+
+.az-edit-mode-button {
+  font-size: 0.88rem !important;
+  letter-spacing: -0.01em !important;
+}
+
+.az-edit-mode-inline .az-divider {
+  font-size: 0.88rem !important;
+  opacity: 0.75 !important;
+}
+
+.az-compare-stage.az-compare-stage-split {
+  gap: 0.72rem !important;
+  align-items: start !important;
+}
+
+.az-compare-stage-split .az-crop-container,
+.az-compare-stage-split .az-compare-frame {
+  height: clamp(365px, 44dvh, 500px) !important;
+  min-height: 365px !important;
+  max-height: 500px !important;
+}
+
+.az-preview-head-row,
+.az-edit-mode-inline {
+  height: 30px !important;
+}
+
+.az-export-zone {
+  margin-top: 0.16rem !important;
+  gap: 0.25rem !important;
+}
+
+.az-bottom-export-row {
+  gap: 0.55rem !important;
+  margin-top: 0.1rem !important;
+  padding-bottom: 0 !important;
+}
+
+.az-export-icon-minimal {
+  min-width: 30px !important;
+  min-height: 30px !important;
+}
+
+.az-export-icon-minimal svg {
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.az-scan-brightness input {
+  height: 24px !important;
+}
+
+.az-brightness-icon-small {
+  font-size: 0.78rem !important;
+}
+
+.az-brightness-icon-big {
+  font-size: 1.25rem !important;
+}
+
+.az-bottom-area {
+  padding-bottom: max(1.25rem, env(safe-area-inset-bottom)) !important;
 }
