@@ -1496,11 +1496,6 @@ body {
   margin: 0 !important;
 }
 
-.az-bottom-export-row {
-  position: relative;
-  z-index: 91;
-}
-
 .az-export-drawer button {
   border: none;
   background: transparent;
@@ -1991,13 +1986,6 @@ body {
   line-height: 1;
 }
 
-.az-edit-mode-inline {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  margin-bottom: 0.4rem;
-}
-
 .az-edit-mode-button {
   border: none;
   background: transparent;
@@ -2187,24 +2175,6 @@ body {
   z-index: 99 !important;
 }
 
-.az-preview-head-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  width: 100%;
-  margin-bottom: 0.35rem;
-}
-
-.az-smart-clean-toggle-preview {
-  transform: scale(0.82);
-  transform-origin: right center;
-}
-
-.az-smart-clean-toggle-preview button {
-  white-space: nowrap;
-}
-
 .az-scan-settings-title-row {
   display: flex;
   align-items: center;
@@ -2216,11 +2186,6 @@ body {
 .az-result-controls-row-centered {
   justify-content: center !important;
   margin-top: 0.9rem !important;
-}
-
-.az-compare-stage-split {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
-  align-items: stretch !important;
 }
 
 .az-compare-panel {
@@ -2292,6 +2257,8 @@ body {
 }
 
 .az-bottom-export-row {
+  position: relative !important;
+  z-index: 91 !important;
   display: grid !important;
   grid-template-columns: auto 1fr auto !important;
   align-items: center !important;
