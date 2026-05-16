@@ -2313,3 +2313,30 @@ body {
 .az-smart-clean-toggle-preview button {
   white-space: nowrap;
 }
+
+.az-scan-settings-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+}
+
+.az-result-controls-row-centered {
+  justify-content: center !important;
+  margin-top: 0.9rem !important;
+}
+
+.az-compare-stage-split {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  align-items: stretch !important;
+}
+
+.az-compare-panel {
+  min-width: 0 !important;
+}
+
+.az-app:not(.az-app-pro) .az-result-toggle-active {
+  background: #111111 !important;
+  color: #ffffff !important;
+}

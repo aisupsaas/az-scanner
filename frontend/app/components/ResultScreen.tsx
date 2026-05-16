@@ -100,9 +100,11 @@ export default function ResultScreen({
   }: 
 
   ResultScreenProps) {
-    const previewImage =
-  imageEdit.pdfSource === "smartClean" && smartCleanImageHref
-    ? smartCleanImageHref
+    const smartCleanPreviewHref = smartCleanImageHref || cleanedImageHref || originalImageHref || sourcePreview;
+
+const previewImage =
+  imageEdit.pdfSource === "smartClean" && smartCleanPreviewHref
+    ? smartCleanPreviewHref
     : imageEdit.pdfSource === "cleaned" && cleanedImageHref
       ? cleanedImageHref
       : originalImageHref || sourcePreview;
@@ -234,10 +236,6 @@ export default function ResultScreen({
       <div className="az-result-masthead">
         <div>
           <div className="az-result-title">Result</div>
-          <div className="az-result-subtitle">
-            Page {activePageIndex + 1} of {pageCount} •{" "}
-            {imageEdit.applied ? "Saved" : "Unsaved"}
-          </div>
         </div>
       </div>
 
@@ -423,22 +421,12 @@ export default function ResultScreen({
 
         ) : (
           <>
-          <div className="az-scan-settings-head">
-
-            <div className="az-settings-main-row">
-
-              <div className="az-settings-left">
-                <div className="az-section-label">
-                  ORIGINAL PDF SETTINGS
-                </div>
-
+            <div className="az-scan-settings-head">
+              <div className="az-scan-settings-title-row">
                 <div className="az-section-copy">
                   Page {activePageIndex + 1} of {pageCount} •{" "}
                   {imageEdit.applied ? "Saved" : "Unsaved changes"}
                 </div>
-              </div>
-
-              <div className="az-settings-right">
 
                 <div className="az-top-tools-row">
                   <button
@@ -459,89 +447,67 @@ export default function ResultScreen({
                     Reset
                   </button>
                 </div>
-
-                <div className="az-result-controls-row">
-
-                  <div className="az-result-toggle az-scan-mode-toggle">
-                    <button
-                      type="button"
-                      onClick={() => onCompareViewChange("split")}
-                      className={
-                        compareView === "split"
-                          ? "az-result-toggle-active"
-                          : ""
-                      }
-                    >
-                      Preview
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => onCompareViewChange("original")}
-                      className={
-                        compareView === "original"
-                          ? "az-result-toggle-active"
-                          : ""
-                      }
-                    >
-                      Edit
-                    </button>
-                  </div>
-
-                  <div className="az-result-toggle">
-                    <button
-                      type="button"
-                      onClick={() => onResultTabChange("compare")}
-                      className={
-                        resultTab === "compare"
-                          ? "az-result-toggle-active"
-                          : ""
-                      }
-                    >
-                      Scan
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => onResultTabChange("text")}
-                    >
-                      Text
-                    </button>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={applyScanEdit}
-                    className={[
-                      "az-scan-apply",
-                      imageEdit.applied
-                        ? "az-scan-apply-saved"
-                        : "",
-                      !imageEdit.applied
-                        ? "az-scan-apply-pulse"
-                        : "",
-                    ].join(" ")}
-                  >
-                    {imageEdit.applied ? "Saved" : "Apply"}
-                  </button>
-
-                  <span className="az-divider">|</span>
-
-                  <button
-                    type="button"
-                    onClick={onApplyEditToAllPages}
-                    className="az-scan-apply-all"
-                  >
-                    All
-                  </button>
-
-                </div>
-
               </div>
 
-            </div>
+              <div className="az-result-controls-row az-result-controls-row-centered">
+                <div className="az-result-toggle az-scan-mode-toggle">
+                  <button
+                    type="button"
+                    onClick={() => onCompareViewChange("split")}
+                    className={compareView === "split" ? "az-result-toggle-active" : ""}
+                  >
+                    Preview
+                  </button>
 
-          </div>
+                  <button
+                    type="button"
+                    onClick={() => onCompareViewChange("original")}
+                    className={compareView === "original" ? "az-result-toggle-active" : ""}
+                  >
+                    Edit
+                  </button>
+                </div>
+
+                <div className="az-result-toggle">
+                  <button
+                    type="button"
+                    onClick={() => onResultTabChange("compare")}
+                    className={resultTab === "compare" ? "az-result-toggle-active" : ""}
+                  >
+                    Scan
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => onResultTabChange("text")}
+                  >
+                    Text
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={applyScanEdit}
+                  className={[
+                    "az-scan-apply",
+                    imageEdit.applied ? "az-scan-apply-saved" : "",
+                    !imageEdit.applied ? "az-scan-apply-pulse" : "",
+                  ].join(" ")}
+                >
+                  {imageEdit.applied ? "Saved" : "Apply"}
+                </button>
+
+                <span className="az-divider">|</span>
+
+                <button
+                  type="button"
+                  onClick={onApplyEditToAllPages}
+                  className="az-scan-apply-all"
+                >
+                  All
+                </button>
+              </div>
+            </div>
 
               <div className="az-page-strip">
                 {Array.from({ length: pageCount }).map((_, index) => (
@@ -765,7 +731,7 @@ export default function ResultScreen({
                     Preview
                   </div>
 
-                  {smartCleanImageHref ? (
+                  {smartCleanPreviewHref ? (
                     <div className="az-result-toggle az-smart-clean-toggle az-smart-clean-toggle-preview">
 
                       <button
