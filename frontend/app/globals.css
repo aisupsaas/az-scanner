@@ -2451,3 +2451,74 @@ body {
 .az-bottom-area {
   padding-bottom: max(1.25rem, env(safe-area-inset-bottom)) !important;
 }
+
+/* FINAL fix: keep download / brightness / share below scan boxes */
+.az-panel-card-fill {
+  overflow: hidden !important;
+}
+
+.az-compare-stage.az-compare-stage-split {
+  flex: 0 0 auto !important;
+}
+
+.az-compare-stage-split .az-crop-container,
+.az-compare-stage-split .az-compare-frame {
+  height: clamp(300px, 37dvh, 430px) !important;
+  min-height: 300px !important;
+  max-height: 430px !important;
+}
+
+.az-export-zone {
+  position: relative !important;
+  z-index: 5 !important;
+  flex: 0 0 auto !important;
+  margin-top: 0.55rem !important;
+  padding: 0 0.4rem 0.25rem !important;
+}
+
+.az-bottom-export-row {
+  position: relative !important;
+  z-index: 5 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.65rem !important;
+  width: 100% !important;
+  min-height: 38px !important;
+}
+
+.az-export-icon-minimal {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  flex: 0 0 34px !important;
+}
+
+.az-export-icon-minimal svg {
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.az-scan-brightness-bottom {
+  flex: 1 1 auto !important;
+  width: auto !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+}
+
+.az-scan-brightness input {
+  height: 20px !important;
+}
+
+@media (max-width: 640px) {
+  .az-compare-stage-split .az-crop-container,
+  .az-compare-stage-split .az-compare-frame {
+    height: clamp(260px, 34dvh, 380px) !important;
+    min-height: 260px !important;
+  }
+
+  .az-export-zone {
+    margin-top: 0.45rem !important;
+  }
+}
