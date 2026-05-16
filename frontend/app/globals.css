@@ -2775,3 +2775,84 @@ body {
   grid-column: 2 !important;
   margin-top: -0.08rem !important;
 }
+
+/* FINAL Smart Clean mode inside Result scan grid */
+.az-preview-head-row {
+  display: grid !important;
+  grid-template-columns: 1fr auto auto !important;
+  grid-template-areas: "label source mode" !important;
+  align-items: center !important;
+  column-gap: 0.45rem !important;
+  row-gap: 0 !important;
+  width: 100% !important;
+  min-height: 30px !important;
+  margin-bottom: 0.25rem !important;
+  overflow: visible !important;
+}
+
+.az-preview-head-row .az-compare-label {
+  grid-area: label !important;
+  min-width: 0 !important;
+}
+
+.az-smart-clean-toggle-preview {
+  grid-area: source !important;
+  justify-self: end !important;
+  transform: none !important;
+}
+
+.az-smart-clean-subtoggle {
+  grid-area: mode !important;
+  justify-self: end !important;
+
+  display: inline-grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 0.12rem !important;
+
+  padding: 0.12rem !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.72) !important;
+  border: 1px solid rgba(0, 0, 0, 0.07) !important;
+  white-space: nowrap !important;
+}
+
+.az-smart-clean-subtoggle button {
+  min-height: 24px !important;
+  min-width: 42px !important;
+  border: none !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  color: #5f6670 !important;
+  padding: 0 0.42rem !important;
+  font-size: 0.68rem !important;
+  font-weight: 400 !important;
+}
+
+.az-smart-clean-subtoggle .az-smart-clean-subtoggle-active {
+  background: #111111 !important;
+  color: #ffffff !important;
+}
+
+.az-app-pro .az-smart-clean-subtoggle .az-smart-clean-subtoggle-active {
+  background: rgba(35, 92, 81, 0.94) !important;
+}
+
+@media (max-width: 640px) {
+  .az-preview-head-row {
+    grid-template-columns: 1fr auto !important;
+    grid-template-areas:
+      "label source"
+      "label mode" !important;
+    row-gap: 0.18rem !important;
+  }
+
+  .az-smart-clean-toggle-preview button {
+    min-width: 60px !important;
+    font-size: 0.66rem !important;
+  }
+
+  .az-smart-clean-subtoggle button {
+    min-width: 38px !important;
+    font-size: 0.64rem !important;
+  }
+}
