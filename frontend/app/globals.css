@@ -3648,3 +3648,274 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* FINAL Drawer breathing room + auth/private minimalist pass */
+.az-menu-drawer {
+  padding: 18px 22px 22px !important;
+}
+
+.az-drawer-section {
+  padding-top: 14px !important;
+}
+
+.az-drawer-card,
+.az-auth-card,
+.az-history-item {
+  border-radius: 18px !important;
+  box-shadow: none !important;
+}
+
+/* Account login/register: smaller, calmer, more breathable */
+.az-auth-card {
+  padding: 18px !important;
+  display: grid !important;
+  gap: 14px !important;
+  max-width: 100% !important;
+}
+
+.az-auth-tabs {
+  height: 54px !important;
+  min-height: 54px !important;
+  padding: 4px !important;
+  border-radius: 999px !important;
+  background: rgba(238, 244, 252, 0.72) !important;
+}
+
+.az-auth-tabs button {
+  min-height: 46px !important;
+  border-radius: 999px !important;
+  font-size: 0.9rem !important;
+  padding: 0 1rem !important;
+}
+
+.az-auth-tab-active {
+  background: #111111 !important;
+  color: #ffffff !important;
+}
+
+.az-auth-input {
+  min-height: 52px !important;
+  height: 52px !important;
+  border-radius: 14px !important;
+  padding: 0 14px !important;
+  font-size: 0.94rem !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+}
+
+.az-auth-name-grid {
+  gap: 10px !important;
+}
+
+.az-auth-helper,
+.az-auth-message {
+  font-size: 0.78rem !important;
+  line-height: 1.35 !important;
+  margin: -4px 2px 0 !important;
+}
+
+.az-auth-card .az-history-save-button {
+  min-height: 52px !important;
+  height: 52px !important;
+  border-radius: 18px !important;
+  margin-top: 2px !important;
+  font-size: 0.95rem !important;
+}
+
+/* Private Folder: compact summary */
+.az-private-summary-card {
+  padding: 14px 0 10px !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.az-private-summary-card h3,
+.az-private-summary-card p,
+.az-private-summary-card .az-history-save-button {
+  display: none !important;
+}
+
+.az-private-summary-card .az-drawer-card-label {
+  margin: 0 0 10px !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.2em !important;
+}
+
+.az-storage-card-minimal {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.az-storage-card-minimal .az-storage-row {
+  font-size: 0.78rem !important;
+  color: rgba(75, 90, 112, 0.82) !important;
+  margin-bottom: 6px !important;
+}
+
+.az-storage-card-minimal .az-storage-row strong {
+  font-size: 0.78rem !important;
+  font-weight: 400 !important;
+  color: rgba(20, 26, 36, 0.86) !important;
+}
+
+.az-storage-card-minimal .az-storage-track {
+  height: 3px !important;
+  border-radius: 999px !important;
+  background: rgba(95, 118, 155, 0.13) !important;
+  overflow: hidden !important;
+}
+
+.az-storage-card-minimal .az-storage-track span {
+  height: 3px !important;
+  border-radius: 999px !important;
+}
+
+.az-storage-card-minimal small {
+  display: block !important;
+  margin-top: 5px !important;
+  font-size: 0.68rem !important;
+  color: rgba(75, 90, 112, 0.62) !important;
+}
+
+/* Private file list: thin, icon-based, no pill buttons */
+.az-private-file-list {
+  margin-top: 6px !important;
+  display: grid !important;
+  gap: 10px !important;
+}
+
+.az-private-file-item {
+  padding: 13px 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  border-top: 1px solid rgba(83, 113, 172, 0.12) !important;
+  background: transparent !important;
+}
+
+.az-private-file-main,
+.az-history-main.az-private-file-main {
+  width: 100% !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  display: grid !important;
+  grid-template-columns: 26px minmax(0, 1fr) !important;
+  gap: 10px !important;
+  align-items: start !important;
+  text-align: left !important;
+}
+
+.az-private-open-icon,
+.az-history-folder-icon.az-private-open-icon {
+  width: 26px !important;
+  height: 26px !important;
+  min-width: 26px !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  font-size: 1.15rem !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.az-private-file-copy {
+  min-width: 0 !important;
+  display: grid !important;
+  gap: 3px !important;
+}
+
+.az-private-file-title {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  color: #1f2937 !important;
+  font-size: 0.98rem !important;
+  line-height: 1.2 !important;
+  font-weight: 400 !important;
+  text-align: left !important;
+  white-space: normal !important;
+}
+
+.az-private-file-title:active {
+  opacity: 0.65 !important;
+}
+
+.az-private-file-copy small {
+  color: rgba(76, 88, 108, 0.72) !important;
+  font-size: 0.76rem !important;
+  line-height: 1.25 !important;
+}
+
+.az-private-icon-actions,
+.az-history-actions.az-private-icon-actions {
+  margin-top: 9px !important;
+  margin-left: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+}
+
+.az-private-icon-actions button {
+  width: 28px !important;
+  height: 28px !important;
+  min-height: 28px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  color: rgba(67, 84, 112, 0.82) !important;
+  font-size: 1.05rem !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.az-private-icon-actions button:last-child {
+  color: rgba(200, 55, 55, 0.82) !important;
+}
+
+.az-private-icon-actions button:active {
+  transform: scale(0.9) !important;
+}
+
+.az-history-empty {
+  border: none !important;
+  background: transparent !important;
+  padding: 16px 0 !important;
+  color: rgba(75, 90, 112, 0.72) !important;
+  font-size: 0.86rem !important;
+}
+
+@media (max-width: 640px) {
+  .az-menu-drawer {
+    padding: 14px 18px 20px !important;
+  }
+
+  .az-auth-card {
+    padding: 14px !important;
+    gap: 12px !important;
+  }
+
+  .az-auth-tabs {
+    height: 50px !important;
+    min-height: 50px !important;
+  }
+
+  .az-auth-tabs button {
+    min-height: 42px !important;
+    font-size: 0.86rem !important;
+  }
+
+  .az-auth-input,
+  .az-auth-card .az-history-save-button {
+    height: 48px !important;
+    min-height: 48px !important;
+  }
+}
