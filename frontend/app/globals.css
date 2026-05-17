@@ -3486,3 +3486,165 @@ body {
 .az-app-pro .az-storage-track span {
   background: rgba(43, 134, 115, 0.78);
 }
+
+
+/* FINAL: full-space drawer section navigation + sharing UI */
+.az-section-drawer-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.az-section-back-button {
+  min-height: 38px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #2f3a4a;
+  padding: 0 0.82rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 400;
+  box-shadow: 0 8px 18px rgba(42, 91, 150, 0.08);
+}
+
+.az-drawer-menu-list-full {
+  flex: 1;
+  min-height: 0;
+  align-content: start;
+  overflow-y: auto;
+  padding-top: 0.2rem;
+}
+
+.az-drawer-menu-list-full button {
+  min-height: 48px;
+  border-radius: 16px;
+  padding: 0 0.9rem;
+  font-size: 0.96rem;
+}
+
+.az-drawer-section-full {
+  flex: 1;
+  min-height: 0;
+}
+
+.az-history-actions-wide {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.az-share-item {
+  display: grid;
+  gap: 0.72rem;
+}
+
+.az-share-main-static {
+  pointer-events: none;
+}
+
+.az-share-add-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.az-share-add-row .az-history-save-button {
+  min-width: 64px;
+  padding: 0 0.8rem;
+}
+
+.az-share-member-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.az-share-member-card {
+  border-radius: 14px;
+  border: 1px solid rgba(83, 113, 172, 0.12);
+  background: rgba(245, 249, 255, 0.7);
+  padding: 0.65rem;
+}
+
+.az-share-member-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.55rem;
+}
+
+.az-share-member-head strong {
+  min-width: 0;
+  font-size: 0.82rem;
+  line-height: 1.25;
+  color: #1f2937;
+  word-break: break-word;
+  font-weight: 400;
+}
+
+.az-share-member-head button {
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 241, 241, 0.95);
+  color: #c24141;
+  min-height: 28px;
+  padding: 0 0.65rem;
+  font-size: 0.72rem;
+}
+
+.az-share-permission-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.az-share-permission-grid label {
+  min-height: 30px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #536273;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  padding: 0 0.55rem;
+  font-size: 0.74rem;
+}
+
+.az-share-permission-grid input {
+  width: 15px;
+  height: 15px;
+  accent-color: #111111;
+}
+
+.az-share-permission-note {
+  border-radius: 12px;
+  background: rgba(240, 247, 255, 0.95);
+  color: #536273;
+  padding: 0.55rem 0.65rem;
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.az-app-pro .az-section-back-button,
+.az-app-pro .az-share-member-card,
+.az-app-pro .az-share-permission-note {
+  background: rgba(238, 252, 247, 0.86);
+}
+
+.az-app-pro .az-share-permission-grid input {
+  accent-color: #235c51;
+}
+
+@media (max-width: 520px) {
+  .az-share-add-row {
+    grid-template-columns: 1fr;
+  }
+
+  .az-share-permission-grid {
+    grid-template-columns: 1fr;
+  }
+}
