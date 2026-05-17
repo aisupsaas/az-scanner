@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createClient, type User } from "@supabase/supabase-js";
 import type {
   CompareView,
   ImageEditSettings,
@@ -71,6 +72,10 @@ type HistoryItem = {
   createdAt: string;
   pageCount: number;
   text: string;
+  originalPdfPath?: string | null;
+  textPdfPath?: string | null;
+  txtPath?: string | null;
+  docxPath?: string | null;
 };
 
 export default function HomePage() {
@@ -78,6 +83,15 @@ export default function HomePage() {
     () => process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000",
     []
   );
+
+  const supabase = useMemo(() => {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseAnonKey) return null;
+
+    return createClient(supabaseUrl, supabaseAnonKey);
+  }, []);
 
   const [mode, setMode] = useState<ScreenMode>("start");
   const [resultTab, setResultTab] = useState<ResultTab>("text");
@@ -116,6 +130,12 @@ export default function HomePage() {
 
   const [historyOpen, setHistoryOpen] = useState(false);
   const [historyItems, setHistoryItems] = useState<HistoryItem[]>([]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [authMode, setAuthMode] = useState<"login" | "register">("login");
+  const [authEmail, setAuthEmail] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authMessage, setAuthMessage] = useState("");
   
   const originalImageUrls =
     result?.files?.originalPdfImageUrls?.map((url) => `${apiBase}${url}`) ||
@@ -1056,42 +1076,209 @@ function resetOcrText() {
     };
   }, [sourcePreviews]);
 
-function loadHistoryItems() {
-  try {
-    const raw = localStorage.getItem("az-scanner-history");
-    const parsed = raw ? JSON.parse(raw) : [];
-    setHistoryItems(Array.isArray(parsed) ? parsed : []);
-  } catch {
+
+async function loadHistoryItems(userId = currentUser?.id) {
+  if (!supabase || !userId) {
     setHistoryItems([]);
+    return;
   }
+
+  const { data, error } = await supabase
+    .from("scan_history")
+    .select("id,title,page_count,ocr_text,original_pdf_path,text_pdf_path,txt_path,docx_path,created_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    setStatusText(error.message || "Could not load History.");
+    setHistoryItems([]);
+    return;
+  }
+
+  setHistoryItems(
+    (data || []).map((item: any) => ({
+      id: item.id,
+      title: item.title || "Untitled scan",
+      createdAt: item.created_at,
+      pageCount: item.page_count || 1,
+      text: item.ocr_text || "",
+      originalPdfPath: item.original_pdf_path || null,
+      textPdfPath: item.text_pdf_path || null,
+      txtPath: item.txt_path || null,
+      docxPath: item.docx_path || null,
+    }))
+  );
 }
 
-function saveHistoryItems(nextItems: HistoryItem[]) {
-  setHistoryItems(nextItems);
-  localStorage.setItem("az-scanner-history", JSON.stringify(nextItems));
+async function uploadHistoryBlob(path: string, blob: Blob) {
+  if (!supabase) throw new Error("Supabase is not configured.");
+
+  const { error } = await supabase.storage
+    .from("scan-history")
+    .upload(path, blob, {
+      cacheControl: "3600",
+      upsert: true,
+    });
+
+  if (error) throw error;
+
+  return path;
 }
 
-function saveCurrentScanToHistory() {
+async function createTextPdfBlob(filenameBase: string) {
+  const res = await fetch(`${apiBase}/export/text-pdf`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      text: pageTexts.join("\n\n") || editedText || "",
+      filename: cleanFilenameBase(filenameBase),
+    }),
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    throw new Error(data?.error || "Failed to create text PDF.");
+  }
+
+  return res.blob();
+}
+
+async function createTextDocxBlob(filenameBase: string) {
+  const res = await fetch(`${apiBase}/export/text-docx`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      text: pageTexts.join("\n\n") || editedText || "",
+      filename: cleanFilenameBase(filenameBase),
+    }),
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    throw new Error(data?.error || "Failed to create Word DOCX.");
+  }
+
+  return res.blob();
+}
+
+async function createOriginalPdfBlob(filenameBase: string) {
+  const originalUrls = result?.files?.originalPdfImageUrls || [];
+  const cleanedUrls = result?.files?.cleanedImageUrls || [];
+  const smartCleanColorUrls = result?.files?.smartCleanColorImageUrls || result?.files?.smartCleanImageUrls || [];
+  const smartCleanBwUrls = result?.files?.smartCleanBwImageUrls || result?.files?.smartCleanImageUrls || [];
+
+  if (!originalUrls.length) {
+    throw new Error("Original PDF source is not ready.");
+  }
+
+  const pages = originalUrls.map((originalUrl, index) => {
+    const edit = imageEdits[index] || DEFAULT_IMAGE_EDIT;
+    const cleanedUrl = cleanedUrls[index];
+    const smartCleanUrl = edit.smartCleanMode === "bw"
+      ? smartCleanBwUrls[index]
+      : smartCleanColorUrls[index];
+    const imageUrl = edit.pdfSource === "smartClean" && smartCleanUrl
+      ? smartCleanUrl
+      : edit.pdfSource === "cleaned" && cleanedUrl
+        ? cleanedUrl
+        : originalUrl;
+
+    return {
+      imageUrl,
+      rotate: edit.rotate,
+      brightness: edit.brightness,
+      zoom: edit.zoom,
+      panX: edit.panX,
+      panY: edit.panY,
+      crop: edit.crop,
+    };
+  });
+
+  const res = await fetch(`${apiBase}/export/original-pdf`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      pages,
+      filename: cleanFilenameBase(filenameBase),
+    }),
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    throw new Error(data?.error || "Failed to create original PDF.");
+  }
+
+  return res.blob();
+}
+
+async function saveCurrentScanToHistory() {
+  if (!supabase) {
+    setStatusText("Supabase is not configured.");
+    return;
+  }
+
+  if (!currentUser) {
+    setAuthMode("login");
+    setAuthMessage("Log in or create an account to save scan history.");
+    return;
+  }
+
   if (!result?.success) {
     setStatusText("No completed scan to save yet.");
     return;
   }
 
-  const now = new Date();
+  try {
+    setStatusText("Saving scan to private History...");
 
-  const nextItem: HistoryItem = {
-    id: `scan-${Date.now()}`,
-    title: `Scan ${now.toLocaleDateString()} ${now.toLocaleTimeString([], {
+    const now = new Date();
+    const title = `Scan ${now.toLocaleDateString()} ${now.toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
-    })}`,
-    createdAt: now.toISOString(),
-    pageCount: Math.max(originalImageUrls.length, sourcePreviews.length, pageTexts.length, 1),
-    text: pageTexts.join("\n\n") || editedText || originalOcrText || "",
-  };
+    })}`;
+    const filenameBase = cleanFilenameBase(title);
+    const scanId = `scan-${Date.now()}`;
+    const basePath = `${currentUser.id}/${scanId}`;
+    const text = pageTexts.join("\n\n") || editedText || originalOcrText || "";
 
-  saveHistoryItems([nextItem, ...historyItems]);
-  setStatusText("Scan saved to History.");
+    const txtBlob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const [originalPdfBlob, textPdfBlob, docxBlob] = await Promise.all([
+      createOriginalPdfBlob(filenameBase),
+      createTextPdfBlob(filenameBase),
+      createTextDocxBlob(filenameBase),
+    ]);
+
+    const [originalPdfPath, textPdfPath, txtPath, docxPath] = await Promise.all([
+      uploadHistoryBlob(`${basePath}/original.pdf`, originalPdfBlob),
+      uploadHistoryBlob(`${basePath}/text.pdf`, textPdfBlob),
+      uploadHistoryBlob(`${basePath}/text.txt`, txtBlob),
+      uploadHistoryBlob(`${basePath}/text.docx`, docxBlob),
+    ]);
+
+    const { error } = await supabase.from("scan_history").insert({
+      user_id: currentUser.id,
+      title,
+      page_count: Math.max(originalImageUrls.length, sourcePreviews.length, pageTexts.length, 1),
+      ocr_text: text,
+      original_pdf_path: originalPdfPath,
+      text_pdf_path: textPdfPath,
+      txt_path: txtPath,
+      docx_path: docxPath,
+    });
+
+    if (error) throw error;
+
+    await loadHistoryItems(currentUser.id);
+    setStatusText("Scan saved to private History.");
+  } catch (err: any) {
+    setStatusText(err?.message || "Could not save scan to History.");
+  }
 }
 
 function openHistoryItem(item: HistoryItem) {
@@ -1105,51 +1292,221 @@ function openHistoryItem(item: HistoryItem) {
   setStatusText(`Opened ${item.title}.`);
 }
 
-function renameHistoryItem(id: string) {
+async function renameHistoryItem(id: string) {
+  if (!supabase || !currentUser) return;
+
   const current = historyItems.find((item) => item.id === id);
   if (!current) return;
 
   const nextTitle = window.prompt("Rename scan", current.title)?.trim();
   if (!nextTitle) return;
 
-  saveHistoryItems(
-    historyItems.map((item) =>
-      item.id === id ? { ...item, title: nextTitle } : item
-    )
-  );
-}
+  const { error } = await supabase
+    .from("scan_history")
+    .update({ title: nextTitle })
+    .eq("id", id)
+    .eq("user_id", currentUser.id);
 
-function deleteHistoryItem(id: string) {
-  const confirmed = window.confirm("Delete this saved scan from History?");
-  if (!confirmed) return;
-
-  saveHistoryItems(historyItems.filter((item) => item.id !== id));
-}
-
-function downloadHistoryItem(item: HistoryItem) {
-  downloadTextFile(`${cleanFilenameBase(item.title)}.txt`, item.text || "");
-  setStatusText("History TXT downloaded.");
-}
-
-async function shareHistoryItem(item: HistoryItem) {
-  const shared = await shareTextFile(
-    `${cleanFilenameBase(item.title)}.txt`,
-    item.text || "",
-    item.title
-  );
-
-  if (shared) {
-    setStatusText("History item shared.");
+  if (error) {
+    setStatusText(error.message || "Rename failed.");
     return;
   }
 
-  downloadHistoryItem(item);
-  setStatusText("Sharing is not supported here. History TXT downloaded instead.");
+  await loadHistoryItems(currentUser.id);
+}
+
+async function deleteHistoryItem(id: string) {
+  if (!supabase || !currentUser) return;
+
+  const current = historyItems.find((item) => item.id === id);
+  if (!current) return;
+
+  const confirmed = window.confirm("Delete this saved scan from History?");
+  if (!confirmed) return;
+
+  const paths = [
+    current.originalPdfPath,
+    current.textPdfPath,
+    current.txtPath,
+    current.docxPath,
+  ].filter(Boolean) as string[];
+
+  if (paths.length) {
+    await supabase.storage.from("scan-history").remove(paths);
+  }
+
+  const { error } = await supabase
+    .from("scan_history")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", currentUser.id);
+
+  if (error) {
+    setStatusText(error.message || "Delete failed.");
+    return;
+  }
+
+  await loadHistoryItems(currentUser.id);
+}
+
+async function getHistoryBlob(path: string) {
+  if (!supabase) throw new Error("Supabase is not configured.");
+
+  const { data, error } = await supabase.storage
+    .from("scan-history")
+    .download(path);
+
+  if (error) throw error;
+  if (!data) throw new Error("File not found.");
+
+  return data;
+}
+
+async function downloadHistoryItem(item: HistoryItem) {
+  try {
+    if (item.originalPdfPath) {
+      const blob = await getHistoryBlob(item.originalPdfPath);
+      downloadBlobFile(`${cleanFilenameBase(item.title)}-original.pdf`, blob);
+      setStatusText("History Original PDF downloaded.");
+      return;
+    }
+
+    downloadTextFile(`${cleanFilenameBase(item.title)}.txt`, item.text || "");
+    setStatusText("History TXT downloaded.");
+  } catch (err: any) {
+    setStatusText(err?.message || "History download failed.");
+  }
+}
+
+async function shareHistoryItem(item: HistoryItem) {
+  try {
+    if (item.originalPdfPath) {
+      const blob = await getHistoryBlob(item.originalPdfPath);
+      const shared = await shareBlobFile(
+        `${cleanFilenameBase(item.title)}-original.pdf`,
+        blob,
+        item.title
+      );
+
+      if (shared) {
+        setStatusText("History item shared.");
+        return;
+      }
+
+      downloadBlobFile(`${cleanFilenameBase(item.title)}-original.pdf`, blob);
+      setStatusText("Sharing is not supported here. History PDF downloaded instead.");
+      return;
+    }
+
+    const shared = await shareTextFile(
+      `${cleanFilenameBase(item.title)}.txt`,
+      item.text || "",
+      item.title
+    );
+
+    if (shared) {
+      setStatusText("History item shared.");
+      return;
+    }
+
+    downloadHistoryItem(item);
+    setStatusText("Sharing is not supported here. History TXT downloaded instead.");
+  } catch (err: any) {
+    setStatusText(err?.message || "History share failed.");
+  }
+}
+
+async function submitAuthForm(event: React.FormEvent<HTMLFormElement>) {
+  event.preventDefault();
+
+  if (!supabase) {
+    setAuthMessage("Supabase is not configured.");
+    return;
+  }
+
+  setAuthLoading(true);
+  setAuthMessage("");
+
+  try {
+    if (authMode === "register") {
+      const { data, error } = await supabase.auth.signUp({
+        email: authEmail.trim(),
+        password: authPassword,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        await supabase.from("profiles").upsert({
+          id: data.user.id,
+          email: data.user.email,
+        });
+      }
+
+      setAuthMessage("Account created. Check your email if confirmation is required.");
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: authEmail.trim(),
+        password: authPassword,
+      });
+
+      if (error) throw error;
+
+      setAuthEmail("");
+      setAuthPassword("");
+      setAuthMessage("");
+    }
+  } catch (err: any) {
+    setAuthMessage(err?.message || "Authentication failed.");
+  } finally {
+    setAuthLoading(false);
+  }
+}
+
+async function signOutUser() {
+  if (!supabase) return;
+
+  await supabase.auth.signOut();
+  setCurrentUser(null);
+  setHistoryItems([]);
+  setStatusText("Logged out.");
 }
 
 useEffect(() => {
-  loadHistoryItems();
-}, []);
+  if (!supabase) return;
+
+  let mounted = true;
+
+  supabase.auth.getUser().then(({ data }) => {
+    if (!mounted) return;
+
+    setCurrentUser(data.user || null);
+
+    if (data.user) {
+      loadHistoryItems(data.user.id);
+    }
+  });
+
+  const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const user = session?.user || null;
+    setCurrentUser(user);
+
+    if (user) {
+      setAuthEmail("");
+      setAuthPassword("");
+      setAuthMessage("");
+      loadHistoryItems(user.id);
+    } else {
+      setHistoryItems([]);
+    }
+  });
+
+  return () => {
+    mounted = false;
+    listener.subscription.unsubscribe();
+  };
+}, [supabase]);
+
 
   return (
     <main className={`az-app ${selectedPlan === "pro" ? "az-app-pro" : ""}`}>
@@ -1378,6 +1735,9 @@ useEffect(() => {
                 <div>
                   <div className="az-history-kicker">PRIVATE FOLDER</div>
                   <h2 className="az-history-title">History</h2>
+                  <p className="az-history-user">
+                    {currentUser?.email || "Log in to save and access private scans."}
+                  </p>
                 </div>
 
                 <button
@@ -1390,53 +1750,134 @@ useEffect(() => {
                 </button>
               </div>
 
-              <button
-                type="button"
-                onClick={saveCurrentScanToHistory}
-                disabled={!result?.success}
-                className="az-history-save-button"
-              >
-                Save current scan
-              </button>
+              {currentUser ? (
+                <div className="az-history-account-row">
+                  <button
+                    type="button"
+                    onClick={signOutUser}
+                    className="az-history-secondary-button"
+                  >
+                    Logout
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={saveCurrentScanToHistory}
+                    disabled={!result?.success}
+                    className="az-history-save-button"
+                  >
+                    Save current scan
+                  </button>
+                </div>
+              ) : (
+                <form className="az-auth-card" onSubmit={submitAuthForm}>
+                  <div className="az-auth-tabs">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAuthMode("login");
+                        setAuthMessage("");
+                      }}
+                      className={authMode === "login" ? "az-auth-tab-active" : ""}
+                    >
+                      Login
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAuthMode("register");
+                        setAuthMessage("");
+                      }}
+                      className={authMode === "register" ? "az-auth-tab-active" : ""}
+                    >
+                      Register
+                    </button>
+                  </div>
+
+                  <input
+                    type="email"
+                    value={authEmail}
+                    onChange={(event) => setAuthEmail(event.target.value)}
+                    placeholder="Email"
+                    className="az-auth-input"
+                    autoComplete="email"
+                    required
+                  />
+
+                  <input
+                    type="password"
+                    value={authPassword}
+                    onChange={(event) => setAuthPassword(event.target.value)}
+                    placeholder="Password"
+                    className="az-auth-input"
+                    autoComplete={authMode === "login" ? "current-password" : "new-password"}
+                    required
+                    minLength={6}
+                  />
+
+                  {authMessage ? (
+                    <div className="az-auth-message">{authMessage}</div>
+                  ) : null}
+
+                  <button
+                    type="submit"
+                    disabled={authLoading}
+                    className="az-history-save-button"
+                  >
+                    {authLoading
+                      ? "Please wait..."
+                      : authMode === "login"
+                        ? "Login"
+                        : "Create account"}
+                  </button>
+                </form>
+              )}
 
               <div className="az-history-list">
-                {historyItems.length ? (
-                  historyItems.map((item) => (
-                    <div key={item.id} className="az-history-item">
-                      <button
-                        type="button"
-                        onClick={() => openHistoryItem(item)}
-                        className="az-history-main"
-                      >
-                        <span className="az-history-folder-icon">📁</span>
-                        <span>
-                          <strong>{item.title}</strong>
-                          <small>
-                            {item.pageCount} page{item.pageCount === 1 ? "" : "s"} •{" "}
-                            {new Date(item.createdAt).toLocaleDateString()}
-                          </small>
-                        </span>
-                      </button>
+                {currentUser ? (
+                  historyItems.length ? (
+                    historyItems.map((item) => (
+                      <div key={item.id} className="az-history-item">
+                        <button
+                          type="button"
+                          onClick={() => openHistoryItem(item)}
+                          className="az-history-main"
+                        >
+                          <span className="az-history-folder-icon">📁</span>
+                          <span>
+                            <strong>{item.title}</strong>
+                            <small>
+                              {item.pageCount} page{item.pageCount === 1 ? "" : "s"} •{" "}
+                              {new Date(item.createdAt).toLocaleDateString()}
+                            </small>
+                          </span>
+                        </button>
 
-                      <div className="az-history-actions">
-                        <button type="button" onClick={() => renameHistoryItem(item.id)}>
-                          Rename
-                        </button>
-                        <button type="button" onClick={() => downloadHistoryItem(item)}>
-                          Download
-                        </button>
-                        <button type="button" onClick={() => shareHistoryItem(item)}>
-                          Share
-                        </button>
-                        <button type="button" onClick={() => deleteHistoryItem(item.id)}>
-                          Delete
-                        </button>
+                        <div className="az-history-actions">
+                          <button type="button" onClick={() => renameHistoryItem(item.id)}>
+                            Rename
+                          </button>
+                          <button type="button" onClick={() => downloadHistoryItem(item)}>
+                            Download
+                          </button>
+                          <button type="button" onClick={() => shareHistoryItem(item)}>
+                            Share
+                          </button>
+                          <button type="button" onClick={() => deleteHistoryItem(item.id)}>
+                            Delete
+                          </button>
+                        </div>
                       </div>
+                    ))
+                  ) : (
+                    <div className="az-history-empty">
+                      No saved scans yet. Finish a scan, then tap “Save current scan”.
                     </div>
-                  ))
+                  )
                 ) : (
                   <div className="az-history-empty">
-                    No saved scans yet. Finish a scan, then tap “Save current scan”.
+                    Login or create an account to use private saved History.
                   </div>
                 )}
               </div>
