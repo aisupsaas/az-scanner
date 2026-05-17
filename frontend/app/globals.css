@@ -3649,7 +3649,7 @@ body {
   }
 }
 
-/* FINAL Drawer breathing room + auth/private minimalist pass */
+/* FINAL Drawer section layout + auth/private minimalist pass */
 .az-menu-drawer {
   padding: 18px 22px 22px !important;
 }
@@ -3665,7 +3665,6 @@ body {
   box-shadow: none !important;
 }
 
-/* Account login/register: smaller, calmer, more breathable */
 .az-auth-card {
   padding: 18px !important;
   display: grid !important;
@@ -3721,7 +3720,6 @@ body {
   font-size: 0.95rem !important;
 }
 
-/* Private Folder: compact summary */
 .az-private-summary-card {
   padding: 14px 0 10px !important;
   border: none !important;
@@ -3779,7 +3777,6 @@ body {
   color: rgba(75, 90, 112, 0.62) !important;
 }
 
-/* Private file list: thin, icon-based, no pill buttons */
 .az-private-file-list {
   margin-top: 6px !important;
   display: grid !important;
