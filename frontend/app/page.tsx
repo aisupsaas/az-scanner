@@ -1401,6 +1401,12 @@ async function deleteHistoryItem(id: string) {
   await Promise.all([loadHistoryItems(currentUser.id), loadStorageUsage(currentUser.id)]);
 }
 
+async function addPrivateProjectToShare(item: HistoryItem) {
+  setActiveDrawerSection("share");
+  setHistoryOpen(true);
+  setStatusText(`${item.title} is ready to add to Share Folder.`);
+}
+
 function downloadHistoryItem(item: HistoryItem) {
   const project = item.projectData || {
     version: 1,
