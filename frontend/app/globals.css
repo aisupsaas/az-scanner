@@ -3402,3 +3402,25 @@ body {
     height: 38px;
   }
 }
+
+
+/* FINAL: auth register profile fields */
+.az-auth-name-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.5rem;
+}
+
+.az-auth-helper {
+  margin: -0.1rem 0 0.1rem;
+  font-size: 0.74rem;
+  line-height: 1.35;
+  font-weight: 300;
+  color: #667085;
+}
+
+@media (max-width: 520px) {
+  .az-auth-name-grid {
+    grid-template-columns: 1fr;
+  }
+}

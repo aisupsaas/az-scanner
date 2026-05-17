@@ -143,6 +143,9 @@ export default function HomePage() {
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [authEmail, setAuthEmail] = useState("");
   const [authPassword, setAuthPassword] = useState("");
+  const [authFirstName, setAuthFirstName] = useState("");
+  const [authLastName, setAuthLastName] = useState("");
+  const [authPhone, setAuthPhone] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
   const [authMessage, setAuthMessage] = useState("");
   
@@ -1440,20 +1443,45 @@ async function submitAuthForm(event: React.FormEvent<HTMLFormElement>) {
 
   try {
     if (authMode === "register") {
+      const firstName = authFirstName.trim();
+      const lastName = authLastName.trim();
+      const phone = authPhone.trim();
+
+      if (!firstName || !lastName) {
+        setAuthMessage("First name and last name are required.");
+        setAuthLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email: authEmail.trim(),
         password: authPassword,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            phone: phone || null,
+          },
+        },
       });
 
       if (error) throw error;
 
       if (data.user) {
-        await supabase.from("profiles").upsert({
+        const { error: profileError } = await supabase.from("profiles").upsert({
           id: data.user.id,
           email: data.user.email,
+          first_name: firstName,
+          last_name: lastName,
+          phone: phone || null,
         });
+
+        if (profileError) throw profileError;
       }
 
+      setAuthFirstName("");
+      setAuthLastName("");
+      setAuthPhone("");
       setAuthMessage("Account created. Check your email if confirmation is required.");
     } else {
       const { error } = await supabase.auth.signInWithPassword({
@@ -1465,6 +1493,9 @@ async function submitAuthForm(event: React.FormEvent<HTMLFormElement>) {
 
       setAuthEmail("");
       setAuthPassword("");
+      setAuthFirstName("");
+      setAuthLastName("");
+      setAuthPhone("");
       setAuthMessage("");
     }
   } catch (err: any) {
@@ -1505,6 +1536,9 @@ useEffect(() => {
     if (user) {
       setAuthEmail("");
       setAuthPassword("");
+      setAuthFirstName("");
+      setAuthLastName("");
+      setAuthPhone("");
       setAuthMessage("");
       loadHistoryItems(user.id);
     } else {
@@ -1897,6 +1931,45 @@ useEffect(() => {
                           Register
                         </button>
                       </div>
+
+                      {authMode === "register" ? (
+                        <>
+                          <div className="az-auth-name-grid">
+                            <input
+                              type="text"
+                              value={authFirstName}
+                              onChange={(event) => setAuthFirstName(event.target.value)}
+                              placeholder="First name"
+                              className="az-auth-input"
+                              autoComplete="given-name"
+                              required
+                            />
+
+                            <input
+                              type="text"
+                              value={authLastName}
+                              onChange={(event) => setAuthLastName(event.target.value)}
+                              placeholder="Last name"
+                              className="az-auth-input"
+                              autoComplete="family-name"
+                              required
+                            />
+                          </div>
+
+                          <input
+                            type="tel"
+                            value={authPhone}
+                            onChange={(event) => setAuthPhone(event.target.value)}
+                            placeholder="Phone number (optional)"
+                            className="az-auth-input"
+                            autoComplete="tel"
+                          />
+
+                          <p className="az-auth-helper">
+                            Optional: add a phone number for future 2-step security and account recovery.
+                          </p>
+                        </>
+                      ) : null}
 
                       <input
                         type="email"
