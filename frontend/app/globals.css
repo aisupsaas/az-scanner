@@ -2918,3 +2918,203 @@ body {
 .az-compare-stage.az-compare-stage-split {
   margin-top: 0 !important;
 }
+
+/* HISTORY DRAWER - local/private folder UI */
+.az-line-nav-with-history {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+.az-history-nav-item span {
+  color: inherit;
+}
+
+.az-history-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(15, 23, 42, 0.2);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.az-history-drawer {
+  width: 35%;
+  min-width: 320px;
+  max-width: 440px;
+  height: 100dvh;
+  background: rgba(248, 252, 255, 0.96);
+  border-left: 1px solid rgba(83, 113, 172, 0.14);
+  box-shadow: -22px 0 60px rgba(42, 91, 150, 0.18);
+  padding: max(1rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  animation: azHistorySlideIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes azHistorySlideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0.7;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.az-history-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.az-history-kicker {
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  color: #6a7485;
+}
+
+.az-history-title {
+  margin: 0.34rem 0 0;
+  font-size: 1.45rem;
+  line-height: 1.05;
+  font-weight: 400;
+  color: #111111;
+}
+
+.az-history-close {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.75);
+  color: #526173;
+  font-size: 1.5rem;
+  line-height: 1;
+  box-shadow: 0 8px 18px rgba(42, 91, 150, 0.08);
+}
+
+.az-history-save-button {
+  min-height: 42px;
+  border: none;
+  border-radius: 999px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.az-history-save-button:disabled {
+  opacity: 0.38;
+}
+
+.az-history-list {
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  gap: 0.75rem;
+  padding-right: 0.15rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.az-history-item {
+  border-radius: 16px;
+  border: 1px solid rgba(83, 113, 172, 0.12);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 12px 26px rgba(42, 91, 150, 0.08);
+  padding: 0.75rem;
+}
+
+.az-history-main {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.65rem;
+  text-align: left;
+  align-items: center;
+}
+
+.az-history-folder-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.az-history-main strong {
+  display: block;
+  font-size: 0.95rem;
+  line-height: 1.25;
+  font-weight: 400;
+  color: #1f2937;
+}
+
+.az-history-main small {
+  display: block;
+  margin-top: 0.18rem;
+  font-size: 0.76rem;
+  line-height: 1.25;
+  color: #6b7280;
+}
+
+.az-history-actions {
+  margin-top: 0.65rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+}
+
+.az-history-actions button {
+  min-height: 30px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(240, 247, 255, 0.95);
+  color: #4b5d78;
+  font-size: 0.74rem;
+}
+
+.az-history-actions button:last-child {
+  color: #c24141;
+  background: rgba(255, 241, 241, 0.95);
+}
+
+.az-history-empty {
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px dashed rgba(83, 113, 172, 0.18);
+  padding: 1rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.az-app-pro .az-history-drawer {
+  background: rgba(240, 252, 248, 0.96);
+  border-left-color: rgba(43, 134, 115, 0.16);
+  box-shadow: -22px 0 60px rgba(20, 82, 68, 0.18);
+}
+
+.az-app-pro .az-history-save-button {
+  background: rgba(35, 92, 81, 0.94);
+}
+
+@media (max-width: 720px) {
+  .az-history-drawer {
+    width: 86%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .az-line-nav-with-history {
+    gap: 0 !important;
+  }
+
+  .az-line-nav-with-history .az-line-nav-item {
+    font-size: 0.78rem;
+  }
+}

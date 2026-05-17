@@ -65,6 +65,14 @@ type ExportAction = {
   run: (filenameBase: string) => void | Promise<void>;
 };
 
+type HistoryItem = {
+  id: string;
+  title: string;
+  createdAt: string;
+  pageCount: number;
+  text: string;
+};
+
 export default function HomePage() {
   const apiBase = useMemo(
     () => process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000",
@@ -105,6 +113,9 @@ export default function HomePage() {
   
   const [exportAction, setExportAction] = useState<ExportAction | null>(null);
   const [exportFilename, setExportFilename] = useState("az-scanner-document");
+
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyItems, setHistoryItems] = useState<HistoryItem[]>([]);
   
   const originalImageUrls =
     result?.files?.originalPdfImageUrls?.map((url) => `${apiBase}${url}`) ||
@@ -1045,6 +1056,101 @@ function resetOcrText() {
     };
   }, [sourcePreviews]);
 
+function loadHistoryItems() {
+  try {
+    const raw = localStorage.getItem("az-scanner-history");
+    const parsed = raw ? JSON.parse(raw) : [];
+    setHistoryItems(Array.isArray(parsed) ? parsed : []);
+  } catch {
+    setHistoryItems([]);
+  }
+}
+
+function saveHistoryItems(nextItems: HistoryItem[]) {
+  setHistoryItems(nextItems);
+  localStorage.setItem("az-scanner-history", JSON.stringify(nextItems));
+}
+
+function saveCurrentScanToHistory() {
+  if (!result?.success) {
+    setStatusText("No completed scan to save yet.");
+    return;
+  }
+
+  const now = new Date();
+
+  const nextItem: HistoryItem = {
+    id: `scan-${Date.now()}`,
+    title: `Scan ${now.toLocaleDateString()} ${now.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    })}`,
+    createdAt: now.toISOString(),
+    pageCount: Math.max(originalImageUrls.length, sourcePreviews.length, pageTexts.length, 1),
+    text: pageTexts.join("\n\n") || editedText || originalOcrText || "",
+  };
+
+  saveHistoryItems([nextItem, ...historyItems]);
+  setStatusText("Scan saved to History.");
+}
+
+function openHistoryItem(item: HistoryItem) {
+  setPageTexts(splitTextIntoPages(item.text, Math.max(item.pageCount, 1)));
+  setEditedText(item.text);
+  setOriginalOcrText(item.text);
+  setActivePageIndex(0);
+  setResultTab("text");
+  setMode("result");
+  setHistoryOpen(false);
+  setStatusText(`Opened ${item.title}.`);
+}
+
+function renameHistoryItem(id: string) {
+  const current = historyItems.find((item) => item.id === id);
+  if (!current) return;
+
+  const nextTitle = window.prompt("Rename scan", current.title)?.trim();
+  if (!nextTitle) return;
+
+  saveHistoryItems(
+    historyItems.map((item) =>
+      item.id === id ? { ...item, title: nextTitle } : item
+    )
+  );
+}
+
+function deleteHistoryItem(id: string) {
+  const confirmed = window.confirm("Delete this saved scan from History?");
+  if (!confirmed) return;
+
+  saveHistoryItems(historyItems.filter((item) => item.id !== id));
+}
+
+function downloadHistoryItem(item: HistoryItem) {
+  downloadTextFile(`${cleanFilenameBase(item.title)}.txt`, item.text || "");
+  setStatusText("History TXT downloaded.");
+}
+
+async function shareHistoryItem(item: HistoryItem) {
+  const shared = await shareTextFile(
+    `${cleanFilenameBase(item.title)}.txt`,
+    item.text || "",
+    item.title
+  );
+
+  if (shared) {
+    setStatusText("History item shared.");
+    return;
+  }
+
+  downloadHistoryItem(item);
+  setStatusText("Sharing is not supported here. History TXT downloaded instead.");
+}
+
+useEffect(() => {
+  loadHistoryItems();
+}, []);
+
   return (
     <main className={`az-app ${selectedPlan === "pro" ? "az-app-pro" : ""}`}>
       <div className="az-shell">
@@ -1204,6 +1310,7 @@ function resetOcrText() {
           onGoToStart={() => setMode("start")}
           onGoToReview={() => files.length && setMode("review")}
           onGoToResult={() => result?.success && setMode("result")}
+          onOpenHistory={() => setHistoryOpen(true)}
          
         />
       </div>
@@ -1257,6 +1364,83 @@ function resetOcrText() {
                 </button>
               </div>
             </div>
+          </div>
+        ) : null}
+
+        {historyOpen ? (
+          <div className="az-history-backdrop" onClick={() => setHistoryOpen(false)}>
+            <aside
+              className="az-history-drawer"
+              onClick={(event) => event.stopPropagation()}
+              aria-label="History drawer"
+            >
+              <div className="az-history-head">
+                <div>
+                  <div className="az-history-kicker">PRIVATE FOLDER</div>
+                  <h2 className="az-history-title">History</h2>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setHistoryOpen(false)}
+                  className="az-history-close"
+                  aria-label="Close history"
+                >
+                  ×
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={saveCurrentScanToHistory}
+                disabled={!result?.success}
+                className="az-history-save-button"
+              >
+                Save current scan
+              </button>
+
+              <div className="az-history-list">
+                {historyItems.length ? (
+                  historyItems.map((item) => (
+                    <div key={item.id} className="az-history-item">
+                      <button
+                        type="button"
+                        onClick={() => openHistoryItem(item)}
+                        className="az-history-main"
+                      >
+                        <span className="az-history-folder-icon">📁</span>
+                        <span>
+                          <strong>{item.title}</strong>
+                          <small>
+                            {item.pageCount} page{item.pageCount === 1 ? "" : "s"} •{" "}
+                            {new Date(item.createdAt).toLocaleDateString()}
+                          </small>
+                        </span>
+                      </button>
+
+                      <div className="az-history-actions">
+                        <button type="button" onClick={() => renameHistoryItem(item.id)}>
+                          Rename
+                        </button>
+                        <button type="button" onClick={() => downloadHistoryItem(item)}>
+                          Download
+                        </button>
+                        <button type="button" onClick={() => shareHistoryItem(item)}>
+                          Share
+                        </button>
+                        <button type="button" onClick={() => deleteHistoryItem(item.id)}>
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="az-history-empty">
+                    No saved scans yet. Finish a scan, then tap “Save current scan”.
+                  </div>
+                )}
+              </div>
+            </aside>
           </div>
         ) : null}
 

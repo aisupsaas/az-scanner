@@ -15,6 +15,7 @@ type BottomBarProps = {
   onGoToStart: () => void;
   onGoToReview: () => void;
   onGoToResult: () => void;
+  onOpenHistory: () => void;
 };
 
 export default function BottomBar({
@@ -30,6 +31,7 @@ export default function BottomBar({
   onGoToStart,
   onGoToReview,
   onGoToResult,
+  onOpenHistory,
 }: BottomBarProps) {
   return (
     <footer className="az-bottom-area">
@@ -78,7 +80,7 @@ export default function BottomBar({
         ) : null}
       </div>
 
-      <nav className="az-line-nav" aria-label="Workflow navigation">
+      <nav className="az-line-nav az-line-nav-with-history" aria-label="Workflow navigation">
         <button
           type="button"
           onClick={onGoToStart}
@@ -103,6 +105,14 @@ export default function BottomBar({
           className={["az-line-nav-item", mode === "result" ? "az-line-nav-item-active" : ""].join(" ")}
         >
           <span>Result</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={onOpenHistory}
+          className="az-line-nav-item az-history-nav-item"
+        >
+          <span>History</span>
         </button>
       </nav>
     </footer>
