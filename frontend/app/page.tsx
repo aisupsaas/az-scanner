@@ -78,6 +78,14 @@ type HistoryItem = {
   docxPath?: string | null;
 };
 
+type DrawerSection =
+  | "account"
+  | "private"
+  | "share"
+  | "sharedWithMe"
+  | "settings"
+  | "help";
+
 export default function HomePage() {
   const apiBase = useMemo(
     () => process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000",
@@ -129,6 +137,7 @@ export default function HomePage() {
   const [exportFilename, setExportFilename] = useState("az-scanner-document");
 
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [activeDrawerSection, setActiveDrawerSection] = useState<DrawerSection>("private");
   const [historyItems, setHistoryItems] = useState<HistoryItem[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
@@ -177,6 +186,8 @@ const smartCleanImageUrls =
 
   const topTitle =
     mode === "start" ? "Start" : mode === "review" ? "Review" : "Result";
+
+  const sharedWithMeUserCount = 0;
 
   function revokeSourcePreviews() {
     setSourcePreviews((prev) => {
@@ -1511,8 +1522,14 @@ useEffect(() => {
   return (
     <main className={`az-app ${selectedPlan === "pro" ? "az-app-pro" : ""}`}>
       <div className="az-shell">
-       <header className="az-topbar">
-          <div>
+       <header className="az-topbar az-app-topbar">
+          <img
+            src="/az-logo.png"
+            alt="AZ Scanner"
+            className="az-topbar-logo az-topbar-logo-left"
+          />
+
+          <div className="az-topbar-copy">
             <div className="az-topbar-title">{topTitle}</div>
 
             <div
@@ -1530,11 +1547,36 @@ useEffect(() => {
             </div>
           </div>
 
-          <img
-            src="/az-logo.png"
-            alt="AZ Scanner"
-            className="az-topbar-logo"
-          />
+          <button
+            type="button"
+            className="az-user-menu-button"
+            onClick={() => {
+              setActiveDrawerSection("account");
+              setHistoryOpen(true);
+            }}
+            aria-label="Open account menu"
+          >
+            <svg
+              width="25"
+              height="25"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.9" />
+              <path
+                d="M4.8 20C5.6 16.4 8.35 14.4 12 14.4C15.65 14.4 18.4 16.4 19.2 20"
+                stroke="currentColor"
+                strokeWidth="1.9"
+                strokeLinecap="round"
+              />
+            </svg>
+
+            {sharedWithMeUserCount > 0 ? (
+              <span className="az-user-menu-badge">{sharedWithMeUserCount}</span>
+            ) : null}
+          </button>
         </header>
         <section className="az-content">
           {mode === "start" ? (
@@ -1667,7 +1709,10 @@ useEffect(() => {
           onGoToStart={() => setMode("start")}
           onGoToReview={() => files.length && setMode("review")}
           onGoToResult={() => result?.success && setMode("result")}
-          onOpenHistory={() => setHistoryOpen(true)}
+          onOpenHistory={() => {
+            setActiveDrawerSection("private");
+            setHistoryOpen(true);
+          }}
          
         />
       </div>
@@ -1727,16 +1772,16 @@ useEffect(() => {
         {historyOpen ? (
           <div className="az-history-backdrop" onClick={() => setHistoryOpen(false)}>
             <aside
-              className="az-history-drawer"
+              className="az-history-drawer az-menu-drawer"
               onClick={(event) => event.stopPropagation()}
-              aria-label="History drawer"
+              aria-label="Account and folders drawer"
             >
               <div className="az-history-head">
                 <div>
-                  <div className="az-history-kicker">PRIVATE FOLDER</div>
-                  <h2 className="az-history-title">History</h2>
+                  <div className="az-history-kicker">AZ SCANNER</div>
+                  <h2 className="az-history-title">Menu</h2>
                   <p className="az-history-user">
-                    {currentUser?.email || "Log in to save and access private scans."}
+                    {currentUser?.email || "Login to use cloud folders."}
                   </p>
                 </div>
 
@@ -1744,142 +1789,274 @@ useEffect(() => {
                   type="button"
                   onClick={() => setHistoryOpen(false)}
                   className="az-history-close"
-                  aria-label="Close history"
+                  aria-label="Close menu"
                 >
                   ×
                 </button>
               </div>
 
-              {currentUser ? (
-                <div className="az-history-account-row">
-                  <button
-                    type="button"
-                    onClick={signOutUser}
-                    className="az-history-secondary-button"
-                  >
-                    Logout
-                  </button>
+              <div className="az-drawer-menu-list" aria-label="Menu sections">
+                <button
+                  type="button"
+                  onClick={() => setActiveDrawerSection("account")}
+                  className={activeDrawerSection === "account" ? "az-drawer-menu-active" : ""}
+                >
+                  <span>Account</span>
+                </button>
 
-                  <button
-                    type="button"
-                    onClick={saveCurrentScanToHistory}
-                    disabled={!result?.success}
-                    className="az-history-save-button"
-                  >
-                    Save current scan
-                  </button>
-                </div>
-              ) : (
-                <form className="az-auth-card" onSubmit={submitAuthForm}>
-                  <div className="az-auth-tabs">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setAuthMode("login");
-                        setAuthMessage("");
-                      }}
-                      className={authMode === "login" ? "az-auth-tab-active" : ""}
-                    >
-                      Login
-                    </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveDrawerSection("private")}
+                  className={activeDrawerSection === "private" ? "az-drawer-menu-active" : ""}
+                >
+                  <span>Private Folder</span>
+                </button>
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setAuthMode("register");
-                        setAuthMessage("");
-                      }}
-                      className={authMode === "register" ? "az-auth-tab-active" : ""}
-                    >
-                      Register
-                    </button>
-                  </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveDrawerSection("share")}
+                  className={activeDrawerSection === "share" ? "az-drawer-menu-active" : ""}
+                >
+                  <span>Share Folder</span>
+                </button>
 
-                  <input
-                    type="email"
-                    value={authEmail}
-                    onChange={(event) => setAuthEmail(event.target.value)}
-                    placeholder="Email"
-                    className="az-auth-input"
-                    autoComplete="email"
-                    required
-                  />
-
-                  <input
-                    type="password"
-                    value={authPassword}
-                    onChange={(event) => setAuthPassword(event.target.value)}
-                    placeholder="Password"
-                    className="az-auth-input"
-                    autoComplete={authMode === "login" ? "current-password" : "new-password"}
-                    required
-                    minLength={6}
-                  />
-
-                  {authMessage ? (
-                    <div className="az-auth-message">{authMessage}</div>
+                <button
+                  type="button"
+                  onClick={() => setActiveDrawerSection("sharedWithMe")}
+                  className={activeDrawerSection === "sharedWithMe" ? "az-drawer-menu-active" : ""}
+                >
+                  <span>Shared With Me</span>
+                  {sharedWithMeUserCount > 0 ? (
+                    <strong>{sharedWithMeUserCount}</strong>
                   ) : null}
+                </button>
 
-                  <button
-                    type="submit"
-                    disabled={authLoading}
-                    className="az-history-save-button"
-                  >
-                    {authLoading
-                      ? "Please wait..."
-                      : authMode === "login"
-                        ? "Login"
-                        : "Create account"}
-                  </button>
-                </form>
-              )}
+                <button
+                  type="button"
+                  onClick={() => setActiveDrawerSection("settings")}
+                  className={activeDrawerSection === "settings" ? "az-drawer-menu-active" : ""}
+                >
+                  <span>Settings</span>
+                </button>
 
-              <div className="az-history-list">
+                <button
+                  type="button"
+                  onClick={() => setActiveDrawerSection("help")}
+                  className={activeDrawerSection === "help" ? "az-drawer-menu-active" : ""}
+                >
+                  <span>Help & Reports</span>
+                </button>
+
                 {currentUser ? (
-                  historyItems.length ? (
-                    historyItems.map((item) => (
-                      <div key={item.id} className="az-history-item">
+                  <button type="button" onClick={signOutUser} className="az-drawer-menu-danger">
+                    <span>Log out</span>
+                  </button>
+                ) : null}
+              </div>
+
+              <div className="az-drawer-section">
+                {activeDrawerSection === "account" ? (
+                  currentUser ? (
+                    <div className="az-drawer-card">
+                      <div className="az-drawer-card-label">ACCOUNT</div>
+                      <h3>{currentUser.email}</h3>
+                      <p>
+                        Profile, name, password, secondary emails, and sub-accounts will live here.
+                      </p>
+
+                      <button
+                        type="button"
+                        onClick={signOutUser}
+                        className="az-history-secondary-button"
+                      >
+                        Log out
+                      </button>
+                    </div>
+                  ) : (
+                    <form className="az-auth-card" onSubmit={submitAuthForm}>
+                      <div className="az-auth-tabs">
                         <button
                           type="button"
-                          onClick={() => openHistoryItem(item)}
-                          className="az-history-main"
+                          onClick={() => {
+                            setAuthMode("login");
+                            setAuthMessage("");
+                          }}
+                          className={authMode === "login" ? "az-auth-tab-active" : ""}
                         >
-                          <span className="az-history-folder-icon">📁</span>
-                          <span>
-                            <strong>{item.title}</strong>
-                            <small>
-                              {item.pageCount} page{item.pageCount === 1 ? "" : "s"} •{" "}
-                              {new Date(item.createdAt).toLocaleDateString()}
-                            </small>
-                          </span>
+                          Login
                         </button>
 
-                        <div className="az-history-actions">
-                          <button type="button" onClick={() => renameHistoryItem(item.id)}>
-                            Rename
-                          </button>
-                          <button type="button" onClick={() => downloadHistoryItem(item)}>
-                            Download
-                          </button>
-                          <button type="button" onClick={() => shareHistoryItem(item)}>
-                            Share
-                          </button>
-                          <button type="button" onClick={() => deleteHistoryItem(item.id)}>
-                            Delete
-                          </button>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAuthMode("register");
+                            setAuthMessage("");
+                          }}
+                          className={authMode === "register" ? "az-auth-tab-active" : ""}
+                        >
+                          Register
+                        </button>
                       </div>
-                    ))
-                  ) : (
-                    <div className="az-history-empty">
-                      No saved scans yet. Finish a scan, then tap “Save current scan”.
-                    </div>
+
+                      <input
+                        type="email"
+                        value={authEmail}
+                        onChange={(event) => setAuthEmail(event.target.value)}
+                        placeholder="Email"
+                        className="az-auth-input"
+                        autoComplete="email"
+                        required
+                      />
+
+                      <input
+                        type="password"
+                        value={authPassword}
+                        onChange={(event) => setAuthPassword(event.target.value)}
+                        placeholder="Password"
+                        className="az-auth-input"
+                        autoComplete={authMode === "login" ? "current-password" : "new-password"}
+                        required
+                        minLength={6}
+                      />
+
+                      {authMessage ? (
+                        <div className="az-auth-message">{authMessage}</div>
+                      ) : null}
+
+                      <button
+                        type="submit"
+                        disabled={authLoading}
+                        className="az-history-save-button"
+                      >
+                        {authLoading
+                          ? "Please wait..."
+                          : authMode === "login"
+                            ? "Login"
+                            : "Create account"}
+                      </button>
+                    </form>
                   )
-                ) : (
-                  <div className="az-history-empty">
-                    Login or create an account to use private saved History.
+                ) : null}
+
+                {activeDrawerSection === "private" ? (
+                  <>
+                    <div className="az-drawer-card">
+                      <div className="az-drawer-card-label">PRIVATE FOLDER</div>
+                      <h3>Private Folder</h3>
+                      <p>
+                        Your private cloud folder. Current scans can be saved here and later opened, renamed,
+                        downloaded, shared, or deleted.
+                      </p>
+
+                      <button
+                        type="button"
+                        onClick={saveCurrentScanToHistory}
+                        disabled={!currentUser || !result?.success}
+                        className="az-history-save-button"
+                      >
+                        Save current scan
+                      </button>
+                    </div>
+
+                    <div className="az-history-list">
+                      {currentUser ? (
+                        historyItems.length ? (
+                          historyItems.map((item) => (
+                            <div key={item.id} className="az-history-item">
+                              <button
+                                type="button"
+                                onClick={() => openHistoryItem(item)}
+                                className="az-history-main"
+                              >
+                                <span className="az-history-folder-icon">📁</span>
+                                <span>
+                                  <strong>{item.title}</strong>
+                                  <small>
+                                    {item.pageCount} page{item.pageCount === 1 ? "" : "s"} •{" "}
+                                    {new Date(item.createdAt).toLocaleDateString()}
+                                  </small>
+                                </span>
+                              </button>
+
+                              <div className="az-history-actions">
+                                <button type="button" onClick={() => renameHistoryItem(item.id)}>
+                                  Rename
+                                </button>
+                                <button type="button" onClick={() => downloadHistoryItem(item)}>
+                                  Download
+                                </button>
+                                <button type="button" onClick={() => shareHistoryItem(item)}>
+                                  Share
+                                </button>
+                                <button type="button" onClick={() => deleteHistoryItem(item.id)}>
+                                  Delete
+                                </button>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="az-history-empty">
+                            No private files yet. Finish a scan, then tap “Save current scan”.
+                          </div>
+                        )
+                      ) : (
+                        <div className="az-history-empty">
+                          Login or create an account to use Private Folder.
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : null}
+
+                {activeDrawerSection === "share" ? (
+                  <div className="az-drawer-card">
+                    <div className="az-drawer-card-label">SHARE FOLDER</div>
+                    <h3>Share Folder</h3>
+                    <p>
+                      Manually add files here when you want selected registered users to access them.
+                      This folder will use a 2-step warning before any file becomes shareable.
+                    </p>
+                    <div className="az-drawer-note">
+                      Coming next: add users by email, check/uncheck file visibility per user,
+                      and manage download/print/re-share permissions.
+                    </div>
                   </div>
-                )}
+                ) : null}
+
+                {activeDrawerSection === "sharedWithMe" ? (
+                  <div className="az-drawer-card">
+                    <div className="az-drawer-card-label">SHARED WITH ME</div>
+                    <h3>Shared With Me</h3>
+                    <p>
+                      Files other AZ Scanner users shared with you will appear here.
+                      The badge on the user icon counts unique users who shared files with you.
+                    </p>
+                    <div className="az-drawer-note">
+                      No shared files yet.
+                    </div>
+                  </div>
+                ) : null}
+
+                {activeDrawerSection === "settings" ? (
+                  <div className="az-drawer-card">
+                    <div className="az-drawer-card-label">SETTINGS</div>
+                    <h3>Settings</h3>
+                    <p>
+                      App preferences, storage limits, default export choices, and scanner behavior will live here.
+                    </p>
+                  </div>
+                ) : null}
+
+                {activeDrawerSection === "help" ? (
+                  <div className="az-drawer-card">
+                    <div className="az-drawer-card-label">HELP & REPORTS</div>
+                    <h3>Help & Reports</h3>
+                    <p>
+                      Contact admin, get account help, payment/billing support, and report bugs, crashes,
+                      app issues, scams, or system misbehavior.
+                    </p>
+                  </div>
+                ) : null}
               </div>
             </aside>
           </div>

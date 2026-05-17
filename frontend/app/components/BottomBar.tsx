@@ -112,7 +112,7 @@ export default function BottomBar({
           onClick={onOpenHistory}
           className="az-line-nav-item az-history-nav-item"
         >
-          <span>History</span>
+          <span>Private</span>
         </button>
       </nav>
     </footer>

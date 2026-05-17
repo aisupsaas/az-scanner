@@ -3212,3 +3212,193 @@ body {
 .az-app-pro .az-auth-tabs {
   background: rgba(238, 252, 247, 0.94);
 }
+
+
+/* FINAL account menu + Private bottom item */
+.az-app-topbar {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) auto !important;
+  align-items: start !important;
+  gap: 0.72rem !important;
+  padding: max(0.55rem, env(safe-area-inset-top)) 1rem 0.26rem !important;
+  padding-right: 1rem !important;
+}
+
+.az-app-topbar .az-topbar-logo-left {
+  position: static !important;
+  width: 42px !important;
+  height: auto !important;
+  margin: 0.02rem 0 0 !important;
+  flex: 0 0 auto !important;
+}
+
+.az-topbar-copy {
+  min-width: 0 !important;
+}
+
+.az-user-menu-button {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #344154;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 10px 22px rgba(42, 91, 150, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+
+.az-user-menu-button:active {
+  transform: scale(0.94);
+}
+
+.az-user-menu-badge {
+  position: absolute;
+  top: -0.2rem;
+  right: -0.22rem;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.26rem;
+  border-radius: 999px;
+  background: #d64545;
+  color: #ffffff;
+  font-size: 0.68rem;
+  line-height: 1.15rem;
+  text-align: center;
+  box-shadow: 0 6px 14px rgba(214, 69, 69, 0.28);
+}
+
+.az-history-nav-item span {
+  color: inherit;
+}
+
+.az-menu-drawer {
+  gap: 0.75rem !important;
+}
+
+.az-drawer-menu-list {
+  display: grid;
+  gap: 0.42rem;
+}
+
+.az-drawer-menu-list button {
+  min-height: 40px;
+  border: none;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.62);
+  color: #445164;
+  padding: 0 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.az-drawer-menu-list button strong {
+  min-width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  background: #d64545;
+  color: #ffffff;
+  font-size: 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.az-drawer-menu-list .az-drawer-menu-active {
+  background: #111111;
+  color: #ffffff;
+}
+
+.az-drawer-menu-list .az-drawer-menu-danger {
+  color: #c24141;
+  background: rgba(255, 241, 241, 0.92);
+}
+
+.az-drawer-section {
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  gap: 0.75rem;
+  padding-right: 0.15rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.az-drawer-card {
+  border-radius: 16px;
+  border: 1px solid rgba(83, 113, 172, 0.12);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 12px 26px rgba(42, 91, 150, 0.08);
+  padding: 0.85rem;
+}
+
+.az-drawer-card-label {
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
+  color: #6a7485;
+  margin-bottom: 0.35rem;
+}
+
+.az-drawer-card h3 {
+  margin: 0;
+  font-size: 1.04rem;
+  line-height: 1.2;
+  font-weight: 400;
+  color: #111111;
+}
+
+.az-drawer-card p {
+  margin: 0.45rem 0 0.75rem;
+  font-size: 0.84rem;
+  line-height: 1.42;
+  color: #607086;
+  font-weight: 300;
+}
+
+.az-drawer-note {
+  border-radius: 12px;
+  background: rgba(240, 247, 255, 0.95);
+  color: #4b5d78;
+  padding: 0.7rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.az-app-pro .az-user-menu-button,
+.az-app-pro .az-drawer-menu-list button,
+.az-app-pro .az-drawer-card {
+  color: #244d45;
+}
+
+.az-app-pro .az-drawer-menu-list .az-drawer-menu-active {
+  background: rgba(35, 92, 81, 0.94);
+  color: #ffffff;
+}
+
+.az-app-pro .az-drawer-note {
+  background: rgba(238, 252, 247, 0.94);
+}
+
+@media (max-width: 720px) {
+  .az-app-topbar {
+    grid-template-columns: auto minmax(0, 1fr) auto !important;
+    gap: 0.56rem !important;
+  }
+
+  .az-app-topbar .az-topbar-logo-left {
+    width: 38px !important;
+  }
+
+  .az-user-menu-button {
+    width: 38px;
+    height: 38px;
+  }
+}
