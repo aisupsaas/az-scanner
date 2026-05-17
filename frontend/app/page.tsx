@@ -72,10 +72,15 @@ type HistoryItem = {
   createdAt: string;
   pageCount: number;
   text: string;
-  originalPdfPath?: string | null;
-  textPdfPath?: string | null;
-  txtPath?: string | null;
-  docxPath?: string | null;
+  projectData?: any | null;
+  storageBytes?: number;
+};
+
+type StorageUsage = {
+  privateUsedBytes: number;
+  privateLimitBytes: number;
+  shareUsedBytes: number;
+  shareLimitBytes: number;
 };
 
 type DrawerSection =
@@ -139,6 +144,12 @@ export default function HomePage() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [activeDrawerSection, setActiveDrawerSection] = useState<DrawerSection>("private");
   const [historyItems, setHistoryItems] = useState<HistoryItem[]>([]);
+  const [storageUsage, setStorageUsage] = useState<StorageUsage>({
+    privateUsedBytes: 0,
+    privateLimitBytes: 1073741824,
+    shareUsedBytes: 0,
+    shareLimitBytes: 1073741824,
+  });
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [authEmail, setAuthEmail] = useState("");
@@ -1091,6 +1102,85 @@ function resetOcrText() {
   }, [sourcePreviews]);
 
 
+
+function estimateProjectBytes(projectData: any) {
+  try {
+    return new Blob([JSON.stringify(projectData || {})], {
+      type: "application/json",
+    }).size;
+  } catch {
+    return 0;
+  }
+}
+
+function formatBytes(bytes: number) {
+  const safe = Math.max(0, Number(bytes || 0));
+
+  if (safe >= 1073741824) return `${(safe / 1073741824).toFixed(2)} GB`;
+  if (safe >= 1048576) return `${(safe / 1048576).toFixed(1)} MB`;
+  if (safe >= 1024) return `${(safe / 1024).toFixed(1)} KB`;
+
+  return `${safe} B`;
+}
+
+function privateStoragePercent() {
+  if (!storageUsage.privateLimitBytes) return 0;
+
+  return Math.min(
+    100,
+    Math.round((storageUsage.privateUsedBytes / storageUsage.privateLimitBytes) * 100)
+  );
+}
+
+async function ensureUserStorage(userId: string) {
+  if (!supabase) return null;
+
+  const { data: existing, error: readError } = await supabase
+    .from("user_storage")
+    .select("private_used_bytes,private_limit_bytes,share_used_bytes,share_limit_bytes")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (readError) throw readError;
+
+  if (existing) return existing;
+
+  const { data, error } = await supabase
+    .from("user_storage")
+    .insert({ user_id: userId })
+    .select("private_used_bytes,private_limit_bytes,share_used_bytes,share_limit_bytes")
+    .single();
+
+  if (error) throw error;
+
+  return data;
+}
+
+async function loadStorageUsage(userId = currentUser?.id) {
+  if (!supabase || !userId) {
+    setStorageUsage({
+      privateUsedBytes: 0,
+      privateLimitBytes: 1073741824,
+      shareUsedBytes: 0,
+      shareLimitBytes: 1073741824,
+    });
+    return;
+  }
+
+  try {
+    const data = await ensureUserStorage(userId);
+
+    setStorageUsage({
+      privateUsedBytes: Number(data?.private_used_bytes || 0),
+      privateLimitBytes: Number(data?.private_limit_bytes || 1073741824),
+      shareUsedBytes: Number(data?.share_used_bytes || 0),
+      shareLimitBytes: Number(data?.share_limit_bytes || 1073741824),
+    });
+  } catch (err: any) {
+    setStatusText(err?.message || "Could not load storage usage.");
+  }
+}
+
 async function loadHistoryItems(userId = currentUser?.id) {
   if (!supabase || !userId) {
     setHistoryItems([]);
@@ -1098,137 +1188,56 @@ async function loadHistoryItems(userId = currentUser?.id) {
   }
 
   const { data, error } = await supabase
-    .from("scan_history")
-    .select("id,title,page_count,ocr_text,original_pdf_path,text_pdf_path,txt_path,docx_path,created_at")
-    .eq("user_id", userId)
+    .from("private_projects")
+    .select("id,title,project_data,storage_bytes,created_at")
+    .eq("owner_id", userId)
     .order("created_at", { ascending: false });
 
   if (error) {
-    setStatusText(error.message || "Could not load History.");
+    setStatusText(error.message || "Could not load Private Folder.");
     setHistoryItems([]);
     return;
   }
 
   setHistoryItems(
-    (data || []).map((item: any) => ({
-      id: item.id,
-      title: item.title || "Untitled scan",
-      createdAt: item.created_at,
-      pageCount: item.page_count || 1,
-      text: item.ocr_text || "",
-      originalPdfPath: item.original_pdf_path || null,
-      textPdfPath: item.text_pdf_path || null,
-      txtPath: item.txt_path || null,
-      docxPath: item.docx_path || null,
-    }))
+    (data || []).map((item: any) => {
+      const projectData = item.project_data || {};
+      const projectText =
+        projectData.editedText ||
+        (Array.isArray(projectData.pageTexts) ? projectData.pageTexts.join("\n\n") : "");
+
+      return {
+        id: item.id,
+        title: item.title || "Untitled project",
+        createdAt: item.created_at,
+        pageCount: Number(projectData.pageCount || projectData.pageTexts?.length || 1),
+        text: projectText,
+        projectData,
+        storageBytes: Number(item.storage_bytes || 0),
+      };
+    })
   );
 }
 
-async function uploadHistoryBlob(path: string, blob: Blob) {
-  if (!supabase) throw new Error("Supabase is not configured.");
+function buildCurrentProjectData(now = new Date()) {
+  const pageCount = Math.max(originalImageUrls.length, sourcePreviews.length, pageTexts.length, 1);
+  const text = pageTexts.join("\n\n") || editedText || originalOcrText || "";
 
-  const { error } = await supabase.storage
-    .from("scan-history")
-    .upload(path, blob, {
-      cacheControl: "3600",
-      upsert: true,
-    });
-
-  if (error) throw error;
-
-  return path;
-}
-
-async function createTextPdfBlob(filenameBase: string) {
-  const res = await fetch(`${apiBase}/export/text-pdf`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      text: pageTexts.join("\n\n") || editedText || "",
-      filename: cleanFilenameBase(filenameBase),
-    }),
-  });
-
-  if (!res.ok) {
-    const data = await res.json().catch(() => null);
-    throw new Error(data?.error || "Failed to create text PDF.");
-  }
-
-  return res.blob();
-}
-
-async function createTextDocxBlob(filenameBase: string) {
-  const res = await fetch(`${apiBase}/export/text-docx`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      text: pageTexts.join("\n\n") || editedText || "",
-      filename: cleanFilenameBase(filenameBase),
-    }),
-  });
-
-  if (!res.ok) {
-    const data = await res.json().catch(() => null);
-    throw new Error(data?.error || "Failed to create Word DOCX.");
-  }
-
-  return res.blob();
-}
-
-async function createOriginalPdfBlob(filenameBase: string) {
-  const originalUrls = result?.files?.originalPdfImageUrls || [];
-  const cleanedUrls = result?.files?.cleanedImageUrls || [];
-  const smartCleanColorUrls = result?.files?.smartCleanColorImageUrls || result?.files?.smartCleanImageUrls || [];
-  const smartCleanBwUrls = result?.files?.smartCleanBwImageUrls || result?.files?.smartCleanImageUrls || [];
-
-  if (!originalUrls.length) {
-    throw new Error("Original PDF source is not ready.");
-  }
-
-  const pages = originalUrls.map((originalUrl, index) => {
-    const edit = imageEdits[index] || DEFAULT_IMAGE_EDIT;
-    const cleanedUrl = cleanedUrls[index];
-    const smartCleanUrl = edit.smartCleanMode === "bw"
-      ? smartCleanBwUrls[index]
-      : smartCleanColorUrls[index];
-    const imageUrl = edit.pdfSource === "smartClean" && smartCleanUrl
-      ? smartCleanUrl
-      : edit.pdfSource === "cleaned" && cleanedUrl
-        ? cleanedUrl
-        : originalUrl;
-
-    return {
-      imageUrl,
-      rotate: edit.rotate,
-      brightness: edit.brightness,
-      zoom: edit.zoom,
-      panX: edit.panX,
-      panY: edit.panY,
-      crop: edit.crop,
-    };
-  });
-
-  const res = await fetch(`${apiBase}/export/original-pdf`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      pages,
-      filename: cleanFilenameBase(filenameBase),
-    }),
-  });
-
-  if (!res.ok) {
-    const data = await res.json().catch(() => null);
-    throw new Error(data?.error || "Failed to create original PDF.");
-  }
-
-  return res.blob();
+  return {
+    version: 1,
+    kind: "az-scanner-project",
+    savedAt: now.toISOString(),
+    selectedPlan,
+    pageCount,
+    activePageIndex,
+    resultTab,
+    compareView,
+    pageTexts,
+    editedText: text,
+    originalOcrText,
+    imageEdits,
+    resultFiles: result?.files || null,
+  };
 }
 
 async function saveCurrentScanToHistory() {
@@ -1239,7 +1248,9 @@ async function saveCurrentScanToHistory() {
 
   if (!currentUser) {
     setAuthMode("login");
-    setAuthMessage("Log in or create an account to save scan history.");
+    setAuthMessage("Log in or create an account to save to Private Folder.");
+    setActiveDrawerSection("account");
+    setHistoryOpen(true);
     return;
   }
 
@@ -1249,58 +1260,81 @@ async function saveCurrentScanToHistory() {
   }
 
   try {
-    setStatusText("Saving scan to private History...");
+    setStatusText("Checking Private Folder storage...");
 
     const now = new Date();
     const title = `Scan ${now.toLocaleDateString()} ${now.toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
     })}`;
-    const filenameBase = cleanFilenameBase(title);
-    const scanId = `scan-${Date.now()}`;
-    const basePath = `${currentUser.id}/${scanId}`;
-    const text = pageTexts.join("\n\n") || editedText || originalOcrText || "";
 
-    const txtBlob = new Blob([text], { type: "text/plain;charset=utf-8" });
-    const [originalPdfBlob, textPdfBlob, docxBlob] = await Promise.all([
-      createOriginalPdfBlob(filenameBase),
-      createTextPdfBlob(filenameBase),
-      createTextDocxBlob(filenameBase),
-    ]);
+    const projectData = buildCurrentProjectData(now);
+    const storageBytes = estimateProjectBytes(projectData);
 
-    const [originalPdfPath, textPdfPath, txtPath, docxPath] = await Promise.all([
-      uploadHistoryBlob(`${basePath}/original.pdf`, originalPdfBlob),
-      uploadHistoryBlob(`${basePath}/text.pdf`, textPdfBlob),
-      uploadHistoryBlob(`${basePath}/text.txt`, txtBlob),
-      uploadHistoryBlob(`${basePath}/text.docx`, docxBlob),
-    ]);
+    const usage = await ensureUserStorage(currentUser.id);
+    const privateUsed = Number(usage?.private_used_bytes || 0);
+    const privateLimit = Number(usage?.private_limit_bytes || 1073741824);
 
-    const { error } = await supabase.from("scan_history").insert({
-      user_id: currentUser.id,
+    if (privateUsed + storageBytes > privateLimit) {
+      setStatusText(
+        `Private Folder is full. ${formatBytes(privateUsed)} used of ${formatBytes(privateLimit)}.`
+      );
+      return;
+    }
+
+    setStatusText("Saving editable project to Private Folder...");
+
+    const { error } = await supabase.from("private_projects").insert({
+      owner_id: currentUser.id,
       title,
-      page_count: Math.max(originalImageUrls.length, sourcePreviews.length, pageTexts.length, 1),
-      ocr_text: text,
-      original_pdf_path: originalPdfPath,
-      text_pdf_path: textPdfPath,
-      txt_path: txtPath,
-      docx_path: docxPath,
+      project_data: projectData,
+      storage_bytes: storageBytes,
     });
 
     if (error) throw error;
 
-    await loadHistoryItems(currentUser.id);
-    setStatusText("Scan saved to private History.");
+    const { error: quotaError } = await supabase
+      .from("user_storage")
+      .update({
+        private_used_bytes: privateUsed + storageBytes,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("user_id", currentUser.id);
+
+    if (quotaError) throw quotaError;
+
+    await Promise.all([loadHistoryItems(currentUser.id), loadStorageUsage(currentUser.id)]);
+    setStatusText("Editable project saved to Private Folder.");
   } catch (err: any) {
-    setStatusText(err?.message || "Could not save scan to History.");
+    setStatusText(err?.message || "Could not save to Private Folder.");
   }
 }
 
 function openHistoryItem(item: HistoryItem) {
-  setPageTexts(splitTextIntoPages(item.text, Math.max(item.pageCount, 1)));
-  setEditedText(item.text);
-  setOriginalOcrText(item.text);
-  setActivePageIndex(0);
-  setResultTab("text");
+  const project = item.projectData || null;
+  const nextPageCount = Math.max(item.pageCount, 1);
+  const nextPageTexts = Array.isArray(project?.pageTexts)
+    ? project.pageTexts
+    : splitTextIntoPages(item.text, nextPageCount);
+
+  setPageTexts(nextPageTexts);
+  setEditedText(project?.editedText || item.text || nextPageTexts.join("\n\n"));
+  setOriginalOcrText(project?.originalOcrText || item.text || "");
+  setEditedLines([]);
+  setOriginalOcrLines([]);
+  setImageEdits(
+    Array.isArray(project?.imageEdits) && project.imageEdits.length
+      ? project.imageEdits
+      : makeDefaultEdits(nextPageCount)
+  );
+  setResult({
+    success: true,
+    text: project?.editedText || item.text || nextPageTexts.join("\n\n"),
+    files: project?.resultFiles || {},
+  });
+  setActivePageIndex(Math.max(0, Math.min(project?.activePageIndex || 0, nextPageCount - 1)));
+  setResultTab(project?.resultTab || "text");
+  setCompareView(project?.compareView || "split");
   setMode("result");
   setHistoryOpen(false);
   setStatusText(`Opened ${item.title}.`);
@@ -1312,14 +1346,14 @@ async function renameHistoryItem(id: string) {
   const current = historyItems.find((item) => item.id === id);
   if (!current) return;
 
-  const nextTitle = window.prompt("Rename scan", current.title)?.trim();
+  const nextTitle = window.prompt("Rename project", current.title)?.trim();
   if (!nextTitle) return;
 
   const { error } = await supabase
-    .from("scan_history")
+    .from("private_projects")
     .update({ title: nextTitle })
     .eq("id", id)
-    .eq("user_id", currentUser.id);
+    .eq("owner_id", currentUser.id);
 
   if (error) {
     setStatusText(error.message || "Rename failed.");
@@ -1335,99 +1369,77 @@ async function deleteHistoryItem(id: string) {
   const current = historyItems.find((item) => item.id === id);
   if (!current) return;
 
-  const confirmed = window.confirm("Delete this saved scan from History?");
+  const confirmed = window.confirm("Delete this private project?");
   if (!confirmed) return;
 
-  const paths = [
-    current.originalPdfPath,
-    current.textPdfPath,
-    current.txtPath,
-    current.docxPath,
-  ].filter(Boolean) as string[];
-
-  if (paths.length) {
-    await supabase.storage.from("scan-history").remove(paths);
-  }
+  const storageBytes = Number(current.storageBytes || 0);
+  const nextUsed = Math.max(0, storageUsage.privateUsedBytes - storageBytes);
 
   const { error } = await supabase
-    .from("scan_history")
+    .from("private_projects")
     .delete()
     .eq("id", id)
-    .eq("user_id", currentUser.id);
+    .eq("owner_id", currentUser.id);
 
   if (error) {
     setStatusText(error.message || "Delete failed.");
     return;
   }
 
-  await loadHistoryItems(currentUser.id);
-}
+  const { error: quotaError } = await supabase
+    .from("user_storage")
+    .update({
+      private_used_bytes: nextUsed,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("user_id", currentUser.id);
 
-async function getHistoryBlob(path: string) {
-  if (!supabase) throw new Error("Supabase is not configured.");
-
-  const { data, error } = await supabase.storage
-    .from("scan-history")
-    .download(path);
-
-  if (error) throw error;
-  if (!data) throw new Error("File not found.");
-
-  return data;
-}
-
-async function downloadHistoryItem(item: HistoryItem) {
-  try {
-    if (item.originalPdfPath) {
-      const blob = await getHistoryBlob(item.originalPdfPath);
-      downloadBlobFile(`${cleanFilenameBase(item.title)}-original.pdf`, blob);
-      setStatusText("History Original PDF downloaded.");
-      return;
-    }
-
-    downloadTextFile(`${cleanFilenameBase(item.title)}.txt`, item.text || "");
-    setStatusText("History TXT downloaded.");
-  } catch (err: any) {
-    setStatusText(err?.message || "History download failed.");
+  if (quotaError) {
+    setStatusText(quotaError.message || "Storage update failed.");
   }
+
+  await Promise.all([loadHistoryItems(currentUser.id), loadStorageUsage(currentUser.id)]);
+}
+
+function downloadHistoryItem(item: HistoryItem) {
+  const project = item.projectData || {
+    version: 1,
+    kind: "az-scanner-project",
+    title: item.title,
+    pageCount: item.pageCount,
+    editedText: item.text,
+  };
+
+  const blob = new Blob([JSON.stringify(project, null, 2)], {
+    type: "application/json;charset=utf-8",
+  });
+
+  downloadBlobFile(`${cleanFilenameBase(item.title)}.azscan.json`, blob);
+  setStatusText("Private project backup downloaded.");
 }
 
 async function shareHistoryItem(item: HistoryItem) {
-  try {
-    if (item.originalPdfPath) {
-      const blob = await getHistoryBlob(item.originalPdfPath);
-      const shared = await shareBlobFile(
-        `${cleanFilenameBase(item.title)}-original.pdf`,
-        blob,
-        item.title
-      );
+  const project = item.projectData || {
+    version: 1,
+    kind: "az-scanner-project",
+    title: item.title,
+    pageCount: item.pageCount,
+    editedText: item.text,
+  };
 
-      if (shared) {
-        setStatusText("History item shared.");
-        return;
-      }
+  const blob = new Blob([JSON.stringify(project, null, 2)], {
+    type: "application/json;charset=utf-8",
+  });
 
-      downloadBlobFile(`${cleanFilenameBase(item.title)}-original.pdf`, blob);
-      setStatusText("Sharing is not supported here. History PDF downloaded instead.");
-      return;
-    }
+  const shared = await shareBlobFile(`${cleanFilenameBase(item.title)}.azscan.json`, blob, item.title);
 
-    const shared = await shareTextFile(
-      `${cleanFilenameBase(item.title)}.txt`,
-      item.text || "",
-      item.title
-    );
-
-    if (shared) {
-      setStatusText("History item shared.");
-      return;
-    }
-
-    downloadHistoryItem(item);
-    setStatusText("Sharing is not supported here. History TXT downloaded instead.");
-  } catch (err: any) {
-    setStatusText(err?.message || "History share failed.");
+  if (shared) {
+    setStatusText("Private project backup shared.");
+    return;
   }
+
+  downloadBlobFile(`${cleanFilenameBase(item.title)}.azscan.json`, blob);
+  setStatusText("Sharing is not supported here. Private project backup downloaded instead.");
 }
 
 async function submitAuthForm(event: React.FormEvent<HTMLFormElement>) {
@@ -1526,6 +1538,7 @@ useEffect(() => {
 
     if (data.user) {
       loadHistoryItems(data.user.id);
+      loadStorageUsage(data.user.id);
     }
   });
 
@@ -1541,8 +1554,15 @@ useEffect(() => {
       setAuthPhone("");
       setAuthMessage("");
       loadHistoryItems(user.id);
+      loadStorageUsage(user.id);
     } else {
       setHistoryItems([]);
+      setStorageUsage({
+        privateUsedBytes: 0,
+        privateLimitBytes: 1073741824,
+        shareUsedBytes: 0,
+        shareLimitBytes: 1073741824,
+      });
     }
   });
 
@@ -2017,9 +2037,23 @@ useEffect(() => {
                       <div className="az-drawer-card-label">PRIVATE FOLDER</div>
                       <h3>Private Folder</h3>
                       <p>
-                        Your private cloud folder. Current scans can be saved here and later opened, renamed,
-                        downloaded, shared, or deleted.
+                        Your private cloud folder saves editable AZ Scanner projects only. Export formats are created only when you choose them.
                       </p>
+
+                      <div className="az-storage-card" aria-label="Private Folder storage usage">
+                        <div className="az-storage-row">
+                          <span>Private storage</span>
+                          <strong>
+                            {formatBytes(storageUsage.privateUsedBytes)} / {formatBytes(storageUsage.privateLimitBytes)}
+                          </strong>
+                        </div>
+
+                        <div className="az-storage-track">
+                          <span style={{ width: `${privateStoragePercent()}%` }} />
+                        </div>
+
+                        <small>{privateStoragePercent()}% used</small>
+                      </div>
 
                       <button
                         type="button"
@@ -2027,7 +2061,7 @@ useEffect(() => {
                         disabled={!currentUser || !result?.success}
                         className="az-history-save-button"
                       >
-                        Save current scan
+                        Save current project
                       </button>
                     </div>
 
@@ -2046,6 +2080,7 @@ useEffect(() => {
                                   <strong>{item.title}</strong>
                                   <small>
                                     {item.pageCount} page{item.pageCount === 1 ? "" : "s"} •{" "}
+                                    {formatBytes(item.storageBytes || 0)} •{" "}
                                     {new Date(item.createdAt).toLocaleDateString()}
                                   </small>
                                 </span>
@@ -2069,7 +2104,7 @@ useEffect(() => {
                           ))
                         ) : (
                           <div className="az-history-empty">
-                            No private files yet. Finish a scan, then tap “Save current scan”.
+                            No private projects yet. Finish a scan, then tap “Save current project”.
                           </div>
                         )
                       ) : (

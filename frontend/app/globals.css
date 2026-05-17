@@ -3424,3 +3424,65 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* FINAL: Private Folder quota UI */
+.az-storage-card {
+  margin: 0.85rem 0 0.75rem;
+  display: grid;
+  gap: 0.45rem;
+  border-radius: 14px;
+  padding: 0.7rem;
+  background: rgba(245, 249, 255, 0.78);
+  border: 1px solid rgba(83, 113, 172, 0.12);
+}
+
+.az-storage-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  color: #536273;
+  font-size: 0.78rem;
+  line-height: 1.2;
+}
+
+.az-storage-row strong {
+  font-weight: 400;
+  color: #1f2937;
+  white-space: nowrap;
+}
+
+.az-storage-track {
+  position: relative;
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(83, 113, 172, 0.12);
+}
+
+.az-storage-track span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: rgba(83, 113, 172, 0.82);
+}
+
+.az-storage-card small {
+  font-size: 0.72rem;
+  line-height: 1.2;
+  color: #6b7280;
+}
+
+.az-app-pro .az-storage-card {
+  background: rgba(240, 252, 248, 0.72);
+  border-color: rgba(43, 134, 115, 0.14);
+}
+
+.az-app-pro .az-storage-track {
+  background: rgba(43, 134, 115, 0.12);
+}
+
+.az-app-pro .az-storage-track span {
+  background: rgba(43, 134, 115, 0.78);
+}
