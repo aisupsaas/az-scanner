@@ -3917,418 +3917,348 @@ body {
   }
 }
 
-/* FINAL drawer compact/minimal list pass */
-.az-drawer-section-body {
-  gap: 0 !important;
+/* FINAL drawer spacing + compact lists + auth centering */
+.az-app-topbar {
+  gap: 1rem !important;
+  align-items: center !important;
 }
 
-.az-drawer-card,
-.az-private-summary-card {
+.az-app-topbar .az-topbar-logo-left {
+  margin-right: 0.25rem !important;
+}
+
+.az-topbar-copy .az-topbar-title {
+  margin-top: 0 !important;
+  line-height: 1 !important;
+}
+
+.az-drawer-menu-list-full {
+  min-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.42rem !important;
+}
+
+.az-drawer-menu-list-full .az-drawer-menu-danger {
+  margin-top: auto !important;
+}
+
+.az-drawer-menu-list .az-drawer-menu-share {
+  color: #b42323 !important;
+  background: rgba(255, 235, 235, 0.94) !important;
+}
+
+.az-drawer-menu-list .az-drawer-menu-share.az-drawer-menu-active {
+  color: #ffffff !important;
+  background: #c92d2d !important;
+}
+
+.az-section-drawer-head {
+  margin-bottom: 0.25rem !important;
+}
+
+.az-drawer-section-full {
+  gap: 0.38rem !important;
+  align-content: start !important;
+}
+
+.az-drawer-section-full:has(.az-auth-card) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding-top: 0 !important;
+}
+
+.az-auth-card {
+  width: min(100%, 520px) !important;
+  margin: auto 0 !important;
+  padding: 1rem !important;
+  gap: 0.72rem !important;
+  align-self: center !important;
+}
+
+.az-auth-tabs {
+  width: 100% !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  padding: 3px !important;
+}
+
+.az-auth-tabs button {
+  min-height: 40px !important;
+  font-size: 0.86rem !important;
+}
+
+.az-auth-input {
+  height: 44px !important;
+  min-height: 44px !important;
+  border-radius: 12px !important;
+  font-size: 0.86rem !important;
+}
+
+.az-auth-card .az-history-save-button {
+  height: 46px !important;
+  min-height: 46px !important;
+  border-radius: 14px !important;
+  margin-top: 0 !important;
+}
+
+.az-auth-helper,
+.az-auth-message {
+  margin: -0.15rem 0 0 !important;
+  font-size: 0.72rem !important;
+}
+
+.az-private-summary-card,
+.az-share-summary-card {
+  padding: 0.35rem 0 0.3rem !important;
   margin: 0 !important;
-  padding: 0 !important;
   border: none !important;
   background: transparent !important;
   box-shadow: none !important;
-  border-radius: 0 !important;
 }
 
-.az-drawer-card h3,
-.az-drawer-card p {
-  display: none !important;
+.az-share-summary-card {
+  color: #a72828 !important;
 }
 
-.az-private-summary-card {
-  padding-bottom: 0.85rem !important;
+.az-share-summary-card .az-drawer-card-label,
+.az-share-summary-card .az-storage-row span,
+.az-share-summary-card .az-storage-card small {
+  color: rgba(180, 35, 35, 0.86) !important;
 }
 
-.az-drawer-card-label {
-  margin: 0 0 0.7rem !important;
-  font-size: 0.68rem !important;
-  letter-spacing: 0.24em !important;
-  color: rgba(51, 65, 85, 0.68) !important;
+.az-share-summary-card .az-storage-track span {
+  background: rgba(201, 45, 45, 0.86) !important;
 }
 
 .az-storage-card,
 .az-storage-card-minimal {
   margin: 0 !important;
-  padding: 0 !important;
-  border: none !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
+  gap: 0.22rem !important;
 }
 
-.az-storage-row {
-  display: flex !important;
-  align-items: baseline !important;
-  justify-content: space-between !important;
-  gap: 0.75rem !important;
-  margin: 0 0 0.42rem !important;
-  color: rgba(51, 65, 85, 0.82) !important;
-  font-size: 0.78rem !important;
-  line-height: 1.2 !important;
+.az-storage-card-minimal .az-storage-row {
+  margin-bottom: 0.18rem !important;
+  font-size: 0.74rem !important;
 }
 
-.az-storage-row span,
-.az-storage-row strong {
-  font-size: 0.78rem !important;
-  line-height: 1.2 !important;
-  font-weight: 400 !important;
+.az-storage-card-minimal .az-storage-row strong {
+  font-size: 0.74rem !important;
 }
 
-.az-storage-track {
+.az-storage-card-minimal .az-storage-track {
   height: 2px !important;
-  border-radius: 0 !important;
-  background: rgba(100, 116, 139, 0.16) !important;
-  overflow: hidden !important;
 }
 
-.az-storage-track span {
+.az-storage-card-minimal .az-storage-track span {
   height: 2px !important;
-  border-radius: 0 !important;
-  background: rgba(75, 97, 135, 0.7) !important;
 }
 
-.az-storage-card small,
 .az-storage-card-minimal small {
-  display: block !important;
-  margin-top: 0.42rem !important;
-  color: rgba(71, 85, 105, 0.7) !important;
-  font-size: 0.68rem !important;
-  line-height: 1.2 !important;
+  margin-top: 0.18rem !important;
+  font-size: 0.64rem !important;
 }
 
 .az-history-list,
-.az-private-file-list,
-.az-compact-folder-list {
-  display: grid !important;
+.az-private-file-list {
   gap: 0 !important;
-  margin-top: 0.2rem !important;
+  margin-top: 0.15rem !important;
+  padding-right: 0.25rem !important;
+  max-height: min(56dvh, 520px) !important;
+  overflow-y: auto !important;
 }
 
-.az-history-item,
 .az-private-file-item,
+.az-history-item,
 .az-share-item {
-  display: grid !important;
-  gap: 0.38rem !important;
-  padding: 0.72rem 0 !important;
-  border: none !important;
-  border-top: 1px solid rgba(100, 116, 139, 0.16) !important;
+  padding: 0.62rem 0 !important;
+  margin: 0 !important;
   border-radius: 0 !important;
+  border: none !important;
+  border-top: 1px solid rgba(83, 113, 172, 0.13) !important;
   background: transparent !important;
   box-shadow: none !important;
 }
 
-.az-history-main,
 .az-private-file-main,
-.az-share-main-static {
-  display: grid !important;
-  grid-template-columns: 1.65rem minmax(0, 1fr) !important;
+.az-history-main.az-private-file-main,
+.az-share-main-static,
+.az-history-main {
+  gap: 0.55rem !important;
   align-items: start !important;
-  gap: 0.56rem !important;
-  width: 100% !important;
-  padding: 0 !important;
-  border: none !important;
-  background: transparent !important;
-  text-align: left !important;
 }
 
 .az-history-folder-icon,
 .az-private-open-icon {
-  width: 1.45rem !important;
-  height: 1.45rem !important;
-  min-width: 1.45rem !important;
-  border: none !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  border-radius: 0 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-size: 1.12rem !important;
-  line-height: 1 !important;
+  font-size: 1rem !important;
+  width: 22px !important;
+  height: 22px !important;
 }
 
 .az-private-file-copy {
   display: grid !important;
-  gap: 0.12rem !important;
-  min-width: 0 !important;
-}
-
-.az-list-title-row {
-  display: inline-grid !important;
-  grid-template-columns: minmax(0, auto) auto !important;
+  grid-template-columns: minmax(0, auto) auto;
+  column-gap: 0.45rem !important;
+  row-gap: 0.1rem !important;
   align-items: center !important;
   justify-content: start !important;
-  gap: 0.34rem !important;
-  max-width: 100% !important;
+}
+
+.az-private-file-copy small {
+  grid-column: 1 / -1 !important;
+  font-size: 0.7rem !important;
+  line-height: 1.18 !important;
 }
 
 .az-private-file-title,
-.az-history-main strong,
-.az-share-main-static strong {
-  width: auto !important;
-  max-width: 100% !important;
-  min-height: 0 !important;
-  padding: 0 !important;
-  border: none !important;
-  background: transparent !important;
-  color: #172033 !important;
-  font-size: 0.9rem !important;
-  line-height: 1.18 !important;
-  font-weight: 400 !important;
-  text-align: left !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
+.az-history-main strong {
+  font-size: 0.86rem !important;
+  line-height: 1.15 !important;
 }
 
-.az-inline-edit-icon {
-  width: 1.18rem !important;
-  height: 1.18rem !important;
-  min-width: 1.18rem !important;
-  padding: 0 !important;
+.az-inline-edit-button {
+  width: 20px !important;
+  height: 20px !important;
+  min-height: 20px !important;
   border: none !important;
   background: transparent !important;
-  color: rgba(71, 85, 105, 0.72) !important;
-  font-size: 0.72rem !important;
+  color: rgba(76, 88, 108, 0.72) !important;
+  padding: 0 !important;
+  font-size: 0.78rem !important;
   line-height: 1 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-.az-history-item small,
-.az-private-file-copy small,
-.az-share-main-static small {
-  color: rgba(71, 85, 105, 0.68) !important;
-  font-size: 0.72rem !important;
-  line-height: 1.22 !important;
-  font-weight: 300 !important;
 }
 
 .az-private-icon-actions,
+.az-history-actions.az-private-icon-actions,
 .az-history-actions {
+  margin-top: 0.38rem !important;
+  margin-left: 1.75rem !important;
+  gap: 0.9rem !important;
   display: flex !important;
   align-items: center !important;
-  justify-content: flex-start !important;
-  gap: 0.62rem !important;
-  margin-left: 2.2rem !important;
-  padding: 0 !important;
 }
 
 .az-private-icon-actions button,
 .az-history-actions button {
-  width: 1.42rem !important;
-  height: 1.42rem !important;
-  min-width: 1.42rem !important;
-  min-height: 1.42rem !important;
-  padding: 0 !important;
-  border: none !important;
+  width: 24px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   border-radius: 0 !important;
   background: transparent !important;
-  box-shadow: none !important;
-  color: rgba(71, 85, 105, 0.78) !important;
-  font-size: 0.94rem !important;
-  line-height: 1 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  color: rgba(67, 84, 112, 0.82) !important;
+  font-size: 0.88rem !important;
+  padding: 0 !important;
 }
 
-.az-private-icon-actions button[aria-label="Delete"],
-.az-history-actions button[aria-label="Delete"] {
-  color: rgba(190, 55, 55, 0.82) !important;
+.az-private-icon-actions button:last-child,
+.az-history-actions button:last-child {
+  color: rgba(200, 55, 55, 0.86) !important;
+  background: transparent !important;
 }
 
-.az-share-add-row {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) auto !important;
-  gap: 0.5rem !important;
-  margin: 0.25rem 0 0 2.2rem !important;
+.az-project-preview-box {
+  margin: 0.3rem 0 0.25rem !important;
+  padding: 0.62rem 0 !important;
+  border-top: 1px solid rgba(83, 113, 172, 0.12) !important;
+  border-bottom: 1px solid rgba(83, 113, 172, 0.12) !important;
+  background: transparent !important;
 }
 
-.az-share-add-row .az-auth-input {
-  min-height: 34px !important;
-  height: 34px !important;
-  padding: 0 0.7rem !important;
-  border-radius: 8px !important;
-  font-size: 0.78rem !important;
-}
-
-.az-share-add-row .az-history-save-button {
-  min-height: 34px !important;
-  height: 34px !important;
-  border-radius: 999px !important;
-  padding: 0 0.82rem !important;
-  font-size: 0.78rem !important;
-}
-
-.az-share-member-list {
-  display: grid !important;
-  gap: 0.42rem !important;
-  margin: 0.25rem 0 0 2.2rem !important;
-}
-
-.az-share-member-card {
-  padding: 0.5rem 0.56rem !important;
-  border: 1px solid rgba(100, 116, 139, 0.14) !important;
-  border-radius: 10px !important;
-  background: rgba(255,255,255,0.38) !important;
-}
-
-.az-share-member-head {
+.az-project-preview-head {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  gap: 0.6rem !important;
+  gap: 0.75rem !important;
 }
 
-.az-share-member-head strong {
-  font-size: 0.74rem !important;
+.az-project-preview-head strong {
+  font-size: 0.86rem !important;
   font-weight: 400 !important;
-  color: #172033 !important;
+  color: #1f2937 !important;
 }
 
-.az-share-member-head button {
+.az-project-preview-head button {
   border: none !important;
-  background: transparent !important;
-  color: rgba(190, 55, 55, 0.84) !important;
-  padding: 0 !important;
+  background: rgba(238, 244, 252, 0.8) !important;
+  border-radius: 999px !important;
+  min-height: 24px !important;
+  padding: 0 0.6rem !important;
+  color: #4b5d78 !important;
+  font-size: 0.72rem !important;
+}
+
+.az-project-preview-box small {
+  display: block !important;
+  margin-top: 0.18rem !important;
+  font-size: 0.68rem !important;
+  color: rgba(76, 88, 108, 0.72) !important;
+}
+
+.az-project-preview-box p {
+  margin: 0.42rem 0 0 !important;
+  max-height: 92px !important;
+  overflow: auto !important;
+  font-size: 0.72rem !important;
+  line-height: 1.35 !important;
+  color: rgba(31, 41, 55, 0.78) !important;
+  white-space: pre-wrap !important;
+}
+
+.az-share-add-row {
+  margin: 0.3rem 0 0.25rem !important;
+  gap: 0.42rem !important;
+}
+
+.az-share-add-row .az-auth-input {
+  height: 38px !important;
+  min-height: 38px !important;
+}
+
+.az-share-add-row .az-history-save-button {
+  min-height: 38px !important;
+  height: 38px !important;
+  border-radius: 999px !important;
+  min-width: 54px !important;
+  background: #111111 !important;
+}
+
+.az-share-member-list {
+  gap: 0.35rem !important;
+}
+
+.az-share-member-card {
+  padding: 0.48rem !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.42) !important;
+}
+
+.az-share-member-head {
+  margin-bottom: 0.35rem !important;
+}
+
+.az-share-member-head strong,
+.az-share-permission-grid label,
+.az-share-permission-note {
   font-size: 0.72rem !important;
 }
 
 .az-share-permission-grid {
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 0.28rem 0.5rem !important;
-  margin-top: 0.42rem !important;
+  gap: 0.3rem !important;
 }
 
 .az-share-permission-grid label {
-  min-height: 26px !important;
-  padding: 0 !important;
-  border: none !important;
-  background: transparent !important;
-  color: rgba(51, 65, 85, 0.78) !important;
-  font-size: 0.72rem !important;
-  gap: 0.28rem !important;
-}
-
-.az-share-permission-grid input {
-  width: 14px !important;
-  height: 14px !important;
-  accent-color: #111111 !important;
-}
-
-.az-share-permission-note {
-  margin-left: 2.2rem !important;
-  color: rgba(71, 85, 105, 0.68) !important;
-  font-size: 0.68rem !important;
-  line-height: 1.22 !important;
-}
-
-.az-project-preview-box {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) auto !important;
-  align-items: center !important;
-  gap: 0.7rem !important;
-  padding: 0.58rem 0 !important;
-  margin: 0.15rem 0 0.15rem !important;
-  border-top: 1px solid rgba(100, 116, 139, 0.16) !important;
-  border-bottom: 1px solid rgba(100, 116, 139, 0.16) !important;
-  background: transparent !important;
-}
-
-.az-project-preview-box > div:first-child {
-  display: grid !important;
-  gap: 0.12rem !important;
-  min-width: 0 !important;
-}
-
-.az-project-preview-box strong {
-  color: #172033 !important;
-  font-size: 0.82rem !important;
-  line-height: 1.18 !important;
-  font-weight: 400 !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-.az-project-preview-box small {
-  color: rgba(71, 85, 105, 0.68) !important;
-  font-size: 0.68rem !important;
-  line-height: 1.2 !important;
-}
-
-.az-project-preview-actions {
-  display: flex !important;
-  align-items: center !important;
-  gap: 0.45rem !important;
-}
-
-.az-project-preview-actions button {
-  min-height: 26px !important;
-  padding: 0 0.48rem !important;
-  border: none !important;
-  border-radius: 999px !important;
-  background: rgba(226, 232, 240, 0.7) !important;
-  color: rgba(51, 65, 85, 0.86) !important;
-  font-size: 0.68rem !important;
-}
-
-.az-history-empty,
-.az-drawer-note {
-  padding: 0.75rem 0 !important;
-  border: none !important;
-  background: transparent !important;
-  color: rgba(71, 85, 105, 0.7) !important;
-  font-size: 0.78rem !important;
-}
-
-.az-auth-panel {
-  padding: 0.85rem !important;
-  border-radius: 16px !important;
-}
-
-.az-auth-tab-row {
-  height: 42px !important;
-  padding: 3px !important;
-  margin-bottom: 0.75rem !important;
-}
-
-.az-auth-tab-row button {
-  min-height: 36px !important;
-  font-size: 0.82rem !important;
-}
-
-.az-auth-input {
-  min-height: 42px !important;
-  height: 42px !important;
-  padding: 0 0.85rem !important;
-  border-radius: 12px !important;
-  font-size: 0.84rem !important;
-}
-
-.az-auth-form {
-  gap: 0.58rem !important;
-}
-
-.az-auth-form .az-history-save-button {
-  min-height: 42px !important;
-  height: 42px !important;
-  border-radius: 999px !important;
-  font-size: 0.84rem !important;
+  min-height: 24px !important;
+  padding: 0 0.42rem !important;
 }
 
 @media (max-width: 640px) {
-  .az-project-preview-box {
-    grid-template-columns: 1fr !important;
+  .az-auth-card {
+    width: 100% !important;
   }
 
-  .az-project-preview-actions {
-    justify-content: flex-start !important;
+  .az-history-list,
+  .az-private-file-list {
+    max-height: min(58dvh, 520px) !important;
   }
 }

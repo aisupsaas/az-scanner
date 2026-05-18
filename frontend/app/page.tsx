@@ -179,14 +179,7 @@ export default function HomePage() {
   const [sharedProjects, setSharedProjects] = useState<SharedProjectItem[]>([]);
   const [sharedWithMeItems, setSharedWithMeItems] = useState<SharedWithMeItem[]>([]);
   const [shareEmailDrafts, setShareEmailDrafts] = useState<Record<string, string>>({});
-  const [previewProject, setPreviewProject] = useState<{
-    title: string;
-    subtitle: string;
-    projectData: any | null;
-    storageBytes: number;
-    source: "private" | "share" | "sharedWithMe";
-    canDownload?: boolean;
-  } | null>(null);
+  const [previewProject, setPreviewProject] = useState<{ title: string; meta: string; text: string } | null>(null);
   const [storageUsage, setStorageUsage] = useState<StorageUsage>({
     privateUsedBytes: 0,
     privateLimitBytes: 1073741824,
@@ -1385,6 +1378,22 @@ function openHistoryItem(item: HistoryItem) {
   setStatusText(`Opened ${item.title}.`);
 }
 
+function previewPrivateProject(item: HistoryItem) {
+  setPreviewProject({
+    title: item.title,
+    meta: `${item.pageCount} page${item.pageCount === 1 ? "" : "s"} • ${formatBytes(item.storageBytes || 0)} • ${new Date(item.createdAt).toLocaleDateString()}`,
+    text: String(item.projectData?.editedText || item.text || "No preview text available.").slice(0, 900),
+  });
+}
+
+function previewSharedProjectItem(item: SharedProjectItem | SharedWithMeItem) {
+  setPreviewProject({
+    title: item.title,
+    meta: `${formatBytes(item.storageBytes || 0)} • ${new Date(item.createdAt).toLocaleDateString()}`,
+    text: String(item.projectData?.editedText || item.projectData?.originalOcrText || "No preview text available.").slice(0, 900),
+  });
+}
+
 async function renameHistoryItem(id: string) {
   if (!supabase || !currentUser) return;
 
@@ -1696,6 +1705,29 @@ async function addPrivateProjectToShareFolder(item: HistoryItem) {
   }
 }
 
+async function renameSharedProject(projectId: string) {
+  if (!supabase || !currentUser) return;
+
+  const current = sharedProjects.find((item) => item.id === projectId);
+  if (!current) return;
+
+  const nextTitle = window.prompt("Rename shared project", current.title)?.trim();
+  if (!nextTitle) return;
+
+  const { error } = await supabase
+    .from("shared_projects")
+    .update({ title: nextTitle, updated_at: new Date().toISOString() })
+    .eq("id", projectId)
+    .eq("owner_id", currentUser.id);
+
+  if (error) {
+    setStatusText(error.message || "Rename failed.");
+    return;
+  }
+
+  await loadSharedProjects(currentUser.id);
+}
+
 async function deleteSharedProject(projectId: string) {
   if (!supabase || !currentUser) return;
 
@@ -1812,76 +1844,6 @@ async function removeSharedMember(memberId: string) {
   }
 
   await loadSharedProjects(currentUser.id);
-}
-
-async function renameSharedProject(id: string) {
-  if (!supabase || !currentUser) return;
-
-  const current = sharedProjects.find((item) => item.id === id);
-  if (!current) return;
-
-  const nextTitle = window.prompt("Rename shared project", current.title)?.trim();
-  if (!nextTitle) return;
-
-  const { error } = await supabase
-    .from("shared_projects")
-    .update({ title: nextTitle, updated_at: new Date().toISOString() })
-    .eq("id", id)
-    .eq("owner_id", currentUser.id);
-
-  if (error) {
-    setStatusText(error.message || "Rename failed.");
-    return;
-  }
-
-  await loadSharedProjects(currentUser.id);
-}
-
-function previewPrivateProject(item: HistoryItem) {
-  setPreviewProject({
-    title: item.title,
-    subtitle: `${item.pageCount} page${item.pageCount === 1 ? "" : "s"} • ${formatBytes(item.storageBytes || 0)} • ${new Date(item.createdAt).toLocaleDateString()}`,
-    projectData: item.projectData || {},
-    storageBytes: item.storageBytes || 0,
-    source: "private",
-    canDownload: true,
-  });
-}
-
-function previewSharedProject(item: SharedProjectItem) {
-  setPreviewProject({
-    title: item.title,
-    subtitle: `${formatBytes(item.storageBytes || 0)} • ${new Date(item.createdAt).toLocaleDateString()}`,
-    projectData: item.projectData || {},
-    storageBytes: item.storageBytes || 0,
-    source: "share",
-    canDownload: true,
-  });
-}
-
-function previewSharedWithMeProject(item: SharedWithMeItem) {
-  setPreviewProject({
-    title: item.title,
-    subtitle: `Shared by user • ${formatBytes(item.storageBytes || 0)} • ${new Date(item.createdAt).toLocaleDateString()}`,
-    projectData: item.projectData || {},
-    storageBytes: item.storageBytes || 0,
-    source: "sharedWithMe",
-    canDownload: item.canDownload,
-  });
-}
-
-function openPreviewProject() {
-  if (!previewProject) return;
-  openSharedProject(previewProject.projectData, previewProject.title);
-}
-
-function downloadPreviewProject() {
-  if (!previewProject || !previewProject.canDownload) return;
-  const blob = new Blob([JSON.stringify(previewProject.projectData || {}, null, 2)], {
-    type: "application/json;charset=utf-8",
-  });
-  downloadBlobFile(`${cleanFilenameBase(previewProject.title)}.azscan.json`, blob);
-  setStatusText("Project backup downloaded.");
 }
 
 function openSharedProject(projectData: any, title: string) {
@@ -2366,9 +2328,10 @@ useEffect(() => {
                         type="button"
                         onClick={() => {
                           setActiveDrawerSection(section as DrawerSection);
+                          setPreviewProject(null);
                           setDrawerView("section");
                         }}
-                        className={activeDrawerSection === section ? "az-drawer-menu-active" : ""}
+                        className={[activeDrawerSection === section ? "az-drawer-menu-active" : "", section === "share" ? "az-drawer-menu-share" : ""].filter(Boolean).join(" ")}
                       >
                         <span>{label}</span>
                         {section === "sharedWithMe" && sharedWithMeUserCount > 0 ? (
@@ -2552,19 +2515,14 @@ useEffect(() => {
                           </div>
                         </div>
 
-                        {previewProject && previewProject.source === "private" ? (
+                        {previewProject ? (
                           <div className="az-project-preview-box">
-                            <div>
+                            <div className="az-project-preview-head">
                               <strong>{previewProject.title}</strong>
-                              <small>{previewProject.subtitle}</small>
-                            </div>
-                            <div className="az-project-preview-actions">
-                              <button type="button" onClick={openPreviewProject}>Open</button>
-                              {previewProject.canDownload ? (
-                                <button type="button" onClick={downloadPreviewProject}>Download</button>
-                              ) : null}
                               <button type="button" onClick={() => setPreviewProject(null)}>Close</button>
                             </div>
+                            <small>{previewProject.meta}</small>
+                            <p>{previewProject.text}</p>
                           </div>
                         ) : null}
 
@@ -2576,35 +2534,33 @@ useEffect(() => {
                                   <div className="az-history-main az-private-file-main">
                                     <button
                                       type="button"
-                                      onClick={() => previewPrivateProject(item)}
+                                      onClick={() => openHistoryItem(item)}
                                       className="az-history-folder-icon az-private-open-icon"
-                                      aria-label={`Preview ${item.title}`}
-                                      title="Preview"
+                                      aria-label={`Open ${item.title}`}
+                                      title="Open"
                                     >
                                       📁
                                     </button>
 
                                     <span className="az-private-file-copy">
-                                      <span className="az-list-title-row">
-                                        <button
-                                          type="button"
-                                          onClick={() => previewPrivateProject(item)}
-                                          className="az-private-file-title"
-                                          aria-label={`Preview ${item.title}`}
-                                          title="Preview"
-                                        >
-                                          {item.title}
-                                        </button>
-                                        <button
-                                          type="button"
-                                          onClick={() => renameHistoryItem(item.id)}
-                                          className="az-inline-edit-icon"
-                                          aria-label={`Rename ${item.title}`}
-                                          title="Rename"
-                                        >
-                                          ✎
-                                        </button>
-                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => previewPrivateProject(item)}
+                                        className="az-private-file-title"
+                                        aria-label={`Preview ${item.title}`}
+                                        title="Preview"
+                                      >
+                                        {item.title}
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => renameHistoryItem(item.id)}
+                                        className="az-inline-edit-button"
+                                        aria-label={`Rename ${item.title}`}
+                                        title="Rename"
+                                      >
+                                        ✎
+                                      </button>
 
                                       <small>
                                         {item.pageCount} page{item.pageCount === 1 ? "" : "s"} •{" "}
@@ -2658,7 +2614,7 @@ useEffect(() => {
 
                     {activeDrawerSection === "share" ? (
                       <>
-                        <div className="az-drawer-card az-private-summary-card">
+                        <div className="az-drawer-card az-share-summary-card">
                           <div className="az-drawer-card-label">SHARE FOLDER</div>
 
                           <div className="az-storage-card az-storage-card-minimal" aria-label="Share Folder storage usage">
@@ -2690,34 +2646,27 @@ useEffect(() => {
                           </div>
                         </div>
 
-                        {previewProject && previewProject.source === "share" ? (
-                          <div className="az-project-preview-box">
-                            <div>
+                        {previewProject ? (
+                          <div className="az-project-preview-box az-share-preview-box">
+                            <div className="az-project-preview-head">
                               <strong>{previewProject.title}</strong>
-                              <small>{previewProject.subtitle}</small>
-                            </div>
-                            <div className="az-project-preview-actions">
-                              <button type="button" onClick={openPreviewProject}>Open</button>
-                              {previewProject.canDownload ? (
-                                <button type="button" onClick={downloadPreviewProject}>Download</button>
-                              ) : null}
                               <button type="button" onClick={() => setPreviewProject(null)}>Close</button>
                             </div>
+                            <small>{previewProject.meta}</small>
+                            <p>{previewProject.text}</p>
                           </div>
                         ) : null}
 
-                        <div className="az-history-list az-compact-folder-list">
+                        <div className="az-history-list">
                           {currentUser ? (
                             sharedProjects.length ? (
                               sharedProjects.map((project) => (
                                 <div key={project.id} className="az-history-item az-share-item">
                                   <div className="az-history-main az-share-main-static">
-                                    <button type="button" onClick={() => previewSharedProject(project)} className="az-history-folder-icon az-private-open-icon" aria-label={`Preview ${project.title}`} title="Preview">🤝</button>
-                                    <span>
-                                      <span className="az-list-title-row">
-                                        <button type="button" onClick={() => previewSharedProject(project)} className="az-private-file-title" aria-label={`Preview ${project.title}`} title="Preview">{project.title}</button>
-                                        <button type="button" onClick={() => renameSharedProject(project.id)} className="az-inline-edit-icon" aria-label={`Rename ${project.title}`} title="Rename">✎</button>
-                                      </span>
+                                    <span className="az-history-folder-icon">🤝</span>
+                                    <span className="az-private-file-copy">
+                                      <button type="button" onClick={() => previewSharedProjectItem(project)} className="az-private-file-title">{project.title}</button>
+                                      <button type="button" onClick={() => renameSharedProject(project.id)} className="az-inline-edit-button" aria-label={`Rename ${project.title}`} title="Rename">✎</button>
                                       <small>
                                         {formatBytes(project.storageBytes)} •{" "}
                                         {new Date(project.createdAt).toLocaleDateString()}
@@ -2825,32 +2774,25 @@ useEffect(() => {
 
                     {activeDrawerSection === "sharedWithMe" ? (
                       <>
-                        {previewProject && previewProject.source === "sharedWithMe" ? (
+                        {previewProject ? (
                           <div className="az-project-preview-box">
-                            <div>
+                            <div className="az-project-preview-head">
                               <strong>{previewProject.title}</strong>
-                              <small>{previewProject.subtitle}</small>
-                            </div>
-                            <div className="az-project-preview-actions">
-                              <button type="button" onClick={openPreviewProject}>Open</button>
-                              {previewProject.canDownload ? (
-                                <button type="button" onClick={downloadPreviewProject}>Download</button>
-                              ) : null}
                               <button type="button" onClick={() => setPreviewProject(null)}>Close</button>
                             </div>
+                            <small>{previewProject.meta}</small>
+                            <p>{previewProject.text}</p>
                           </div>
                         ) : null}
-                        <div className="az-history-list az-compact-folder-list">
+                        <div className="az-history-list">
                         {currentUser ? (
                           sharedWithMeItems.length ? (
                             sharedWithMeItems.map((item) => (
                               <div key={item.id} className="az-history-item">
-                                <div className="az-history-main">
-                                  <button type="button" onClick={() => previewSharedWithMeProject(item)} className="az-history-folder-icon az-private-open-icon" aria-label={`Preview ${item.title}`} title="Preview">👥</button>
-                                  <span>
-                                    <span className="az-list-title-row">
-                                      <button type="button" onClick={() => previewSharedWithMeProject(item)} className="az-private-file-title" aria-label={`Preview ${item.title}`} title="Preview">{item.title}</button>
-                                    </span>
+                                <div className="az-history-main az-share-main-static">
+                                  <span className="az-history-folder-icon">👥</span>
+                                  <span className="az-private-file-copy">
+                                    <button type="button" onClick={() => previewSharedProjectItem(item)} className="az-private-file-title">{item.title}</button>
                                     <small>
                                       Shared by user • {formatBytes(item.storageBytes)} •{" "}
                                       {new Date(item.createdAt).toLocaleDateString()}
@@ -2882,7 +2824,7 @@ useEffect(() => {
                             Login or create an account to view files shared with you.
                           </div>
                         )}
-                      </div>
+                        </div>
                       </>
                     ) : null}
 
